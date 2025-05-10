@@ -874,3 +874,23 @@ class ChallengeSelection(Resource):
         except Exception as e:
             db.session.rollback()
             return {"success": False, "errors": {"database": [str(e)]}}, 500
+
+@challenges_namespace.route("/<challenge_id>/remove_from_competition")
+class SelectedChallenge(Resource):
+    @admins_only
+    def delete(self, challenge_id):
+        # Verify that the challenge ID exists
+        challenge = Challenges.query.filter_by(id=challenge_id).first()
+
+        if not challenge:
+            return {"success": False, "errors": {"challenge_id": ["Challenge does not exist"]}}, 404
+
+        from CTFd.models import SelectedChallenges
+
+        selected = SelectedChallenges.query.filter_by(challenge_id=challenge_id).first()
+
+        if selected:
+            db.session.delete(selected)
+            db.session.commit()
+            return {"success": True}
+        return {"success": False, "errors": {"": ["Challenge not found in selection"]}}, 404
