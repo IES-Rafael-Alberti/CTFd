@@ -173,6 +173,15 @@ class Challenges(db.Model):
         return "<Challenge %r>" % self.name
 
 
+class SelectedChallenges(db.Model):
+    __tablename__ = "selected_challenges"
+    id = db.Column(db.Integer, primary_key=True)
+    challenge_id = db.Column(db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"), unique=True, nullable=False)
+
+    challenge = db.relationship("Challenges", backref="selected_entry")
+
+
+
 class Hints(db.Model):
     __tablename__ = "hints"
     id = db.Column(db.Integer, primary_key=True)

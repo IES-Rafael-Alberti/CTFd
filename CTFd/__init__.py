@@ -219,6 +219,7 @@ def create_app(config="CTFd.config.Config"):
 
         from CTFd.models import (  # noqa: F401
             Challenges,
+            SelectedChallenges,
             Fails,
             Files,
             Flags,
