@@ -833,3 +833,44 @@ class ChallengeRequirements(Resource):
     def get(self, challenge_id):
         challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
         return {"success": True, "data": challenge.requirements}
+
+
+@challenges_namespace.route("/<challenge_id>/add_to_competition")
+class ChallengeSelection(Resource):
+    @admins_only
+    def post(self, challenge_id):
+        # Verify that the challenge ID exists
+        challenge = Challenges.query.filter_by(id=challenge_id).first()
+        
+        if not challenge:
+            return {"success": False, "errors": {"challenge_id": ["Challenge does not exist"]}}, 404
+
+        # Add to selected_challenges table only if it doesn't exist already
+        from CTFd.models import SelectedChallenges
+
+        # Check if the challenge is already selected
+        existing = SelectedChallenges.query.filter_by(challenge_id=challenge_id).first()
+        
+        if existing:
+            return {
+                "success": True, 
+                "data": {
+                    "message": "This challenge was already selected for the competition"
+                }
+            }
+
+        # Add the new challenge
+        selected = SelectedChallenges(challenge_id=challenge_id)
+        db.session.add(selected)
+        
+        try:
+            db.session.commit()
+            return {
+                "success": True, 
+                "data": {
+                    "message": "Challenge successfully added to competition"
+                }
+            }
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "errors": {"database": [str(e)]}}, 500

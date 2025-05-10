@@ -29,6 +29,31 @@ function deleteSelectedChallenges(_event) {
   });
 }
 
+function addSelectedChallengesToCompetition(_event) {
+  let challengeIDs = $("input[data-challenge-id]:checked").map(function () {
+    return $(this).data("challenge-id");
+  });
+  let target = challengeIDs.length === 1 ? "challenge" : "challenges";
+
+  ezQuery({
+    title: "Add Challenges to the competition",
+    body: `Are you sure you want to add ${challengeIDs.length} ${target} to the competition?`,
+    success: function () {
+      const reqs = [];
+      for (var chalID of challengeIDs) {
+        reqs.push(
+          CTFd.fetch(`/api/v1/challenges/${chalID}/add_to_competition`, {
+            method: "POST",
+          }),
+        );
+      }
+      Promise.all(reqs).then((_responses) => {
+        window.location.reload();
+      });
+    }
+  })
+}
+
 function bulkEditChallenges(_event) {
   let challengeIDs = $("input[data-challenge-id]:checked").map(function () {
     return $(this).data("challenge-id");
@@ -78,4 +103,5 @@ function bulkEditChallenges(_event) {
 $(() => {
   $("#challenges-delete-button").click(deleteSelectedChallenges);
   $("#challenges-edit-button").click(bulkEditChallenges);
+  $("#challenges-add-to-competition-button").click(addSelectedChallengesToCompetition);
 });
