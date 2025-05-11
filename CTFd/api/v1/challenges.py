@@ -13,7 +13,7 @@ from CTFd.exceptions.challenges import (
     ChallengeCreateException,
     ChallengeUpdateException,
 )
-from CTFd.models import ChallengeFiles as ChallengeFilesModel
+from CTFd.models import ChallengeFiles as ChallengeFilesModel, SelectedChallenges
 from CTFd.models import Challenges
 from CTFd.models import ChallengeTopics as ChallengeTopicsModel
 from CTFd.models import Fails, Flags, Hints, HintUnlocks, Solves, Submissions, Tags, db
@@ -164,7 +164,21 @@ class ChallengeList(Resource):
             # `None` for the solve count if visiblity checks fail
             solve_count_dfl = None
 
-        chal_q = get_all_challenges(admin=admin_view, field=field, q=q, **query_args)
+        # Get selected challenge IDs
+        selected_challenge_ids = (
+            db.session.query(SelectedChallenges.challenge_id).all()
+        )
+        selected_challenge_ids = [id[0] for id in selected_challenge_ids]
+
+        # Filter only selected challenges from `Challenges` table
+        chal_q = Challenges.query.filter(Challenges.id.in_(selected_challenge_ids))
+
+        # Apply additional filters based on query args
+        if q and field:
+            if Challenges.__mapper__.has_property(field):  # Validar campo válido
+                chal_q = chal_q.filter(getattr(Challenges, field).like(f"%{q}%"))
+
+        # chal_q = get_all_challenges(admin=admin_view, field=field, q=q, **query_args)
 
         # Iterate through the list of challenges, adding to the object which
         # will be JSONified back to the client
