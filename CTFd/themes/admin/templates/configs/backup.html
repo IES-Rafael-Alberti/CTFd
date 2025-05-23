@@ -12,6 +12,9 @@
 		<li class="nav-item">
 			<a class="nav-link" href="#import-csv" aria-controls="import-csv" role="tab" data-toggle="tab">Import CSV</a>
 		</li>
+        <li class="nav-item">
+			<a class="nav-link" href="#import-github" aria-controls="import-github" role="tab" data-toggle="tab">Import from Github</a>
+		</li>
 	</ul>
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="export-ctf">
@@ -90,6 +93,14 @@
 				<input type="submit" class="btn btn-warning" value="Import CSV">
 			</form>
 			{% endwith %}
+		</div>
+        <div role="tabpanel" class="tab-pane" id="import-github">
+			<div class="form-group">
+				<p>GITHUB</p>
+			</div>
+			<div class="form-group">
+				<a href="{{ url_for('api.github_github_login') }}" target="_blank" id="github-login-button" class="btn btn-warning">Login Github</a>
+			</div>
 		</div>
 	</div>
 </div>
