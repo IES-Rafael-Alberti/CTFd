@@ -576,6 +576,17 @@ class Users(db.Model):
             return None
 
 
+class UserGitHubToken(db.Model):
+    __tablename__ = "user_github_tokens"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
+    token = db.Column(db.String(255), nullable=False)
+
+    user = db.relationship("Users", backref="github_token_entry", uselist=False)
+
+
+
+
 class Admins(Users):
     __tablename__ = "admins"
     __mapper_args__ = {"polymorphic_identity": "admin"}

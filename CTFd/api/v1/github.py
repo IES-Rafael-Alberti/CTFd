@@ -3,8 +3,12 @@ from flask_restx import Namespace, Resource
 from flask import redirect, url_for, request, flash
 import urllib.parse
 from CTFd.utils import get_app_config
+from CTFd.models import db
+from CTFd.utils import user as current_user
+from CTFd.models import UserGitHubToken
 
 from CTFd.utils.decorators import admins_only
+from CTFd.utils.user import get_current_user
 
 github_namespace = Namespace(
     'github', description='Endpoint to manage challenge sync from github'
@@ -48,8 +52,6 @@ class GithubCallback(Resource):
             },
         )
 
-        print("🔁 Respuesta de GitHub:", response.json())
-
         if response.status_code != 200:
             return {"success": False, "message": "Error al obtener el token."}, 400
 
@@ -57,12 +59,19 @@ class GithubCallback(Resource):
         if not access_token:
             return {"success": False, "message": "No se recibió el token."}, 400
 
-        # 💾 Aquí deberías guardar el access_token relacionado con el usuario actual
-        # Por ejemplo:
-        # save_token(current_user.id, access_token)
+        # 💾 Guarda el token en la base de datos
+        user_id = get_current_user().id
+        token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
+
+        if token_entry:
+            token_entry.token = access_token
+        else:
+            token_entry = UserGitHubToken(user_id=user_id, token=access_token)
+            db.session.add(token_entry)
+
+        db.session.commit()
 
         return {
             "success": True,
             "message": "Token de GitHub obtenido correctamente.",
-            "token": access_token  # Solo para depuración, no lo muestres en producción
         }
