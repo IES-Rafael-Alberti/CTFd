@@ -1,0 +1,47 @@
+<form>
+  <div class="form-group">
+    <label>Tamaño de la ventana de desafío</label>
+    <select class="form-control custom-select" name="challenge_window_size">
+        <option value="sm">Pequeño</option>
+        <option value="norm">Normal</option>
+        <option value="lg">Grande</option>
+        <option value="xl">Extra Grande</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>
+      Función personalizada de orden de categoría de desafío<br>
+      <small class="form-text text-muted">
+        Definir una <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#description" target="_blank">función compareFn personalizada para Array.sort()</a>
+        usada para ordenar las categorías del desafío.
+      </small>
+    </label>
+    <textarea class="form-control text-monospace" name="challenge_category_order" rows="5"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>
+      Función personalizada de orden de desafío<br>
+      <small class="form-text text-muted">
+        Definir una <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#description" target="_blank">función compareFn personalizada para Array.sort()</a>
+        usada para ordenar los desafíos dentro de las categorías.
+      </small>
+    </label>
+    <textarea class="form-control text-monospace" name="challenge_order" rows="5"></textarea>
+  </div>
+
+  <div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="use_builtin_code_highlighter" name="use_builtin_code_highlighter" checked>
+      <label class="form-check-label" for="use_builtin_code_highlighter">
+        Utilice el resaltador de sintaxis incorporado
+      </label>
+    </div>
+    <small class="form-text text-muted">
+      El resaltador de sintaxis integrado es ligero y rápido, pero puede que no siempre resalte correctamente todos los idiomas. Puedes desactivarlo para usar el tuyo propio.
+    </small>
+  </div>
+
+  <button type="submit" class="btn btn-primary float-right mt-4">Actualizar</button>
+</form>
