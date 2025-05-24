@@ -33,7 +33,7 @@ from CTFd.utils.decorators.visibility import (
 from CTFd.utils.email import sendmail, user_created_notification
 from CTFd.utils.helpers.models import build_model_filters
 from CTFd.utils.security.auth import update_user
-from CTFd.utils.user import get_current_user, get_current_user_type, is_admin
+from CTFd.utils.user import get_current_user, get_current_user_type, is_admin, is_last_admin
 
 users_namespace = Namespace("users", description="Endpoint to retrieve Users")
 
@@ -236,6 +236,15 @@ class UserPublic(Resource):
                 {"success": False, "errors": {"id": "You cannot ban yourself"}},
                 400,
             )
+
+        # Prevent the last remaining admin from changing their type
+        if data["id"] == session["id"] and data.get("type") != "admin":
+
+            if is_last_admin(user_id=session["id"]):
+                return {
+                    "success": False,
+                    "errors": {"type": "You cannot change your role as the last admin"},
+                }, 400
 
         schema = UserSchema(view="admin", instance=user, partial=True)
         response = schema.load(data)

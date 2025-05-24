@@ -1002,3 +1002,23 @@ def test_api_user_patch_team_id():
             data = r.get_json()
             assert data["data"]["team_id"] is None
     destroy_ctfd(app)
+
+def test_last_admin_cannot_change_role():
+    """The last admin should not be able to change their type"""
+    app = create_ctfd()
+    with app.app_context():
+        # Admin user has ID 1 by default
+        with login_as_user(app, name="admin") as admin:
+            # Ensure this is the only admin
+            from CTFd.utils.user import get_admins
+            assert len(get_admins()) == 1
+
+            # Attempt to change role to 'user'
+            resp = admin.patch("/api/v1/users/1", json={"type": "user"})
+            data = resp.get_json()
+
+            assert resp.status_code == 400
+            assert data["success"] is False
+            assert "type" in data["errors"]
+            assert data["errors"]["type"] == "You cannot change your role as the last admin"
+    destroy_ctfd(app)

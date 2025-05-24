@@ -230,3 +230,29 @@ def get_wrong_submissions_per_minute(account_id):
         .all()
     )
     return len(fails)
+
+def is_last_admin(user_id=None):
+    """
+    Check if the given user is the last remaining admin.
+    If no user_id is provided, it defaults to the currently authenticated user.
+
+    :param user_id: Optional user ID to check
+    :return: True if the user is the last admin, False otherwise
+    """
+    if user_id is None:
+        if not authed():
+            return False
+        user_id = session.get("id")
+
+    # Import Admins model to count current admins
+    from CTFd.models import Admins
+
+    admin_count = Admins.query.count()
+
+    # Fetch the user and verify if they are an admin
+    user = Users.query.filter_by(id=user_id).first()
+    if not user or user.type != "admin":
+        return False
+
+    # Return True only if this user is the only admin
+    return admin_count == 1 and user.type == "admin"
