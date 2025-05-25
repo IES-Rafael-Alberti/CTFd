@@ -95,12 +95,123 @@
 			{% endwith %}
 		</div>
         <div role="tabpanel" class="tab-pane" id="import-github">
-			<div class="form-group">
-				<p>GITHUB</p>
-			</div>
-			<div class="form-group">
-				<a href="{{ url_for('api.github_github_login') }}" target="_blank" id="github-login-button" class="btn btn-warning">Login Github</a>
-			</div>
-		</div>
+            <div class="form-group" id="github-login-section">
+                <p>Conecta tu cuenta de GitHub para importar retos desde tus repositorios privados o públicos.</p>
+                 <a href="https://github.com/apps/ctfd-library/installations/new" target="_blank" id="github-login-button" class="btn btn-warning">Instalacion con GitHub</a>
+                <a href="{{ url_for('api.github_github_installations') }}" target="_blank" id="github-login-button" class="btn btn-warning">ID de instalacion</a>
+            </div>
+
+            <div class="form-group" id="github-error-section" style="display:none;">
+                <div class="alert alert-danger" role="alert" id="github-error-message">
+                    <!-- El mensaje de error será insertado aquí -->
+                </div>
+            </div>
+
+
+            <div class="form-group" id="github-repos-section" style="display:none;">
+                <label for="github-repo-search">Filtrar por nombre:</label>
+                <input type="text" id="github-repo-search" class="form-control" placeholder="Buscar repositorio...">
+
+                <div id="github-repos-list" class="mt-3"></div>
+
+                <nav aria-label="Repos pagination" class="mt-3">
+                    <ul class="pagination justify-content-center" id="github-repo-pagination"></ul>
+                </nav>
+            </div>
+
+        </div>
 	</div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const ITEMS_PER_PAGE = 10;
+    let allRepos = [];
+    let currentPage = 1;
+
+    const githubLoginSection = document.getElementById("github-login-section");
+    const githubReposSection = document.getElementById("github-repos-section");
+    const githubReposList = document.getElementById("github-repos-list");
+    const githubRepoSearch = document.getElementById("github-repo-search");
+    const githubRepoPagination = document.getElementById("github-repo-pagination");
+
+    function renderRepos() {
+        const searchTerm = githubRepoSearch.value.toLowerCase();
+        const filteredRepos = allRepos.filter(repo => repo.full_name.toLowerCase().includes(searchTerm));
+        const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE);
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const reposToShow = filteredRepos.slice(start, end);
+
+        githubReposList.innerHTML = "";
+        reposToShow.forEach((repo, index) => {
+            const id = `repo-${index}`;
+            const div = document.createElement("div");
+            div.className = "form-check";
+            div.innerHTML = `
+                <input class="form-check-input" type="checkbox" value="${repo.full_name}" id="${id}">
+                <label class="form-check-label" for="${id}">${repo.full_name}</label>
+            `;
+            githubReposList.appendChild(div);
+        });
+
+        renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+        githubRepoPagination.innerHTML = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement("li");
+            li.className = `page-item ${i === currentPage ? "active" : ""}`;
+            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            li.addEventListener("click", (e) => {
+                e.preventDefault();
+                currentPage = i;
+                renderRepos();
+            });
+            githubRepoPagination.appendChild(li);
+        }
+    }
+
+    githubRepoSearch.addEventListener("input", () => {
+        currentPage = 1;
+        renderRepos();
+    });
+
+    fetch("/api/v1/github/repos")
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error("Usuario no autenticado con GitHub. Por favor, instala la app o asegúrate de tener permisos.");
+                }
+                return response.json().then(err => {
+                    throw new Error(err.message || "Error inesperado al comunicarse con la API.");
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                throw new Error(data.message || "La API respondió sin éxito.");
+            }
+
+            allRepos = data.repos || [];
+            githubLoginSection.style.display = "none";
+            githubReposSection.style.display = "block";
+            document.getElementById("github-error-section").style.display = "none";
+            renderRepos();
+        })
+        .catch(error => {
+            console.error("Error al obtener los repos:", error);
+            const errorSection = document.getElementById("github-error-section");
+            const errorMessage = document.getElementById("github-error-message");
+            errorMessage.textContent = error.message;
+            errorSection.style.display = "block";
+            githubLoginSection.style.display = "block";
+            githubReposSection.style.display = "none";
+        });
+
+});
+</script>
+

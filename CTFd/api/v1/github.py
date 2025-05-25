@@ -1,6 +1,6 @@
 import requests
 from flask_restx import Namespace, Resource
-from flask import redirect, url_for, request, flash
+from flask import redirect, url_for, request
 import urllib.parse
 from CTFd.utils import get_app_config
 from CTFd.models import db
@@ -10,68 +10,132 @@ from CTFd.models import UserGitHubToken
 from CTFd.utils.decorators import admins_only
 from CTFd.utils.user import get_current_user
 
+import time
+import jwt
+
 github_namespace = Namespace(
     'github', description='Endpoint to manage challenge sync from github'
 )
 
-@github_namespace.route('/login')
-class GithubLogin(Resource):
-    @admins_only
-    def get(self):
-        client_id = get_app_config('GITHUB_APP_CLIENT_ID')
-        redirect_uri = get_app_config("GITHUB_APP_REDIRECT_URI")
-        scopes = "repo"
+def generate_jwt():
+    app_id = get_app_config("GITHUB_APP_ID")
+    private_key = open(get_app_config("GITHUB_APP_PRIVATE_KEY_PATH"), "r").read()
 
-        github_auth_url = "https://github.com/login/oauth/authorize"
-        query = urllib.parse.urlencode({
-            "client_id": client_id,
-            "redirect_uri": redirect_uri,
-            "scope": scopes,
-        })
+    payload = {
+        "iat": int(time.time()),
+        "exp": int(time.time()) + 600,
+        "iss": app_id
+    }
 
-        return redirect(f"{github_auth_url}?{query}")
+    return jwt.encode(payload, private_key, algorithm="RS256")
 
+def get_installation_access_token(installation_id):
+    jwt_token = generate_jwt()
+
+    headers = {
+        "Authorization": f"Bearer {jwt_token}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
+    r = requests.post(url, headers=headers)
+
+    if r.status_code != 201:
+        print("Error:", r.status_code, r.text)
+        return None
+
+    return r.json().get("token")
 
 @github_namespace.route('/callback')
 class GithubCallback(Resource):
     @admins_only
     def get(self):
-        code = request.args.get("code")
-        if not code:
-            return {"success": False, "message": "No se recibió el código."}, 400
+        installation_id = request.args.get("installation_id")
 
-        # Intercambia el `code` por un `access_token`
-        token_url = "https://github.com/login/oauth/access_token"
-        response = requests.post(
-            token_url,
-            headers={"Accept": "application/json"},
-            data={
-                "client_id": get_app_config("GITHUB_APP_CLIENT_ID"),
-                "client_secret": get_app_config("GITHUB_APP_CLIENT_SECRET"),
-                "code": code,
-            },
-        )
+        if not installation_id:
+            return {"success": False, "message": "No se recibió installation_id."}, 400
 
-        if response.status_code != 200:
-            return {"success": False, "message": "Error al obtener el token."}, 400
-
-        access_token = response.json().get("access_token")
-        if not access_token:
-            return {"success": False, "message": "No se recibió el token."}, 400
-
-        # 💾 Guarda el token en la base de datos
         user_id = get_current_user().id
         token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
 
         if token_entry:
-            token_entry.token = access_token
+            token_entry.token = installation_id  # Cambiar a installation_id más adelante
         else:
-            token_entry = UserGitHubToken(user_id=user_id, token=access_token)
+            token_entry = UserGitHubToken(user_id=user_id, token=installation_id)
             db.session.add(token_entry)
 
         db.session.commit()
 
         return {
             "success": True,
-            "message": "Token de GitHub obtenido correctamente.",
+            "message": "Installation ID de GitHub guardado correctamente.",
         }
+
+@github_namespace.route('/installations')
+class GithubInstallations(Resource):
+    @admins_only
+    def get(self):
+        jwt_token = generate_jwt()
+
+        headers = {
+            "Authorization": f"Bearer {jwt_token}",
+            "Accept": "application/vnd.github+json"
+        }
+
+        r = requests.get("https://api.github.com/app/installations", headers=headers)
+
+        if r.status_code != 200:
+            return {"success": False, "message": "Error al obtener instalaciones"}, 400
+
+        installations = r.json()
+        if not isinstance(installations, list):
+            return {"success": False, "message": "Respuesta inesperada"}, 400
+
+        if len(installations) == 1:
+            installation_id = installations[0]["id"]
+        else:
+            return {"success": False, "message": "Hay múltiples instalaciones. Filtro requerido.", "r": r.json()}, 400
+
+        user_id = get_current_user().id
+        token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
+
+        if token_entry:
+            token_entry.token = installation_id
+        else:
+            token_entry = UserGitHubToken(user_id=user_id, token=installation_id)
+            db.session.add(token_entry)
+
+        db.session.commit()
+
+        return {"success": True, "message": f"Installation ID {installation_id} guardado correctamente."}
+
+@github_namespace.route('/repos')
+class GithubRepos(Resource):
+    @admins_only
+    def get(self):
+        user_id = get_current_user().id
+        token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
+
+        if not token_entry:
+            return {"success": False, "message": "Installation ID no encontrado"}, 401
+
+        installation_id = get_installation_access_token(token_entry.token)
+
+        if not installation_id:
+            return {"success": False, "message": "No se pudo obtener el id de instalación"}, 400
+
+        headers = {
+            "Authorization": f"token {installation_id}",
+            "Accept": "application/vnd.github+json"
+        }
+
+        github_api_url = "https://api.github.com/installation/repositories"
+        response = requests.get(github_api_url, headers=headers)
+
+        if response.status_code != 200:
+            return {"success": False, "message": "No se pudo obtener los repositorios"}, 400
+
+        repos = response.json().get("repositories", [])
+        repo_names = [{"id": r["id"], "name": r["name"], "full_name": r["full_name"]} for r in repos]
+
+        return {"success": True, "repos": repo_names}
