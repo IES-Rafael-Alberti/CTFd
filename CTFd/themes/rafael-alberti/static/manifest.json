@@ -1,11 +1,11 @@
 {
   "assets/js/index.js": {
-    "file": "assets/index.54cc1a39.js",
+    "file": "assets/index.cf63c176.js",
     "src": "assets/js/index.js",
     "isEntry": true
   },
   "assets/js/page.js": {
-    "file": "assets/page.20952f1f.js",
+    "file": "assets/page.8555a144.js",
     "src": "assets/js/page.js",
     "isEntry": true,
     "imports": [
@@ -13,7 +13,7 @@
     ]
   },
   "assets/js/setup.js": {
-    "file": "assets/setup.7ff08b91.js",
+    "file": "assets/setup.3ee820e2.js",
     "src": "assets/js/setup.js",
     "isEntry": true,
     "imports": [
@@ -21,16 +21,16 @@
     ]
   },
   "assets/js/settings.js": {
-    "file": "assets/settings.a39cfda9.js",
+    "file": "assets/settings.29255a2c.js",
     "src": "assets/js/settings.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_clipboard.c5d79f2d.js"
+      "_clipboard.85462a03.js"
     ]
   },
   "assets/js/challenges.js": {
-    "file": "assets/challenges.4245ccbf.js",
+    "file": "assets/challenges.cc4570ff.js",
     "src": "assets/js/challenges.js",
     "isEntry": true,
     "imports": [
@@ -38,7 +38,7 @@
     ]
   },
   "assets/js/scoreboard.js": {
-    "file": "assets/scoreboard.ae2aeeba.js",
+    "file": "assets/scoreboard.160d97fa.js",
     "src": "assets/js/scoreboard.js",
     "isEntry": true,
     "imports": [
@@ -48,7 +48,7 @@
     ]
   },
   "assets/js/notifications.js": {
-    "file": "assets/notifications.6622f982.js",
+    "file": "assets/notifications.e6c488c7.js",
     "src": "assets/js/notifications.js",
     "isEntry": true,
     "imports": [
@@ -56,30 +56,30 @@
     ]
   },
   "assets/js/teams/public.js": {
-    "file": "assets/teams_public.8583d126.js",
+    "file": "assets/teams_public.7ac7eec9.js",
     "src": "assets/js/teams/public.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_userscore.fc5540f8.js",
+      "_userscore.9a7b9a20.js",
       "_index.5233cf8c.js",
       "_echarts.128204f2.js"
     ]
   },
   "assets/js/teams/private.js": {
-    "file": "assets/teams_private.924acf87.js",
+    "file": "assets/teams_private.aafdf5ac.js",
     "src": "assets/js/teams/private.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_clipboard.c5d79f2d.js",
-      "_userscore.fc5540f8.js",
+      "_clipboard.85462a03.js",
+      "_userscore.9a7b9a20.js",
       "_index.5233cf8c.js",
       "_echarts.128204f2.js"
     ]
   },
   "assets/js/teams/list.js": {
-    "file": "assets/teams_list.0d06da84.js",
+    "file": "assets/teams_list.71c042c8.js",
     "src": "assets/js/teams/list.js",
     "isEntry": true,
     "imports": [
@@ -87,29 +87,29 @@
     ]
   },
   "assets/js/users/public.js": {
-    "file": "assets/users_public.0195a078.js",
+    "file": "assets/users_public.a1396c87.js",
     "src": "assets/js/users/public.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_userscore.fc5540f8.js",
+      "_userscore.9a7b9a20.js",
       "_index.5233cf8c.js",
       "_echarts.128204f2.js"
     ]
   },
   "assets/js/users/private.js": {
-    "file": "assets/users_private.a9971ade.js",
+    "file": "assets/users_private.9125754b.js",
     "src": "assets/js/users/private.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_userscore.fc5540f8.js",
+      "_userscore.9a7b9a20.js",
       "_index.5233cf8c.js",
       "_echarts.128204f2.js"
     ]
   },
   "assets/js/users/list.js": {
-    "file": "assets/users_list.e54bba54.js",
+    "file": "assets/users_list.53c4c11d.js",
     "src": "assets/js/users/list.js",
     "isEntry": true,
     "imports": [
@@ -124,8 +124,8 @@
   "_echarts.128204f2.js": {
     "file": "assets/echarts.128204f2.js"
   },
-  "_clipboard.c5d79f2d.js": {
-    "file": "assets/clipboard.c5d79f2d.js",
+  "_clipboard.85462a03.js": {
+    "file": "assets/clipboard.85462a03.js",
     "imports": [
       "assets/js/index.js"
     ]
@@ -136,15 +136,15 @@
       "_echarts.128204f2.js"
     ]
   },
-  "_userscore.fc5540f8.js": {
-    "file": "assets/userscore.fc5540f8.js",
+  "_userscore.9a7b9a20.js": {
+    "file": "assets/userscore.9a7b9a20.js",
     "imports": [
       "assets/js/index.js",
       "_index.5233cf8c.js"
     ]
   },
   "assets/scss/main.scss": {
-    "file": "assets/main.e9ec7884.css",
+    "file": "assets/main.0a3d8a0c.css",
     "src": "assets/scss/main.scss",
     "isEntry": true
   }

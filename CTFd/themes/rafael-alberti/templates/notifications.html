@@ -1,34 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div class="jumbotron">
-		<div class="container">
-			<h1>
-				Notificaciones
-			</h1>
-		</div>
-	</div>
-	<div class="container">
-		{% if not notifications %}
-		<h2 class="text-center">
-			No hay notificaciones todavía
-		</h2>
-		{% endif %}
-		{% for notification in notifications %}
-		<div class="card bg-body-tertiary mb-4">
-			<div class="card-body">
-				<h3 class="card-title">{{ notification.title }}</h3>
-				<blockquote class="blockquote mb-0">
-					<p>{{ notification.html }}</p>
-					<small class="text-muted"><span data-time="{{ notification.date | isoformat }}"></span></small>
-				</blockquote>
-			</div>
-		</div>
-		{% endfor %}
-	</div>
+  <section class="jumbotron">
+    <div class="jumbotron__container">
+      <h1 class="jumbotron__title">
+        NOTIFICACIONES
+      </h1>
+    </div>
+  </section>
+	<div class="container-path container-path--jumbotron-bottom"></div>
+	<div class="container-path container-path--top"></div>
+  <div class="notifications">
+    {% if not notifications %}
+    <div class="notifications__empty">
+      <h2 class="notifications__empty-title">
+        No hay notificaciones todavía
+      </h2>
+    </div>
+    {% endif %}
+    {% for notification in notifications %}
+    <div class="notification">
+      <div class="notification__content">
+        <h3 class="notification__title">{{ notification.title }}</h3>
+          <p class="notification__text">{{ notification.html }}</p>
+          <small class="notification__date"><span data-time="{{ notification.date | isoformat }}"></span></small>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+	<div class="container-path container-path--bottom"></div>
 {% endblock %}
 
 {% block scripts %}
   {{ Assets.js("assets/js/notifications.js") }}
 {% endblock %}
-

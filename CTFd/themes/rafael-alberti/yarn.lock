@@ -17,16 +17,6 @@
     howler "^2.2.1"
     whatwg-fetch "^3.6.2"
 
-"@fontsource/lato@^4.5.3":
-  version "4.5.5"
-  resolved "https://registry.npmjs.org/@fontsource/lato/-/lato-4.5.5.tgz"
-  integrity sha512-0KVmVCq3wZnriKVdbY+n/ZLf7Vy+dQcqpcm8kaVX4QGd6uBTgH6YWLnM1L051TtjKlal2FiE6xc/BLw116a0gQ==
-
-"@fontsource/raleway@^4.5.3":
-  version "4.5.5"
-  resolved "https://registry.npmjs.org/@fontsource/raleway/-/raleway-4.5.5.tgz"
-  integrity sha512-T2zIJ/6/2x+T9+tLtw/qSiJ68ahcceDMUOU3zrzEyNGYXUvlQyU4Cv9wyTmS+TU9IFHHChjMToV6izRL9mqDqg==
-
 "@fortawesome/fontawesome-free@6.5.1":
   version "6.5.1"
   resolved "https://registry.npmjs.org/@fortawesome/fontawesome-free/-/fontawesome-free-6.5.1.tgz"
@@ -228,12 +218,12 @@ binary-extensions@^2.0.0:
 bootstrap-multimodal@~1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/bootstrap-multimodal/-/bootstrap-multimodal-1.0.4.tgz"
-  integrity sha1-0+7cX15iVR4rLhMKueCSMY3aosQ= sha512-ZEPTxydHGRdXEbLwZFbYvYQ1G7YBU5Drqts++RMFO9uRJuzYTKiYMFl4Ip81I17IaSL8l0yFpoGQB+JfLRL0IQ==
+  integrity sha512-ZEPTxydHGRdXEbLwZFbYvYQ1G7YBU5Drqts++RMFO9uRJuzYTKiYMFl4Ip81I17IaSL8l0yFpoGQB+JfLRL0IQ==
 
 bootstrap@^5.3.3:
-  version "5.3.3"
-  resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.3.tgz"
-  integrity sha512-8HLCdWgyoMguSO9o+aH+iuZ+aht+mzW0u3HIMzVu7Srrpv7EBBxTnrFlSCskwdY1+EOFQSm7uMJhNQHkdPcmjg==
+  version "5.3.6"
+  resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.6.tgz"
+  integrity sha512-jX0GAcRzvdwISuvArXn3m7KZscWWFAf1MKBcnzaN02qWMb3jpMoUX4/qgeiGzqyIb4ojulRzs89UCUmGcFSzTA==
 
 brace-expansion@^1.1.7:
   version "1.1.11"

@@ -1,22 +1,45 @@
-/* Jumbotron styles
--------------------------------------------------- */
-
+/* Jumbotron styles */
 // Move down content because we have a fixed navbar that is 3.5rem tall
 main {
-  padding-top: 3.5rem;
+  padding-top: 4rem;
 }
 
 .jumbotron {
-  padding: 2rem 1rem;
-  margin-bottom: 2rem;
+  padding: 6rem 2rem;
   text-align: center;
+  background-color: #222222;
+  color: #fff;
+  position: relative;
 
-  background-color: var(--bs-dark);
-  color: var(--bs-white);
-}
+  &__container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 15px;
+    height: 50px;
+  }
 
-@media (min-width: 576px) {
-  .jumbotron {
-    padding: 4rem 2rem;
+  &__title {
+    font-size: 3rem;
+    text-shadow:
+      -20px -10px 1px #0055f480,
+      15px 10px 1px #e9345584;
+    color: #fff;
+  }
+
+  &__subtitle {
+    font-size: 1.25rem;
+    color: #6c757d;
+  }
+
+  @media (min-width: 760px) {
+    padding: 8rem 4rem;
+
+    &__title {
+      font-size: 4rem;
+    }
   }
 }

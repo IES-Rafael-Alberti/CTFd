@@ -7,6 +7,9 @@
 @use "includes/components/challenge";
 @use "includes/components/sticky-footer";
 @use "includes/components/graphs";
+@use "includes/components/errors";
+@use "includes/components/navbar";
+@use "includes/components/containers";
 
 @use "includes/utils/fonts";
 @use "includes/utils/opacity";
@@ -17,9 +20,11 @@
 @use "includes/icons/award-icons";
 @use "includes/icons/flag-icons";
 
+@use "includes/pages/notifications";
+
 h1,
 h2 {
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 2px;
 }
 
