@@ -1,55 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>
-        Inicio de sesión
-      </h1>
-    </div>
-  </div>
+  {% set bordes_svg = Assets.file("static/img/Bordes.svg") %}
 
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 col offset-md-2 col-lg-6 offset-lg-3">
-        {% include "components/errors.html" %}
+  {% set titulo = "Inicio de sesión" %}
+  {% include "components/jumbotron.html" with context %}
 
-        {% if integrations.mlc() %}
-          <a class="btn btn-secondary btn-lg btn-block w-100" href="{{ url_for('auth.oauth_login') }}">
-            Iniciar sesión con Major League Cyber
-          </a>
+  <div class="login">
+    <div class="login__box">
+      {% include "components/errors.html" %}
 
-          <hr>
-        {% endif %}
+      {% if integrations.mlc() %}
+        <a class="login__oauth-button" href="{{ url_for('auth.oauth_login') }}">
+          Iniciar sesión con Major League Cyber
+        </a>
+        <hr class="login__divider">
+      {% endif %}
 
-        {% with form = Forms.auth.LoginForm() %}
-          <form method="post" accept-charset="utf-8">
-            <div class="mb-3">
-              <b>{{ form.name.label(class="form-label") }}</b>
-              {{ form.name(class="form-control", value=name, autocomplete="username email") }}
+      {% with form = Forms.auth.LoginForm() %}
+        <form method="post" accept-charset="utf-8" class="login__form">
+          <div class="login__field">
+            <label class="login__label">
+              <b>{{ form.name.label() }}</b>
+            </label>
+            {{ form.name(class="login__input", value=name, autocomplete="username email") }}
+          </div>
+
+          <div class="login__field">
+            <label class="login__label">
+              <b>{{ form.password.label() }}</b>
+            </label>
+            {{ form.password(class="login__input", value=password, autocomplete="current-password") }}
+          </div>
+
+          <div class="login__actions">
+            <a href="{{ url_for('auth.reset_password') }}" class="login__link">
+              ¿Olvidaste tu contraseña?
+            </a>
+            <div class="login__submit-wrapper"
+                  onmouseover="this.style.backgroundImage='url({{ bordes_svg }})'"
+                  onmouseout="this.style.backgroundImage='none'"
+                  style="background-size: contain; background-repeat: no-repeat; background-position: center; transition: background-image 0.3s ease;">
+              {{ form.submit(class="login__submit") }}
             </div>
+          </div>
 
-            <div class="mb-3">
-              <b>{{ form.password.label(class="form-label") }}</b>
-              {{ form.password(class="form-control", value=password, autocomplete="current-password") }}
-            </div>
-
-            <div class="row pt-3">
-              <div class="col-6 col-md-8">
-                <a class="align-middle" href="{{ url_for('auth.reset_password') }}">
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
-
-              <div class="col-6 col-md-4">
-                {{ form.submit(class="btn btn-block btn-primary w-100") }}
-              </div>
-            </div>
-
-            {{ form.nonce() }}
-          </form>
-        {% endwith %}
-      </div>
+          {{ form.nonce() }}
+        </form>
+      {% endwith %}
     </div>
   </div>
 {% endblock %}

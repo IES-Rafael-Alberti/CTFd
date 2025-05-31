@@ -1,14 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <section class="jumbotron">
-    <div class="jumbotron__container">
-      <h1 class="jumbotron__title">
-        NOTIFICACIONES
-      </h1>
-    </div>
-  </section>
-	<div class="container-path container-path--jumbotron-bottom"></div>
+
+  {% set titulo = "Notificaciones" %}
+  {% include "components/jumbotron.html" with context %}
+  
 	<div class="container-path container-path--top"></div>
   <div class="notifications">
     {% if not notifications %}

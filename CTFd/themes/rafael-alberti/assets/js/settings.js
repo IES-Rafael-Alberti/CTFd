@@ -82,19 +82,23 @@ Alpine.data("TokensForm", () => ({
 Alpine.data("Tokens", () => ({
   selectedTokenId: null,
 
-  async deleteTokenModal(tokenId) {
+  deleteTokenModal(tokenId) {
     this.selectedTokenId = tokenId;
-    new Modal(this.$refs.confirmModal).show();
+    this.$refs.confirmModal.style.display = "block"; // 👈 Mostrar modal
   },
 
   async deleteSelectedToken() {
     await CTFd.pages.settings.deleteToken(this.selectedTokenId);
-    const $token = this.$refs[`token-${this.selectedTokenId}`];
 
+    const $token = this.$refs[`token-${this.selectedTokenId}`];
     if ($token) {
       $token.remove();
     }
-  },
+
+    this.$refs.confirmModal.style.display = "none"; // 👈 Ocultar modal
+    this.selectedTokenId = null;
+  }
 }));
+
 
 Alpine.start();

@@ -1,19 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="container">
-	<div class="row">
-		<div class="col-md-12">
-			<div class="pt-5 mt-5 text-center">
-				<h1>502</h1>
-				<hr class="w-50 m-auto">
-				<br/>
-				<h2>502 Puerta de enlace incorrecta</h2>
-			</div>
-		</div>
-	</div>
-</div>
-
-
+  <div class="error">
+    <div class="error__container">
+      <h1 class="error__message">502</h1>
+      <hr class="error__divider">
+      <h2 class="error__code">Puerta de enlace incorrecta</h2>
+    </div>
+  </div>
 {% endblock %}

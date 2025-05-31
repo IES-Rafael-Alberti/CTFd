@@ -17,6 +17,8 @@ import eventRead from "./utils/notifications/read";
 
 import "./components/language";
 
+import "./assets";
+
 dayjs.extend(advancedFormat);
 CTFd.init(window.init);
 

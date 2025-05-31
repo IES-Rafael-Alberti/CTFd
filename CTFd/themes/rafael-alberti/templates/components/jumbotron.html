@@ -1,0 +1,16 @@
+{% set decorado_header = decorado_header or Assets.file("static/img/Decorado_header.svg") %}
+{% set titulo = titulo or "Título por defecto" %}
+
+<section class="jumbotron" style="position: relative; overflow: hidden;">
+  <div class="jumbotron__container">
+    <h1 class="jumbotron__title section-title">
+      {{ titulo}}
+    </h1>
+  </div>
+
+  <!-- Mash decorativo -->
+  <img src="{{ decorado_header }}" alt="Decoración jumbotron" 
+       style="position: absolute; top: 20%; left: 0; width: 100%; height: auto; pointer-events: none; z-index: 0;">
+</section>
+
+<div class="container-path container-path--jumbotron-bottom"></div>

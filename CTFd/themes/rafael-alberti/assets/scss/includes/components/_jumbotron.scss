@@ -10,6 +10,7 @@ main {
   background-color: #222222;
   color: #fff;
   position: relative;
+  margin-top: 2rem;
 
   &__container {
     position: absolute;
@@ -23,11 +24,11 @@ main {
   }
 
   &__title {
-    font-size: 3rem;
     text-shadow:
       -20px -10px 1px #0055f480,
       15px 10px 1px #e9345584;
     color: #fff;
+    text-transform: uppercase;
   }
 
   &__subtitle {
@@ -37,9 +38,24 @@ main {
 
   @media (min-width: 760px) {
     padding: 8rem 4rem;
+    margin-top: 2.75rem;
 
     &__title {
       font-size: 4rem;
     }
+  }
+
+  @media (min-width: 1000px) {
+    margin-top: 2.25rem;
+  }
+
+  @media (min-width: 1100px) {
+    margin-top: 3rem;
+    padding-top: 12rem;
+  }
+
+  @media (min-width: 1600px) {
+    margin-top: 1.5rem;
+    padding-top: 16rem;
   }
 }

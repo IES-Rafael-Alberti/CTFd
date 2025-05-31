@@ -10,6 +10,7 @@
 @use "includes/components/errors";
 @use "includes/components/navbar";
 @use "includes/components/containers";
+@use "includes/components/scoreboard";
 
 @use "includes/utils/fonts";
 @use "includes/utils/opacity";
@@ -17,19 +18,28 @@
 @use "includes/utils/cursors";
 @use "includes/utils/lolight";
 
+@use "includes/errors/error";
+
 @use "includes/icons/award-icons";
 @use "includes/icons/flag-icons";
 
+@use "includes/macros/forms";
+
 @use "includes/pages/notifications";
+@use "includes/pages/scoreboard-page";
+@use "includes/pages/login";
+@use "includes/pages/register";
+@use "includes/pages/reset-password";
+@use "includes/pages/settings";
 
 h1,
 h2 {
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 2px;
 }
 
 a {
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 blockquote {
@@ -39,8 +49,8 @@ blockquote {
 
 input,
 select {
-  padding: 0.6rem !important;
-  height: auto !important;
+  padding: 0.6rem;
+  height: auto;
 }
 
 .fa-spin.spinner {

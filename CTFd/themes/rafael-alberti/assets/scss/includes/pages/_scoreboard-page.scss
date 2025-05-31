@@ -1,0 +1,23 @@
+.score-graph {
+  display: none;
+  width: 80vw;
+  margin: 0 auto;
+
+  &--visible {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &--hidden {
+    display: none;
+  }
+
+  &__spinner {
+    text-align: center;
+
+    &-icon {
+      font-size: 2rem;
+    }
+  }
+}

@@ -1,11 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>Equipos</h1>
-    </div>
-  </div>
+  {% set titulo = "Equipos" %}
+  {% include "components/jumbotron.html" with context %}
 
   <div class="container">
     <div class="row">

@@ -1,4 +1,12 @@
 {
+  "static/img/Bordes.svg": {
+    "file": "assets/Bordes.508cd5ed.svg",
+    "src": "static/img/Bordes.svg"
+  },
+  "static/img/Decorado_header.svg": {
+    "file": "assets/Decorado_header.d41f9f28.svg",
+    "src": "static/img/Decorado_header.svg"
+  },
   "assets/js/index.js": {
     "file": "assets/index.cf63c176.js",
     "src": "assets/js/index.js",
@@ -21,7 +29,7 @@
     ]
   },
   "assets/js/settings.js": {
-    "file": "assets/settings.29255a2c.js",
+    "file": "assets/settings.9fc117be.js",
     "src": "assets/js/settings.js",
     "isEntry": true,
     "imports": [
@@ -117,7 +125,7 @@
     ]
   },
   "assets/js/color_mode_switcher.js": {
-    "file": "assets/color_mode_switcher.ef7861d7.js",
+    "file": "assets/color_mode_switcher.785e8a56.js",
     "src": "assets/js/color_mode_switcher.js",
     "isEntry": true
   },
@@ -144,7 +152,7 @@
     ]
   },
   "assets/scss/main.scss": {
-    "file": "assets/main.0a3d8a0c.css",
+    "file": "assets/main.c6d4a7d6.css",
     "src": "assets/scss/main.scss",
     "isEntry": true
   }
