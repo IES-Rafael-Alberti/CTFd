@@ -1,40 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>Crear equipo</h1>
-    </div>
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 offset-md-3">
-        {% include "components/errors.html" %}
 
-        {% with form = Forms.teams.TeamRegisterForm() %}
-          {% from "macros/forms.html" import render_extra_fields %}
-          <form method="POST">
-            <div class="mb-3">
-              <b>{{ form.name.label(class="form-label") }}</b>
-              {{ form.name(class="form-control") }}
-            </div>
-            <div class="mb-3">
-              <b>{{ form.password.label(class="form-label") }}</b>
-              {{ form.password(class="form-control") }}
-            </div>
+  {% set titulo = "Crear equipo" %}
+  {% include "components/jumbotron.html" with context %}
 
-            {{ render_extra_fields(form.extra) }}
+  <div class="team-register">
+    <div class="team-register__body">
+      {% include "components/errors.html" %}
 
-            <div class="row ">
-              <div class="col-md-12">
-                <p>Después de crear tu equipo, comparte el nombre y la contraseña con tus compañeros para que puedan unirse.</p>
-                {{ form.submit(class="btn btn-success float-end px-4") }}
-              </div>
-            </div>
-            {{ form.nonce() }}
-          </form>
-        {% endwith %}
-      </div>
+      {% with form = Forms.teams.TeamRegisterForm() %}
+        {% from "macros/forms.html" import render_extra_fields %}
+
+        <form method="POST" class="team-register__form">
+          <div class="form__group">
+            {{ form.name.label(class="form__label") }}
+            {{ form.name(class="form__input") }}
+          </div>
+
+          <div class="form__group">
+            {{ form.password.label(class="form__label") }}
+            {{ form.password(class="form__input") }}
+          </div>
+
+          {{ render_extra_fields(form.extra) }}
+
+          <div class="team-register__actions">
+            <p class="team-register__note">
+              Después de crear tu equipo, comparte el nombre y la contraseña con tus compañeros para que puedan unirse.
+            </p>
+            {{ form.submit(class="btn--success") }}
+          </div>
+
+          {{ form.nonce() }}
+        </form>
+      {% endwith %}
     </div>
   </div>
 {% endblock %}

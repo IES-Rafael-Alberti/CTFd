@@ -35,6 +35,10 @@
 @use "includes/pages/settings";
 @use "includes/pages/users/users";
 @use "includes/pages/teams/teams";
+@use "includes/pages/teams/join-team";
+@use "includes/pages/teams/new-team";
+@use "includes/pages/teams/invite";
+@use "includes/pages/teams/team_enrollment";
 
 h1,
 h2 {

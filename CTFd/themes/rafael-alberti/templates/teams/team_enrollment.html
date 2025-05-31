@@ -1,44 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
-      <h1>Equipo</h1>
-    </div>
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 offset-md-3 text-center">
-        <p class="h2">Bienvenid@ a {{ Configs.ctf_name }}!</p>
-        <p>
-          Para participar debes unirte o crear un equipo.
-        </p>
-      </div>
+
+  {% set titulo = "Equipo" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="team-options">
+    <div class="team-options__intro">
+      <h2 class="team-options__title">Bienvenid@ a {{ Configs.ctf_name }}!</h2>
+      <p class="team-options__text">
+        Para participar debes unirte o crear un equipo.
+      </p>
     </div>
 
     {% if integrations.mlc() %}
-      <div class="row">
-        <div class="col-md-6 offset-md-3 text-center">
-          <a class="btn btn-primary w-100" href="{{ url_for('auth.oauth_login') }}">Juega con el equipo oficial</a>
-        </div>
+      <div class="team-options__group">
+        <a class="btn--success" href="{{ url_for('auth.oauth_login') }}">
+          Juega con el equipo oficial
+        </a>
       </div>
-      <div class="row">
-        <div class="mt-3 col-md-3 offset-md-3 text-center">
-          <a class="btn btn-outline-info w-100" href="{{ url_for('teams.join') }}">Únete al equipo no oficial</a>
-        </div>
-        <div class="mt-3 col-md-3 text-center">
-          <a class="btn btn-outline-info w-100" href="{{ url_for('teams.new') }}">Crear equipo no oficial</a>
-        </div>
+
+      <div class="team-options__row">
+        <a class="btn--success" href="{{ url_for('teams.join') }}">
+          Únete al equipo no oficial
+        </a>
+        <a class="btn--success" href="{{ url_for('teams.new') }}">
+          Crear equipo no oficial
+        </a>
       </div>
     {% else %}
-      <div class="row">
-        <div class="mt-3 col-sm-4 col-md-3 offset-sm-2 offset-md-3 text-center">
-          <a class="btn btn-primary w-100" href="{{ url_for('teams.join') }}">Unirse al equipo</a>
-        </div>
-        <div class="mt-3 col-sm-4 col-md-3 text-center">
-          <a class="btn btn-primary w-100" href="{{ url_for('teams.new') }}">Crear equipo</a>
-        </div>
+      <div class="team-options__row">
+        <a class="btn--success" href="{{ url_for('teams.join') }}">
+          Unirse al equipo
+        </a>
+        <a class="btn--success" href="{{ url_for('teams.new') }}">
+          Crear equipo
+        </a>
       </div>
     {% endif %}
-  </div>
+  </section>
+
 {% endblock %}
