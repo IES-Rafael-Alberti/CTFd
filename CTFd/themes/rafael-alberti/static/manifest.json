@@ -29,7 +29,7 @@
     ]
   },
   "assets/js/settings.js": {
-    "file": "assets/settings.9fc117be.js",
+    "file": "assets/settings.faffff2f.js",
     "src": "assets/js/settings.js",
     "isEntry": true,
     "imports": [
@@ -75,7 +75,7 @@
     ]
   },
   "assets/js/teams/private.js": {
-    "file": "assets/teams_private.aafdf5ac.js",
+    "file": "assets/teams_private.2abd8a3a.js",
     "src": "assets/js/teams/private.js",
     "isEntry": true,
     "imports": [
@@ -152,7 +152,7 @@
     ]
   },
   "assets/scss/main.scss": {
-    "file": "assets/main.c6d4a7d6.css",
+    "file": "assets/main.3b8c846a.css",
     "src": "assets/scss/main.scss",
     "isEntry": true
   }

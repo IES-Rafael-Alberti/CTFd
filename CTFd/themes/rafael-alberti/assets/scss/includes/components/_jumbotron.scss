@@ -12,6 +12,10 @@ main {
   position: relative;
   margin-top: 2rem;
 
+  &--special {
+    padding: 15rem 2rem;
+  }
+
   &__container {
     position: absolute;
     top: 50%;
@@ -20,7 +24,6 @@ main {
     width: 100%;
     max-width: 1200px;
     padding: 0 15px;
-    height: 50px;
   }
 
   &__title {
@@ -36,12 +39,60 @@ main {
     color: #6c757d;
   }
 
+  &__badges {
+    margin-bottom: 1rem;
+
+    .etiqueta {
+      margin: 0 0.25rem;
+    }
+  }
+
+  &__bracket {
+    margin-bottom: 1rem;
+  }
+
+  &__fields {
+    margin-bottom: 1rem;
+  }
+
+  &__field {
+    margin-bottom: 0.25rem;
+  }
+
+  &__divider {
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1rem 0;
+  }
+
+  &__stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  &__website {
+    margin-top: 1rem;
+
+    a {
+      color: #333;
+    }
+
+    a:hover {
+      color: #e93456;
+    }
+  }
+
   @media (min-width: 760px) {
     padding: 8rem 4rem;
     margin-top: 2.75rem;
 
     &__title {
       font-size: 4rem;
+    }
+
+    &--special {
+      padding: 15rem 4rem;
     }
   }
 
@@ -52,10 +103,18 @@ main {
   @media (min-width: 1100px) {
     margin-top: 3rem;
     padding-top: 12rem;
+
+    &--special {
+      padding: 16rem 4rem;
+    }
   }
 
   @media (min-width: 1600px) {
     margin-top: 1.5rem;
     padding-top: 16rem;
+
+    &--special {
+      padding: 16rem 4rem;
+    }
   }
 }

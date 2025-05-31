@@ -11,6 +11,8 @@
 @use "includes/components/navbar";
 @use "includes/components/containers";
 @use "includes/components/scoreboard";
+@use "includes/components/pagination";
+@use "includes/components/modal";
 
 @use "includes/utils/fonts";
 @use "includes/utils/opacity";
@@ -31,6 +33,8 @@
 @use "includes/pages/register";
 @use "includes/pages/reset-password";
 @use "includes/pages/settings";
+@use "includes/pages/users/users";
+@use "includes/pages/teams/teams";
 
 h1,
 h2 {

@@ -1,0 +1,159 @@
+.usuarios {
+  padding: 2rem;
+  margin: 0 auto;
+  width: 80vw;
+
+  &__mensaje {
+    text-align: center;
+    color: #555;
+
+    &--sub {
+      font-size: 0.9rem;
+      padding-bottom: 1rem;
+    }
+  }
+
+  &__formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  &__campo {
+    &--select,
+    &--boton {
+      flex: 0 100% 20%;
+    }
+
+    &--input {
+      flex: 1;
+    }
+  }
+}
+
+/* Base styles
+-------------------------------------------------- */
+
+.contenido {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Premios styles
+-------------------------------------------------- */
+
+.premios {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+
+  &__titulo {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  &__lista {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  &__item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    width: 250px;
+    text-align: center;
+  }
+
+  &__icono {
+    margin-bottom: 0.5rem;
+  }
+
+  &__nombre {
+    font-weight: bold;
+  }
+
+  &__categoria,
+  &__descripcion,
+  &__valor {
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+  }
+}
+
+/* Estadísticas (gráficas y breakdowns)
+-------------------------------------------------- */
+
+.estadisticas {
+  margin-top: 2rem;
+
+  &__barras {
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__barra {
+    position: relative;
+    height: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #ddd;
+    margin-bottom: 1rem;
+
+    &__container {
+      width: 50%;
+    }
+  }
+
+  &__progreso {
+    height: 100%;
+    float: left;
+    transition: width 0.3s ease;
+  }
+
+  &__leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    small {
+      margin-left: 0.5rem;
+    }
+
+    svg {
+      display: inline-block;
+    }
+  }
+
+  &__grafica {
+    position: relative;
+    height: 400px;
+    width: 100%;
+  }
+
+  &__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #666;
+  }
+
+  &__vacio {
+    text-align: center;
+    margin-top: 3rem;
+
+    h3 {
+      font-size: 1.25rem;
+      color: #999;
+    }
+  }
+}

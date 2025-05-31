@@ -20,3 +20,71 @@
 .table > thead > th {
   white-space: nowrap;
 }
+
+.tabla {
+  overflow-x: auto;
+
+  &__tabla {
+    width: 60vw;
+    margin: 0 auto;
+    border-collapse: collapse;
+  }
+
+  &__th,
+  &__celda {
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  &__th--ocultar,
+  &__celda--ocultar {
+    display: none;
+  }
+
+  &__celda--centro {
+    text-align: center;
+  }
+
+  &__enlace {
+    color: #e93456;
+    text-decoration: none;
+  }
+
+  &__enlace:hover {
+    text-decoration: underline;
+  }
+
+  &__fila:nth-child(odd) {
+    background-color: #efefef;
+  }
+
+  &__fila:nth-child(even) {
+    background-color: #ffffff;
+  }
+}
+
+@media (min-width: 768px) {
+  .tabla__th--ocultar,
+  .tabla__celda--ocultar {
+    display: table-cell;
+  }
+
+  .tabla__tabla {
+    width: 70vw;
+  }
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+
+  &--gris {
+    background-color: #e93456;
+    color: #fff;
+  }
+
+  &--azul {
+    background-color: #007bff;
+    color: #fff;
+  }
+}

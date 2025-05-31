@@ -1,6 +1,5 @@
 import Alpine from "alpinejs";
 import CTFd from "../index";
-import { Modal } from "bootstrap";
 import { serializeJSON } from "@ctfdio/ctfd-js/forms";
 import { copyToClipboard } from "../utils/clipboard";
 import { colorHash } from "@ctfdio/ctfd-js/ui";
@@ -10,7 +9,16 @@ import { embed } from "../utils/graphs/echarts";
 window.Alpine = Alpine;
 window.CTFd = CTFd;
 
-Alpine.store("inviteToken", "");
+Alpine.store('modals', {
+  teamEditModal: null,
+  teamCaptainModal: null,
+  teamInviteModal: null,
+  teamDisbandModal: null,
+  teamEditModalInitialized: false,
+  teamCaptainModalInitialized: false,
+  teamInviteModalInitialized: false,
+  teamDisbandModalInitialized: false,
+});
 
 Alpine.data("TeamEditModal", () => ({
   success: null,
@@ -20,6 +28,10 @@ Alpine.data("TeamEditModal", () => ({
 
   init() {
     this.initial = serializeJSON(this.$el.querySelector("form"));
+    if (!Alpine.store('modals').teamEditModalInitialized) {
+      Alpine.store('modals').teamEditModal = this.$refs.teamEditModal;
+      Alpine.store('modals').teamEditModalInitialized = true;
+    }
   },
 
   async updateProfile() {
@@ -46,6 +58,7 @@ Alpine.data("TeamEditModal", () => ({
         this.success = null;
         this.error = null;
       }, 3000);
+      this.isOpen = false;
     } else {
       this.success = false;
       this.error = true;
@@ -55,12 +68,32 @@ Alpine.data("TeamEditModal", () => ({
       });
     }
   },
+
+  openModal() {
+    if (this.$refs.teamEditModal) {
+      this.$refs.teamEditModal.style.display = 'block';
+    }
+  },
+
+  closeModal() {
+    if (this.$refs.teamEditModal) {
+      this.$refs.teamEditModal.style.display = 'none';
+    }
+  },
 }));
 
 Alpine.data("TeamCaptainModal", () => ({
   success: null,
   error: null,
   errors: [],
+
+  init() {
+    Alpine.store('modals').teamCaptainModal = this.$refs.teamCaptainModal;
+    if (!Alpine.store('modals').teamCaptainModalInitialized) {
+      Alpine.store('modals').teamCaptainModal = this.$refs.teamCaptainModal;
+      Alpine.store('modals').teamCaptainModalInitialized = true;
+    }
+  },
 
   async updateCaptain() {
     let data = serializeJSON(this.$el, null, true);
@@ -77,16 +110,56 @@ Alpine.data("TeamCaptainModal", () => ({
       });
     }
   },
+
+  openModal() {
+    if (this.$refs.teamCaptainModal) {
+      this.$refs.teamCaptainModal.style.display = 'block';
+    }
+  },
+
+  closeModal() {
+    if (this.$refs.teamCaptainModal) {
+      this.$refs.teamCaptainModal.style.display = 'none';
+    }
+  },
 }));
 
 Alpine.data("TeamInviteModal", () => ({
+  init() {
+    Alpine.store('modals').teamInviteModal = this.$refs.teamInviteModal;
+    if (!Alpine.store('modals').teamInviteModalInitialized) {
+      Alpine.store('modals').teamInviteModal = this.$refs.teamInviteModal;
+      Alpine.store('modals').teamInviteModalInitialized = true;
+    }
+  },
+
   copy() {
     copyToClipboard(this.$refs.link);
+  },
+
+  openModal() {
+    if (this.$refs.teamInviteModal) {
+      this.$refs.teamInviteModal.style.display = 'block';
+    }
+  },
+
+  closeModal() {
+    if (this.$refs.teamInviteModal) {
+      this.$refs.teamInviteModal.style.display = 'none';
+    }
   },
 }));
 
 Alpine.data("TeamDisbandModal", () => ({
   errors: [],
+
+  init() {
+    Alpine.store('modals').teamDisbandModal = this.$refs.teamDisbandModal;
+    if (!Alpine.store('modals').teamDisbandModalInitialized) {
+      Alpine.store('modals').teamDisbandModal = this.$refs.teamDisbandModal;
+      Alpine.store('modals').teamDisbandModalInitialized = true;
+    }
+  },
 
   async disbandTeam() {
     let response = await CTFd.pages.teams.disbandTeam();
@@ -97,19 +170,33 @@ Alpine.data("TeamDisbandModal", () => ({
       this.errors = response.errors[""];
     }
   },
+
+  openModal() {
+    if (this.$refs.teamDisbandModal) {
+      this.$refs.teamDisbandModal.style.display = 'block';
+    }
+  },
+
+  closeModal() {
+    if (this.$refs.teamDisbandModal) {
+      this.$refs.teamDisbandModal.style.display = 'none';
+    }
+  },
 }));
 
 Alpine.data("CaptainMenu", () => ({
-  captain: false,
-
   editTeam() {
-    this.teamEditModal = new Modal(document.getElementById("team-edit-modal"));
-    this.teamEditModal.show();
+    const modal = Alpine.store('modals').teamEditModal;
+    if (modal) {
+      modal.style.display = 'block';
+    }
   },
 
   chooseCaptain() {
-    this.teamCaptainModal = new Modal(document.getElementById("team-captain-modal"));
-    this.teamCaptainModal.show();
+    const modal = Alpine.store('modals').teamCaptainModal;
+    if (modal) {
+      modal.style.display = 'block';
+    }
   },
 
   async inviteMembers() {
@@ -121,8 +208,10 @@ Alpine.data("CaptainMenu", () => ({
 
       document.querySelector("#team-invite-modal input[name=link]").value = url;
       this.$store.inviteToken = url;
-      this.teamInviteModal = new Modal(document.getElementById("team-invite-modal"));
-      this.teamInviteModal.show();
+      const modal = Alpine.store('modals').teamInviteModal;
+      if (modal) {
+        modal.style.display = 'block';
+      }
     } else {
       Object.keys(response.errors).map(error => {
         const error_msg = response.errors[error];
@@ -132,8 +221,10 @@ Alpine.data("CaptainMenu", () => ({
   },
 
   disbandTeam() {
-    this.teamDisbandModal = new Modal(document.getElementById("team-disband-modal"));
-    this.teamDisbandModal.show();
+    const modal = Alpine.store('modals').teamDisbandModal;
+    if (modal) {
+      modal.style.display = 'block';
+    }
   },
 }));
 

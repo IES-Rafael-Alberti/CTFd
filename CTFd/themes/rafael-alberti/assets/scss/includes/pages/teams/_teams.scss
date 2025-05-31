@@ -1,0 +1,75 @@
+.equipos {
+  padding: 2rem;
+  margin: 0 auto;
+  width: 80vw;
+
+  &__mensaje {
+    text-align: center;
+    color: #555;
+
+    &--sub {
+      font-size: 0.9rem;
+      padding-bottom: 1rem;
+    }
+  }
+
+  &__formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  &__campo {
+    &--select,
+    &--boton {
+      flex: 0 100% 20%;
+    }
+
+    &--input {
+      flex: 1;
+    }
+  }
+}
+
+.captain-menu {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  &__button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #888;
+    border-radius: 0.25rem;
+    background-color: white;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #888;
+      color: white;
+    }
+
+    &--edit,
+    &--captain,
+    &--invite,
+    &--disband {
+      i {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: white;
+
+        &:hover {
+          color: #888;
+        }
+      }
+    }
+  }
+
+  &__label {
+    font-size: 1rem;
+  }
+}

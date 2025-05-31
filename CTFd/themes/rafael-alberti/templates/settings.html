@@ -131,19 +131,19 @@
             <h4 class="text-center mt-3">Tokens activos</h4>
 
             <div x-data="Tokens">
-              <div class="modal-settings" x-ref="confirmModal" style="display: none;">
-                <div class="modal-settings__overlay"></div>
-                <div class="modal-settings__dialog">
-                  <div class="modal-settings__header">
-                    <h5 class="modal__title">Eliminar token</h5>
-                    <button class="modal__close" @click="$refs.confirmModal.style.display = 'none'" aria-label="Cerrar">
+              <div class="modals" x-ref="confirmModal" style="display: none;">
+                <div class="modals__overlay"></div>
+                <div class="modals__dialog">
+                  <div class="modals__header">
+                    <h5 class="modals__header__title">Eliminar token</h5>
+                    <span class="modals__header__close" @click="$refs.confirmModal.style.display = 'none'" aria-label="Cerrar">
                       &times;
-                    </button>
+                    </span>
                   </div>
-                  <div class="modal-settings__body">
+                  <div class="modals__body">
                     <p>¿Estás seguro de que deseas eliminar este token?</p>
                   </div>
-                  <div class="modal-settings__footer">
+                  <div class="modals__footer">
                     <button type="button" class="btn--cancel" @click="$refs.confirmModal.style.display = 'none'">No</button>
                     <button type="button" class="btn--success" @click="deleteSelectedToken(); $refs.confirmModal.style.display = 'none'">Sí</button>
                   </div>

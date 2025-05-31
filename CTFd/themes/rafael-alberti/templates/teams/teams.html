@@ -4,144 +4,121 @@
   {% set titulo = "Equipos" %}
   {% include "components/jumbotron.html" with context %}
 
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        {% if q and field %}
-          <h5 class="text-muted text-center">
-            Buscando equipos con <strong>{{ campo }}</strong> que coincida con <strong>{{ q }}</strong>
-          </h5>
-          <h6 class="text-muted text-center pb-3">
-            Página {{ teams.page }} de {{ teams.total }} resultados
-          </h6>
-        {% endif %}
+  <div class="equipos">
+    {% if q and field %}
+      <h5 class="equipos__mensaje">
+        Buscando equipos con <strong>{{ campo }}</strong> que coincida con <strong>{{ q }}</strong>
+      </h5>
+      <h6 class="equipos__mensaje--sub">
+        Página {{ teams.page }} de {{ teams.total }} resultados
+      </h6>
+    {% endif %}
 
-        {% with form = Forms.teams.PublicTeamSearchForm(field=field, q=q) %}
-          <form method="GET" class="row justify-content-around align-items-center">
-            <div class="mb-3 col-md-2">
-              {{ form.field(class="form-select w-100") }}
-            </div>
+    {% with form = Forms.teams.PublicTeamSearchForm(field=field, q=q) %}
+      <form method="GET" class="equipos__formulario" novalidate>
+        <div class="equipos__campo equipos__campo--select">
+          {{ form.field(class="form__select") }}
+        </div>
 
-            <div class="mb-3 col-md-8">
-              {{ form.q(class="form-control w-100", placeholder="Buscar equipos coincidentes") }}
-            </div>
+        <div class="equipos__campo equipos__campo--input">
+          <div class="form__input-wrapper">
+            <span class="form__prefix">&gt;</span>
+            {{ form.q(class="form__input form__input--special", placeholder="Buscar equipos coincidentes") }}
+          </div>
+        </div>
 
-            <div class="mb-3 col-md-2">
-              <button type="submit" class="btn btn-primary w-100">
-                <i class="fas fa-search" aria-hidden="true"></i>
-              </button>
-            </div>
-          </form>
-        {% endwith %}
-      </div>
-    </div>
+        <div class="equipos__campo equipos__campo--boton">
+          <button type="submit" class="boton-busqueda boton-busqueda--buscar">
+            <i class="fas fa-search" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    {% endwith %}
 
-    <hr>
-
-    <div class="row">
-      <div class="col-md-12">
-        <table class="table table-striped align-middle">
-          <thead>
+    <div class="tabla">
+      <table class="tabla__tabla">
+        <thead class="tabla__encabezado">
           <tr>
-            <th class="text-md-start">Equipo</th>
-            <th>Página web</th>
-            <th class="d-none d-md-table-cell">Afiliación</th>
-            <th class="d-none d-md-table-cell">País</th>
+            <th class="tabla__th">Equipo</th>
+            <th class="tabla__th tabla__th--centro">Página web</th>
+            <th class="tabla__th tabla__th--ocultar">Afiliación</th>
+            <th class="tabla__th tabla__th--ocultar">País</th>
           </tr>
-          </thead>
-          <tbody>
-
+        </thead>
+        <tbody>
           {% for team in teams.items %}
-            <tr>
-              <td>
+            <tr class="tabla__fila">
+              <td class="tabla__celda">
                 {% if scores_visible() %}
-                  <a href="{{ url_for('teams.public', team_id=team.id) }}">{{ team.name | truncate(50) }}</a>
+                  <a href="{{ url_for('teams.public', team_id=team.id) }}" class="tabla__enlace">
+                    {{ team.name | truncate(50) }}
+                  </a>
                 {% else %}
-                  <span>{{ team.name | truncate(50) }}</span>
+                  <span class="tabla__texto">{{ team.name | truncate(50) }}</span>
                 {% endif %}
 
                 {% if team.bracket_id %}
-                  <span class="badge bg-secondary ms-2">{{ team.bracket.name }}</span>
+                  <span class="etiqueta etiqueta--gris">{{ team.bracket.name }}</span>
                 {% endif %}
 
                 {% if team.oauth_id %}
                   <a href="https://majorleaguecyber.org/t/{{ team.name }}">
-                    <span class="badge bg-primary ms-2">Oficial</span>
+                    <span class="etiqueta etiqueta--azul">Oficial</span>
                   </a>
                 {% endif %}
               </td>
 
-              <td style="width: 10px;">
+              <td class="tabla__celda tabla__celda--centro">
                 {% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
                   <a href="{{ team.website }}" target="_blank" rel="noopener">
-                    <i
-                        class="fas fa-external-link-alt"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                        title="{{ team.website }}"
-                    ></i>
+                    <i class="fas fa-external-link-alt" title="{{ team.website }}"></i>
                   </a>
                 {% endif %}
               </td>
 
-              <td class="d-none d-md-table-cell">
+              <td class="tabla__celda tabla__celda--ocultar">
                 {% if team.affiliation %}
-
                   {% if team.affiliation | length > 50 %}
-                    <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{ team.affiliation }}">
-                        {% if team.affiliation %}{{ team.affiliation | truncate(50) }}{% endif %}
+                    <span title="{{ team.affiliation }}">
+                      {{ team.affiliation | truncate(50) }}
                     </span>
                   {% else %}
-                    <span>
-                      {% if team.affiliation %}
-                        {{ team.affiliation | truncate(50) }}
-                      {% endif %}
-                    </span>
+                    <span>{{ team.affiliation | truncate(50) }}</span>
                   {% endif %}
-
                 {% endif %}
               </td>
 
-              <td class="d-none d-md-table-cell">
-							<span>
-								{% if team.country %}
+              <td class="tabla__celda tabla__celda--ocultar">
+                {% if team.country %}
                   <i class="flag-{{ team.country.lower() }}"></i>
                   {{ lookup_country_code(team.country) }}
                 {% endif %}
-							</span>
               </td>
             </tr>
           {% endfor %}
-
-          </tbody>
-        </table>
-      </div>
+        </tbody>
+      </table>
     </div>
 
     {% if teams.pages > 1 %}
-      <div class="row">
-        <div class="col-md-12">
-          <div class="text-center">
-            Página <br>
+      <div class="paginacion">
+        <span class="paginacion__texto">Página</span>
 
-            {% if teams.page != 1 %}
-              <a href="{{ prev_page }}">&lt;&lt;&lt;</a>
-            {% endif %}
+        {% if teams.page != 1 %}
+          <a href="{{ prev_page }}" class="paginacion__link">&laquo;</a>
+        {% endif %}
 
-            <select class="page-select">
-              {% for page in range(1, teams.pages + 1) %}
-                <option {% if teams.page == page %}selected{% endif %}>{{ page }}</option>
-              {% endfor %}
-            </select>
+        <select class="paginacion__select">
+          {% for page in range(1, teams.pages + 1) %}
+            <option {% if teams.page == page %}selected{% endif %}>{{ page }}</option>
+          {% endfor %}
+        </select>
 
-            {% if teams.next_num %}
-              <a href="{{ next_page }}">&gt;&gt;&gt;</a>
-            {% endif %}
-          </div>
-        </div>
+        {% if teams.next_num %}
+          <a href="{{ next_page }}" class="paginacion__link">&raquo;</a>
+        {% endif %}
       </div>
     {% endif %}
-
   </div>
 {% endblock %}
 

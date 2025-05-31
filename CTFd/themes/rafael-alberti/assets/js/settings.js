@@ -84,7 +84,7 @@ Alpine.data("Tokens", () => ({
 
   deleteTokenModal(tokenId) {
     this.selectedTokenId = tokenId;
-    this.$refs.confirmModal.style.display = "block"; // 👈 Mostrar modal
+    this.$refs.confirmModal.style.display = "block";
   },
 
   async deleteSelectedToken() {
@@ -95,7 +95,7 @@ Alpine.data("Tokens", () => ({
       $token.remove();
     }
 
-    this.$refs.confirmModal.style.display = "none"; // 👈 Ocultar modal
+    this.$refs.confirmModal.style.display = "none";
     this.selectedTokenId = null;
   }
 }));
