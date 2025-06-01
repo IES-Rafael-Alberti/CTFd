@@ -1,0 +1,39 @@
+.challenge-board {
+  max-width: 100%;
+  margin: 0 auto;
+
+  &__loader {
+    min-height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .spinner {
+      text-align: center;
+      color: #e93456;
+    }
+  }
+
+  &__categories {
+    margin-top: 2rem;
+  }
+}
+
+.category {
+  padding: 2rem 10rem;
+
+  &__header {
+    margin-bottom: 1rem;
+    text-align: left;
+  }
+
+  &__challenges {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  &:nth-child(odd) {
+    background-color: #efefef;
+  }
+}

@@ -1,40 +1,132 @@
-/* Challenge styles
--------------------------------------------------- */
+.challenge {
+  &__button {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e93456, #007bff);
+    padding: 3rem;
+    cursor: pointer;
+    transition:
+      background-color 0.3s,
+      box-shadow 0.3s;
+    clip-path: polygon(
+      0 29%,
+      5% 21%,
+      5% 15%,
+      10% 8%,
+      16% 8%,
+      20% 0,
+      43% 0%,
+      47% 8%,
+      92% 8%,
+      100% 18%,
+      96% 28%,
+      96% 53%,
+      100% 63%,
+      100% 91%,
+      95% 100%,
+      50% 100%,
+      43% 92%,
+      18% 92%,
+      13% 100%,
+      9% 100%,
+      4% 92%,
+      4% 61%,
+      0 53%
+    );
+    z-index: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    overflow: hidden;
 
-.challenge-desc {
-  overflow-wrap: anywhere;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      clip-path: inherit;
+      z-index: -1;
+    }
 
-  img {
-    max-width: 100%;
-  }
-}
+    &--solved {
+      &::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        right: 3px;
+        bottom: 3px;
+        background-color: #d9d9d9;
+        clip-path: inherit;
+        z-index: 0;
+      }
 
-[data-bs-theme="light"] .challenge-button {
-  border: none;
-  box-shadow: 0 0 15px var(--bs-secondary);
-
-  &.challenge-solved {
-    background-color: #29c830;
-
-    &:hover {
-      background-color: #37d63e;
+      .challenge__content,
+      .challenge__name,
+      .challenge__value {
+        position: relative;
+        z-index: 1;
+      }
     }
   }
-}
 
-[data-bs-theme="dark"] .challenge-button {
-  border: none;
-  background-color: var(--bs-gray-dark);
-
-  &:hover {
-    background-color: var(--bs-gray);
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+    align-items: flex-start;
+    width: 100%;
   }
 
-  &.challenge-solved {
-    background-color: #29c830;
+  &__name {
+    color: #e93456;
+    text-transform: uppercase;
+  }
 
-    &:hover {
-      background-color: #37d63e;
+  &__value {
+    color: #e93456;
+    margin-top: auto;
+  }
+
+  &__solved {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    width: 9.5rem;
+    height: 6rem;
+    background-color: #eaeaea;
+    color: #727272;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0.5rem;
+    clip-path: polygon(
+      100% 82%,
+      90% 100%,
+      13% 100%,
+      0 80%,
+      0 67%,
+      10% 59%,
+      10% 22%,
+      18% 12%,
+      64% 12%,
+      73% 0,
+      95% 0,
+      100% 17%
+    );
+
+    div {
+      display: inline;
     }
   }
 }

@@ -2,8 +2,6 @@ import Alpine from "alpinejs";
 import dayjs from "dayjs";
 
 import CTFd from "./index";
-
-import { Modal, Tab, Tooltip } from "bootstrap";
 import highlight from "./theme/highlight";
 
 function addTargetBlank(html) {
@@ -59,7 +57,7 @@ Alpine.data("Challenge", () => ({
   id: null,
   next_id: null,
   submission: "",
-  tab: null,
+  tab: "challenge", // valor por defecto: challenge o solves
   solves: [],
   response: null,
   share_url: null,
@@ -68,6 +66,16 @@ Alpine.data("Challenge", () => ({
 
   async init() {
     highlight();
+  },
+
+  // Mostrar modal: quitar clase 'hidden' para mostrar el modal
+  showModal() {
+    this.$refs.challengeWindow.classList.remove("hidden");
+  },
+
+  // Ocultar modal: añadir clase 'hidden' para esconder el modal
+  hideModal() {
+    this.$refs.challengeWindow.classList.add("hidden");
   },
 
   getStyles() {
@@ -97,21 +105,18 @@ Alpine.data("Challenge", () => ({
     return styles;
   },
 
-  async init() {
-    highlight();
-  },
-
   async showChallenge() {
-    new Tab(this.$el).show();
+    this.tab = "challenge";
+    this.showModal();
   },
 
   async showSolves() {
     this.solves = await CTFd.pages.challenge.loadSolves(this.id);
     this.solves.forEach(solve => {
       solve.date = dayjs(solve.date).format("MMMM Do, h:mm:ss A");
-      return solve;
     });
-    new Tab(this.$el).show();
+    this.tab = "solves";
+    this.showModal();
   },
 
   getNextId() {
@@ -120,21 +125,13 @@ Alpine.data("Challenge", () => ({
   },
 
   async nextChallenge() {
-    let modal = Modal.getOrCreateInstance("[x-ref='challengeWindow']");
+    // Ocultar modal
+    this.hideModal();
 
-    // TODO: Get rid of this private attribute access
-    // See https://github.com/twbs/bootstrap/issues/31266
-    modal._element.addEventListener(
-      "hidden.bs.modal",
-      event => {
-        // Dispatch load-challenge event to call loadChallenge in the ChallengeBoard
-        Alpine.nextTick(() => {
-          this.$dispatch("load-challenge", this.getNextId());
-        });
-      },
-      { once: true },
-    );
-    modal.hide();
+    // Cuando se cierra el modal, se carga el siguiente desafío
+    this.$nextTick(() => {
+      this.$dispatch("load-challenge", this.getNextId());
+    });
   },
 
   async getShareUrl() {
@@ -153,13 +150,8 @@ Alpine.data("Challenge", () => ({
 
   copyShareUrl() {
     navigator.clipboard.writeText(this.share_url);
-    let t = Tooltip.getOrCreateInstance(this.$el);
-    t.enable();
-    t.show();
-    setTimeout(() => {
-      t.hide();
-      t.disable();
-    }, 2000);
+    // Opcional: mostrar tooltip o mensaje manual sin Bootstrap
+    alert("URL copiada al portapapeles");
   },
 
   async submitChallenge() {
@@ -190,6 +182,7 @@ Alpine.data("ChallengeBoard", () => ({
   loaded: false,
   challenges: [],
   challenge: null,
+  showModal: false,
 
   async init() {
     this.challenges = await CTFd.pages.challenges.getChallenges();
@@ -199,8 +192,7 @@ Alpine.data("ChallengeBoard", () => ({
       let chalHash = decodeURIComponent(window.location.hash.substring(1));
       let idx = chalHash.lastIndexOf("-");
       if (idx >= 0) {
-        let pieces = [chalHash.slice(0, idx), chalHash.slice(idx + 1)];
-        let id = pieces[1];
+        let id = chalHash.slice(idx + 1);
         await this.loadChallenge(id);
       }
     }
@@ -263,23 +255,19 @@ Alpine.data("ChallengeBoard", () => ({
       challenge.data.view = addTargetBlank(challenge.data.view);
       Alpine.store("challenge").data = challenge.data;
 
-      // nextTick is required here because we're working in a callback
       Alpine.nextTick(() => {
-        let modal = Modal.getOrCreateInstance("[x-ref='challengeWindow']");
-        // TODO: Get rid of this private attribute access
-        // See https://github.com/twbs/bootstrap/issues/31266
-        modal._element.addEventListener(
-          "hidden.bs.modal",
-          event => {
-            // Remove location hash
-            history.replaceState(null, null, " ");
-          },
-          { once: true },
-        );
-        modal.show();
+        // En lugar de usar Bootstrap modal, solo mostramos el modal con Alpine
+        this.$refs.challengeWindow.style.display = "block";
+
+        // Cambiamos la url con hash para reflejar el modal abierto
         history.replaceState(null, null, `#${challenge.data.name}-${challengeId}`);
       });
     });
+  },
+
+  closeModal() {
+    this.$refs.challengeWindow.style.display = "none";
+    history.replaceState(null, null, " ");
   },
 }));
 

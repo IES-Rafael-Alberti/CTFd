@@ -1,0 +1,365 @@
+.challenge-card {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: 100%;
+
+  &__tabs {
+    position: absolute;
+    top: -3rem;
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__tab-button {
+    background: none;
+    border: none;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    color: #e93456;
+    position: relative;
+    background-color: #eeeeee;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    z-index: 1002;
+
+    &--active {
+      background-color: #fff;
+      color: #000;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  &__body {
+    padding: 1.5rem;
+  }
+
+  &__pane {
+    display: none;
+
+    &--active {
+      display: block;
+    }
+  }
+
+  &__name {
+    display: flex;
+    justify-content: center;
+    color: #e93456;
+    font-weight: bold;
+  }
+
+  &__value {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-weight: bold;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  &__tag {
+    background-color: #eee;
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  &__author {
+    color: #666;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  &__description {
+    display: block;
+    margin-bottom: 1.25rem;
+  }
+
+  &__connection {
+    margin-bottom: 1rem;
+
+    &-info {
+      padding: 0.5rem;
+      display: inline-block;
+
+      a {
+        color: #e93456;
+      }
+    }
+  }
+
+  &__hints details {
+    margin-bottom: 0.75rem;
+  }
+
+  &__files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  &__file-button {
+    background: #ffe5ea;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #e93456;
+  }
+
+  &__attempts {
+    color: #555;
+    margin: 1rem 0;
+  }
+
+  &__submit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  &__input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+  }
+
+  &__submit-button {
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #000;
+    }
+  }
+
+  &__notification {
+    margin-top: 1rem;
+
+    .alert {
+      padding: 1rem;
+      border-radius: 0.25rem;
+      margin-bottom: 1rem;
+
+      &-success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      &-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+      }
+
+      &-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      &-warning {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+    }
+  }
+
+  &__next-button {
+    margin-top: 1rem;
+    background: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background: #0056b3;
+    }
+  }
+
+  &__share {
+    margin-top: 1rem;
+
+    & > button {
+      background: #eee;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+    }
+  }
+
+  &__table {
+    width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    td a {
+      color: #e93456;
+      text-decoration: none;
+    }
+
+    tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #efefef;
+    }
+  }
+
+  &__modals {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow-y: hidden;
+
+    &__overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    &__dialog {
+      position: relative;
+      background: #fff;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 600px;
+      margin: 0 auto;
+      top: 10%;
+      z-index: 1001;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      clip-path: polygon(
+        0 -20%,
+        100% -20%,
+        100% 100%,
+        85% 120%,
+        53% 120%,
+        40% 100%,
+        35% 95%,
+        15% 95%,
+        8% 100%,
+        0% 100%
+      );
+    }
+
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      &__title {
+        margin: 0;
+        color: #e93456;
+      }
+
+      &__close {
+        position: absolute;
+        top: -1.5rem;
+        right: -1rem;
+        background: none;
+        border: none;
+        font-size: 3rem;
+        cursor: pointer;
+        color: #888;
+
+        &:hover {
+          color: #e93456;
+        }
+      }
+    }
+
+    &__body {
+      margin-bottom: 1rem;
+      color: #333;
+      overflow-y: auto;
+      max-height: calc(90vh - 200px);
+    }
+
+    &__footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+  }
+
+  &__btn--success {
+    background-color: #e93456;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 8px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ab132f;
+    }
+  }
+
+  &__btn--cancel {
+    background-color: #ccc;
+    color: #000;
+    border: none;
+    padding: 8px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #aaa;
+    }
+  }
+}
+
+.boton-busqueda {
+  position: absolute;
+  bottom: -4.2rem;
+  right: 2rem;
+  background-color: #e93456;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  padding: 1rem 7rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  z-index: 1003;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+
+  &--buscar:hover {
+    background-color: #ab132f;
+  }
+}
