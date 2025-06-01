@@ -560,4 +560,304 @@ $(() => {
   let bracketListContainer = document.createElement("div");
   document.querySelector("#brackets-list").appendChild(bracketListContainer);
   new bracketList({}).$mount(bracketListContainer);
+
+    // --- GitHub Repository Sync Section ---
+  const ITEMS_PER_PAGE = 10;
+  let allRepos = [];
+  let currentPage = 1;
+
+  const githubLoginSection = document.getElementById("github-login-section");
+  const githubReposSection = document.getElementById("github-repos-section");
+  const githubReposList = document.getElementById("github-repos-list");
+  const githubRepoSearch = document.getElementById("github-repo-search");
+  const githubRepoPagination = document.getElementById("github-repo-pagination");
+
+  function renderRepos() {
+    const searchTerm = githubRepoSearch.value.toLowerCase();
+    const filteredRepos = allRepos.filter(repo =>
+      repo.full_name.toLowerCase().includes(searchTerm)
+    );
+    const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE);
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const reposToShow = filteredRepos.slice(start, end);
+
+    githubReposList.innerHTML = "";
+    reposToShow.forEach((repo, index) => {
+      const id = `repo-${index}`;
+      const div = document.createElement("div");
+      div.className = "form-check";
+      div.innerHTML = `
+        <input class="form-check-input" type="checkbox" value="${repo.full_name}" id="${id}">
+        <label class="form-check-label" for="${id}">${repo.full_name}</label>
+      `;
+      githubReposList.appendChild(div);
+    });
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    githubRepoPagination.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = `page-item ${i === currentPage ? "active" : ""}`;
+      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+      li.addEventListener("click", (e) => {
+        e.preventDefault();
+        currentPage = i;
+        renderRepos();
+      });
+      githubRepoPagination.appendChild(li);
+    }
+  }
+
+  githubRepoSearch?.addEventListener("input", () => {
+    currentPage = 1;
+    renderRepos();
+  });
+
+  // Fetch repos desde la API
+  fetch("/api/v1/github/repos")
+  .then(response => {
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error("Usuario no autenticado con GitHub. Por favor, instala la app o asegúrate de tener permisos.");
+      }
+      return response.json().then(err => {
+        throw new Error(err.message || "Error inesperado al comunicarse con la API.");
+      });
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (!data.success) {
+      throw new Error(data.message || "La API respondió sin éxito.");
+    }
+
+    allRepos = data.repos || [];
+
+    // Asegúrate de mostrar y ocultar las secciones correctamente
+    if (githubLoginSection) githubLoginSection.style.display = "none";
+    if (githubReposSection) githubReposSection.style.display = "block";
+    const errorSection = document.getElementById("github-error-section");
+    if (errorSection) errorSection.style.display = "none";
+
+    renderRepos();
+    loadSavedRepos();
+  })
+  .catch(error => {
+    console.error("Error al obtener los repos:", error);
+    const errorSection = document.getElementById("github-error-section");
+    const errorMessage = document.getElementById("github-error-message");
+    if (errorMessage) errorMessage.textContent = error.message;
+    if (errorSection) errorSection.style.display = "block";
+    if (githubLoginSection) githubLoginSection.style.display = "block";
+    if (githubReposSection) githubReposSection.style.display = "none";
+  });
+
+
+  // Guardar selección de repos
+  document.getElementById("save-selected-repos")?.addEventListener("click", () => {
+    const checkboxes = document.querySelectorAll("#github-repos-list input[type=checkbox]:checked");
+    const selected = [];
+
+    checkboxes.forEach(checkbox => {
+      const repo = allRepos.find(r => r.full_name === checkbox.value);
+      if (repo) {
+        selected.push(repo);
+      }
+    });
+
+    CTFd.fetch("/api/v1/github/repos/selection", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        "CSRF-Token": CTFd.config.csrfNonce
+      },
+      body: JSON.stringify({ repos: selected })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        ezAlert({
+          title: "Éxito",
+          body: "Repositorios guardados correctamente.",
+          button: "Aceptar"
+        });
+      } else {
+        ezAlert({
+          title: "Error al guardar",
+          body: data.message || "Error inesperado.",
+          button: "Aceptar"
+        });
+      }
+    })
+    .catch(err => {
+      ezAlert({
+        title: "Error inesperado",
+        body: err.message,
+        button: "Aceptar"
+      });
+    });
+  });
+
+function loadSavedRepos() {
+  const tableBody = document.querySelector("#github-saved-repos-table tbody");
+  tableBody.innerHTML = "";
+
+  CTFd.fetch("/api/v1/github/repos/saved", {
+    method: "GET",
+    credentials: "same-origin"
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (!data.success) {
+        throw new Error(data.message || "No se pudieron cargar los repositorios.");
+      }
+
+      const repos = data.repos;
+
+      if (repos.length === 0) {
+        const emptyRow = document.createElement("tr");
+        const td = document.createElement("td");
+        td.setAttribute("colspan", "4");
+        td.classList.add("text-center", "text-muted");
+        td.textContent = "No hay repositorios guardados.";
+        emptyRow.appendChild(td);
+        tableBody.appendChild(emptyRow);
+        return;
+      }
+
+      // Si hay repos, los renderizamos
+      repos.forEach((repo) => {
+        const tr = document.createElement("tr");
+
+        const nameTd = document.createElement("td");
+        nameTd.textContent = repo.full_name;
+
+        const syncTd = document.createElement("td");
+        syncTd.textContent = repo.last_synced_at
+          ? new Date(repo.last_synced_at).toLocaleString()
+          : "Nunca";
+
+        const selectedTd = document.createElement("td");
+        selectedTd.innerHTML = repo.selected
+          ? '<span class="badge badge-success">Sí</span>'
+          : '<span class="badge badge-secondary">No</span>';
+
+        const actionsTd = document.createElement("td");
+        actionsTd.innerHTML = `
+          ${
+            !repo.last_synced_at
+              ? `<button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">Importar</button>`
+              : ""
+          }
+          <button class="btn btn-sm btn-secondary toggle-sync-btn" data-id="${repo.id}">
+            ${repo.selected ? "Desactivar" : "Activar"} sync
+          </button>
+          <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">Eliminar</button>
+        `;
+
+
+        tr.appendChild(nameTd);
+        tr.appendChild(syncTd);
+        tr.appendChild(selectedTd);
+        tr.appendChild(actionsTd);
+        tableBody.appendChild(tr);
+      });
+
+      // Enlazar acciones
+      document.querySelectorAll(".delete-repo-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const repoId = btn.getAttribute("data-id");
+          ezQuery({
+            title: "¿Eliminar repositorio?",
+            body: "¿Estás seguro de que quieres eliminar este repositorio?",
+            success: () => {
+              CTFd.fetch(`/api/v1/github/repos/${repoId}`, {
+                method: "DELETE",
+                credentials: "same-origin",
+                headers: {
+                  "CSRF-Token": CTFd.config.csrfNonce
+                }
+              })
+                .then((r) => r.json())
+                .then((resp) => {
+                  if (resp.success) {
+                    ezAlert({
+                      title: "Eliminado",
+                      body: resp.message,
+                      button: "OK"
+                    });
+                    loadSavedRepos();
+                  } else {
+                    ezAlert({
+                      title: "Error",
+                      body: resp.message,
+                      button: "Cerrar"
+                    });
+                  }
+                });
+            }
+          });
+        });
+      });
+
+      document.querySelectorAll(".toggle-sync-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const repoId = btn.getAttribute("data-id");
+
+          CTFd.fetch(`/api/v1/github/repos/${repoId}/toggle`, {
+            method: "PATCH",
+            credentials: "same-origin",
+            headers: {
+              "CSRF-Token": CTFd.config.csrfNonce
+            }
+          })
+            .then((r) => r.json())
+            .then((resp) => {
+              if (resp.success) {
+                ezAlert({
+                  title: "Sincronización actualizada",
+                  body: resp.message,
+                  button: "OK"
+                });
+                loadSavedRepos(); // Recargar la tabla para reflejar el cambio
+              } else {
+                ezAlert({
+                  title: "Error",
+                  body: resp.message,
+                  button: "Cerrar"
+                });
+              }
+            });
+        });
+      });
+
+      document.querySelectorAll(".sync-now-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const repoId = btn.getAttribute("data-id");
+          ezAlert({
+            title: "Importación simulada",
+            body: `Aquí podrías iniciar una importación de desafíos para el repo ID ${repoId}.`,
+            button: "OK"
+          });
+
+          // Aquí puedes implementar el fetch para hacer la importación real
+        });
+      });
+    })
+    .catch((err) => {
+      ezAlert({
+        title: "Error",
+        body: err.message,
+        button: "OK"
+      });
+    });
+}
+
+
 });

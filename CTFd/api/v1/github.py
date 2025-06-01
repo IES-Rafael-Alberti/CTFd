@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource
 from flask import redirect, url_for, request
 import urllib.parse
 from CTFd.utils import get_app_config
-from CTFd.models import db
+from CTFd.models import db, GithubRepositories
 from CTFd.utils import user as current_user
 from CTFd.models import UserGitHubToken
 
@@ -130,12 +130,121 @@ class GithubRepos(Resource):
         }
 
         github_api_url = "https://api.github.com/installation/repositories"
-        response = requests.get(github_api_url, headers=headers)
+        all_repos = []
+        page = 1
 
-        if response.status_code != 200:
-            return {"success": False, "message": "No se pudo obtener los repositorios"}, 400
+        while True:
+            response = requests.get(
+                f"{github_api_url}?per_page=100&page={page}",
+                headers=headers
+            )
 
-        repos = response.json().get("repositories", [])
-        repo_names = [{"id": r["id"], "name": r["name"], "full_name": r["full_name"]} for r in repos]
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "message": "No se pudo obtener los repositorios",
+                    "details": response.json()
+                }, 400
+
+            repos_page = response.json().get("repositories", [])
+            all_repos.extend(repos_page)
+
+            # Si no hay más repos, termina
+            if "next" not in response.links:
+                break
+
+            page += 1
+
+        repo_names = [
+            {"id": r["id"], "name": r["name"], "full_name": r["full_name"]}
+            for r in all_repos
+        ]
 
         return {"success": True, "repos": repo_names}
+
+
+@github_namespace.route('/repos/selection')
+class GithubRepoSelection(Resource):
+    @admins_only
+    def post(self):
+        data = request.get_json()
+        selected_repos = data.get("repos", [])
+        user = get_current_user()
+
+        if not isinstance(selected_repos, list):
+            return {"success": False, "message": "Formato de datos inválido"}, 400
+
+        for repo in selected_repos:
+            existing = GithubRepositories.query.filter_by(
+                user_id=user.id,
+                github_repo_id=repo["id"]
+            ).first()
+
+            if not existing:
+                new_repo = GithubRepositories(
+                    user_id=user.id,
+                    github_repo_id=repo["id"],
+                    name=repo["name"],
+                    full_name=repo["full_name"],
+                    selected=True,
+                    last_synced_at=None
+                )
+                db.session.add(new_repo)
+
+        db.session.commit()
+
+        return {"success": True, "message": "Repositorios guardados correctamente"}
+
+
+@github_namespace.route('/repos/saved')
+class GithubSavedRepos(Resource):
+    @admins_only
+    def get(self):
+        user_id = get_current_user().id
+        saved_repos = GithubRepositories.query.filter_by(user_id=user_id).all()
+
+        result = []
+        for repo in saved_repos:
+            result.append({
+                "id": repo.id,
+                "name": repo.name,
+                "full_name": repo.full_name,
+                "selected": repo.selected,
+                "last_synced_at": repo.last_synced_at.isoformat() if repo.last_synced_at else None,
+            })
+
+        return {"success": True, "repos": result}
+
+@github_namespace.route('/repos/<int:repo_id>')
+class GithubRepoDelete(Resource):
+    @admins_only
+    def delete(self, repo_id):
+        user_id = get_current_user().id
+        repo = GithubRepositories.query.filter_by(id=repo_id, user_id=user_id).first()
+
+        if not repo:
+            return {"success": False, "message": "Repositorio no encontrado"}, 404
+
+        db.session.delete(repo)
+        db.session.commit()
+
+        return {"success": True, "message": "Repositorio eliminado"}
+
+@github_namespace.route('/repos/<int:repo_id>/toggle')
+class GithubRepoToggle(Resource):
+    @admins_only
+    def patch(self, repo_id):
+        user_id = get_current_user().id
+        repo = GithubRepositories.query.filter_by(id=repo_id, user_id=user_id).first()
+
+        if not repo:
+            return {"success": False, "message": "Repositorio no encontrado"}, 404
+
+        repo.selected = not repo.selected
+        db.session.commit()
+
+        return {
+            "success": True,
+            "message": f"Sincronización {'activada' if repo.selected else 'desactivada'}",
+            "selected": repo.selected
+        }
