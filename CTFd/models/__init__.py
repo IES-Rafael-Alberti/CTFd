@@ -586,6 +586,19 @@ class UserGitHubToken(db.Model):
 
 
 
+class GithubRepositories(db.Model):
+    __tablename__ = "github_repositories"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    github_repo_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    full_name = db.Column(db.String(255), nullable=False)
+    selected = db.Column(db.Boolean, default=False)
+    last_synced_at = db.Column(db.DateTime, nullable=True)
+
+    user = db.relationship("Users", backref="github_repositories")
+
 
 class Admins(Users):
     __tablename__ = "admins"
