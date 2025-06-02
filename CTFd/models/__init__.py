@@ -228,6 +228,19 @@ class Hints(db.Model):
         return "<Hint %r>" % self.content
 
 
+class GithubHintSync(db.Model):
+    __tablename__ = "github_hint_sync"
+
+    id = db.Column(db.Integer, primary_key=True)
+    hint_id = db.Column(db.Integer, db.ForeignKey("hints.id", ondelete="CASCADE"))
+    github_repo_id = db.Column(db.Integer, db.ForeignKey("github_repositories.id", ondelete="CASCADE"))
+    hint_uuid = db.Column(db.String(128), nullable=False, unique=True)
+    challenge_uuid = db.Column(db.String(128), nullable=False)
+    hint_path = db.Column(db.String(512), nullable=True)
+    last_updated_at = db.Column(db.DateTime, nullable=True)
+
+
+
 class Awards(db.Model):
     __tablename__ = "awards"
     id = db.Column(db.Integer, primary_key=True)

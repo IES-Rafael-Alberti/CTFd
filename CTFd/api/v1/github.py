@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource
 from flask import redirect, url_for, request
 import urllib.parse
 from CTFd.utils import get_app_config
-from CTFd.models import db, GithubRepositories, GithubChallengeSync, Challenges, GithubFlagSync, Flags
+from CTFd.models import db, GithubRepositories, GithubChallengeSync, Challenges, GithubFlagSync, Flags, GithubHintSync
 from CTFd.utils import user as current_user
 from CTFd.models import UserGitHubToken
 
@@ -241,6 +241,11 @@ class GithubRepoDelete(Resource):
         for sync in flag_syncs:
             db.session.delete(sync)
 
+        # 🔁 Eliminar sincronizaciones de pistas
+        hint_syncs = GithubHintSync.query.filter_by(github_repo_id=repo.id).all()
+        for sync in hint_syncs:
+            db.session.delete(sync)
+
         db.session.delete(repo)
         db.session.commit()
 
@@ -380,6 +385,35 @@ def validate_tags_data(tags, path):
         if not isinstance(tag, str):
             raise ValueError(f"{path}: Las tags deben ser cadenas de texto.")
 
+def validate_hints_data(hints, path):
+    if not isinstance(hints, list):
+        raise ValueError(f"{path}: El campo 'hints' debe ser una lista.")
+
+    for i, hint in enumerate(hints):
+        if not isinstance(hint, dict):
+            raise ValueError(f"{path}: Cada pista debe ser un objeto JSON (índice {i}).")
+
+        required_fields = ["uuid", "content", "type"]
+        for field in required_fields:
+            if field not in hint:
+                raise ValueError(f"{path}: Falta el campo obligatorio '{field}' en la pista (índice {i}).")
+
+        if not isinstance(hint["uuid"], str):
+            raise ValueError(f"{path}: El campo 'uuid' de la pista (índice {i}) debe ser una cadena.")
+
+        if not isinstance(hint["content"], str):
+            raise ValueError(f"{path}: El campo 'content' de la pista (índice {i}) debe ser una cadena.")
+
+        if not isinstance(hint["type"], str):
+            raise ValueError(f"{path}: El campo 'type' de la pista (índice {i}) debe ser una cadena.")
+
+        if "title" in hint and not isinstance(hint["title"], str):
+            raise ValueError(f"{path}: El campo 'title' de la pista (índice {i}) debe ser una cadena si está presente.")
+
+        if "cost" in hint and not isinstance(hint["cost"], int):
+            raise ValueError(f"{path}: El campo 'cost' de la pista (índice {i}) debe ser un número entero si está presente.")
+
+
 
 from CTFd.models import Tags
 
@@ -448,6 +482,55 @@ def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_e
             if flag:
                 db.session.delete(flag)
             db.session.delete(synced)
+
+
+from CTFd.models import Hints, db
+
+def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrite_existing=False):
+    from CTFd.models import GithubHintSync
+
+    validate_hints_data(hints, path)
+
+    for hint_data in hints:
+        uuid = hint_data.get("uuid")
+        if not uuid:
+            raise ValueError("Una de las pistas no tiene campo 'uuid'.")
+
+        existing_sync = GithubHintSync.query.filter_by(hint_uuid=uuid).first()
+
+        if existing_sync:
+            if overwrite_existing:
+                hint = Hints.query.get(existing_sync.hint_id)
+                if hint:
+                    hint.title = hint_data.get("title", "")
+                    hint.content = hint_data.get("content", "")
+                    hint.cost = hint_data.get("cost", 0)
+                    hint.type = hint_data.get("type", "standard")
+                    existing_sync.last_updated_at = datetime.utcnow()
+                continue
+            else:
+                continue
+
+        hint = Hints(
+            challenge_id=challenge_id,
+            title=hint_data.get("title", ""),
+            content=hint_data.get("content", ""),
+            cost=hint_data.get("cost", 0),
+            type=hint_data.get("type", "standard")
+        )
+        db.session.add(hint)
+        db.session.flush()
+
+        db.session.add(GithubHintSync(
+            hint_id=hint.id,
+            github_repo_id=repo_id,
+            hint_uuid=uuid,
+            challenge_uuid=challenge_uuid,
+            hint_path=path,
+            last_updated_at=datetime.utcnow()
+        ))
+
+
 
 from datetime import datetime
 from CTFd.models import Challenges
@@ -558,6 +641,20 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                 import_flags(
                     challenge_id=challenge.id,
                     flags=challenge_info.get("flags", []),
+                    repo_id=repo.id,
+                    challenge_uuid=challenge_info["uuid"],
+                    path=path,
+                    overwrite_existing=overwrite_existing
+                )
+            except ValueError as ve:
+                errors.append({"file": path, "error": str(ve)})
+                continue
+
+            # Después de importar las flags
+            try:
+                import_hints(
+                    challenge_id=challenge.id,
+                    hints=challenge_info.get("hints", []),
                     repo_id=repo.id,
                     challenge_uuid=challenge_info["uuid"],
                     path=path,
