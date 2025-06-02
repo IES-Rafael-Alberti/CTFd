@@ -373,6 +373,27 @@ def validate_flag_data(flag, path):
     if flag["data"] not in ["case_insensitive", ""]:
         raise ValueError(f"{path}: data de flag no soportado")
 
+def validate_tags_data(tags, path):
+    if not isinstance(tags, list):
+        raise ValueError(f"{path}: El campo 'tags' debe ser una lista.")
+    for tag in tags:
+        if not isinstance(tag, str):
+            raise ValueError(f"{path}: Las tags deben ser cadenas de texto.")
+
+
+from CTFd.models import Tags
+
+def import_tags(challenge, tags_data, path, overwrite_existing):
+    validate_tags_data(tags_data, path)
+
+    if overwrite_existing:
+        Tags.query.filter_by(challenge_id=challenge.id).delete()
+
+    for tag in tags_data:
+        tag_entry = Tags(challenge_id=challenge.id, value=tag)
+        db.session.add(tag_entry)
+
+
 
 def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_existing):
     json_flag_uuids = set()
@@ -545,6 +566,15 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
             except ValueError as ve:
                 errors.append({"file": path, "error": str(ve)})
                 continue
+
+            # Importar tags
+            tags_data = challenge_info.get("tags", [])
+            if tags_data:
+                try:
+                    import_tags(challenge, tags_data, path, overwrite_existing)
+                except ValueError as ve:
+                    errors.append({"file": path, "error": str(ve)})
+                    continue
 
             if created:
                 count_created += 1
