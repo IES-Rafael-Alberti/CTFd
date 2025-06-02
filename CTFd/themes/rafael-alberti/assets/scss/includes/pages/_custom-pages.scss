@@ -1,0 +1,49 @@
+.custom {
+  margin: 5rem auto;
+  padding: 2rem;
+  max-width: 1200px;
+
+  &__title {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    color: #e93456;
+    font-weight: bold;
+    font-size: 4rem;
+  }
+
+  &__content {
+    font-size: 1.3rem;
+  }
+
+  &__link {
+    color: #222222;
+    text-decoration: underline;
+  }
+
+  &__social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-direction: row;
+
+    &__link {
+      color: #e93456;
+      font-size: 4rem;
+    }
+  }
+
+  &__image {
+    display: block;
+    margin: 2rem auto;
+    max-width: 60vw;
+    height: auto;
+  }
+
+  &__welcome {
+    display: flex;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+}
