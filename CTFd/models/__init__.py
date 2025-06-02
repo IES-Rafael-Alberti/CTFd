@@ -599,6 +599,33 @@ class GithubRepositories(db.Model):
 
     user = db.relationship("Users", backref="github_repositories")
 
+class GithubChallengeSync(db.Model):
+    __tablename__ = "github_challenge_sync"
+
+    id = db.Column(db.Integer, primary_key=True)
+    challenge_id = db.Column(db.Integer, db.ForeignKey("challenges.id", ondelete="CASCADE"))
+    github_repo_id = db.Column(db.Integer, db.ForeignKey("github_repositories.id", ondelete="CASCADE"))
+    challenge_uuid = db.Column(db.String(64), nullable=False, unique=True)
+    challenge_path = db.Column(db.String(255), nullable=True)
+    last_updated_at = db.Column(db.DateTime, nullable=True)
+
+    challenge = db.relationship("Challenges", backref="github_sync")
+    repo = db.relationship("GithubRepositories", backref="synced_challenges")
+
+
+class GithubFlagSync(db.Model):
+    __tablename__ = "github_flag_sync"
+
+    id = db.Column(db.Integer, primary_key=True)
+    flag_id = db.Column(db.Integer, db.ForeignKey("flags.id", ondelete="CASCADE"))
+    github_repo_id = db.Column(db.Integer, db.ForeignKey("github_repositories.id", ondelete="CASCADE"))
+    challenge_uuid = db.Column(db.String(64), nullable=False)
+    flag_uuid = db.Column(db.String(64), nullable=False)
+    last_updated_at = db.Column(db.DateTime, nullable=True)
+
+    flag = db.relationship("Flags", backref="github_sync")
+    repo = db.relationship("GithubRepositories", backref="synced_flags")
+
 
 class Admins(Users):
     __tablename__ = "admins"
