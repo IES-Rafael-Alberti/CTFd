@@ -227,6 +227,11 @@ def create_app(config="CTFd.config.Config"):
             Tags,
             Teams,
             Tracking,
+            GithubFlagSync,
+            GithubChallengeSync,
+            GithubRepositories,
+            UserGitHubToken,
+            GithubHintSync,
             db,
         )
 
