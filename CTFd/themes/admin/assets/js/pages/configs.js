@@ -840,15 +840,93 @@ function loadSavedRepos() {
       document.querySelectorAll(".sync-now-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
           const repoId = btn.getAttribute("data-id");
-          ezAlert({
-            title: "Importación simulada",
-            body: `Aquí podrías iniciar una importación de desafíos para el repo ID ${repoId}.`,
-            button: "OK"
-          });
 
-          // Aquí puedes implementar el fetch para hacer la importación real
+          ezQuery({
+            title: "¿Importar retos?",
+            body: "¿Estás seguro de que quieres importar los retos desde este repositorio?",
+            success: () => {
+              // Encuentra los elementos relacionados
+              const row = btn.closest("tr");
+              const syncCell = row.querySelector("td:nth-child(2)");
+              const toggleBtn = row.querySelector(".toggle-sync-btn");
+              const deleteBtn = row.querySelector(".delete-repo-btn");
+
+              // Guarda el contenido original de la celda de fecha
+              const originalSyncContent = syncCell.innerHTML;
+
+              // Reemplaza con spinner
+              syncCell.innerHTML = `
+                <div class="text-center">
+                  <div class="spinner-border spinner-border-sm text-warning" role="status">
+                    <span class="sr-only">Importando...</span>
+                  </div>
+                  <div class="small text-muted">Importando...</div>
+                </div>
+              `;
+
+              // Desactiva botones
+              btn.disabled = true;
+              toggleBtn.disabled = true;
+              deleteBtn.disabled = true;
+
+              CTFd.fetch(`/api/v1/github/repos/${repoId}/import`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                  "CSRF-Token": CTFd.config.csrfNonce
+                }
+              })
+                .then((r) => r.json())
+                .then((resp) => {
+                  if (resp.success) {
+                    let body = `<p>${resp.message}</p>`;
+
+                    if (resp.errors && resp.errors.length > 0) {
+                      body += "<hr><b>Errores durante la importación:</b><ul>";
+                      resp.errors.forEach((err) => {
+                        body += `<li><code>${err.file}</code>: ${err.error}</li>`;
+                      });
+                      body += "</ul>";
+                    }
+
+                    ezAlert({
+                      title: "Importación completada",
+                      body: body,
+                      button: "OK"
+                    });
+
+                    loadSavedRepos(); // Actualiza toda la tabla
+                  } else {
+                    syncCell.innerHTML = originalSyncContent;
+                    btn.disabled = false;
+                    toggleBtn.disabled = false;
+                    deleteBtn.disabled = false;
+
+                    ezAlert({
+                      title: "Error",
+                      body: resp.message,
+                      button: "Cerrar"
+                    });
+                  }
+                })
+                .catch((err) => {
+                  syncCell.innerHTML = originalSyncContent;
+                  btn.disabled = false;
+                  toggleBtn.disabled = false;
+                  deleteBtn.disabled = false;
+
+                  ezAlert({
+                    title: "Error inesperado",
+                    body: err.message,
+                    button: "Cerrar"
+                  });
+                });
+            }
+          });
         });
       });
+
+
     })
     .catch((err) => {
       ezAlert({
