@@ -192,3 +192,5 @@ zope-interface==5.2.0
 # setuptools
 
 PyJWT~=2.10.1
+
+PyJWT~=2.10.1
