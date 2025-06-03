@@ -56,22 +56,31 @@ class GithubCallback(Resource):
         installation_id = request.args.get("installation_id")
 
         if not installation_id:
-            return {"success": False, "message": "No se recibió installation_id."}, 400
+            return {
+                "success": False,
+                "message": "No se recibió installation_id."
+            }, 400
 
-        user_id = get_current_user().id
-        token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
+        user = get_current_user()
+        if not user:
+            return {
+                "success": False,
+                "message": "Usuario no autenticado"
+            }, 401
+
+        token_entry = UserGitHubToken.query.filter_by(user_id=user.id).first()
 
         if token_entry:
-            token_entry.token = installation_id  # Cambiar a installation_id más adelante
+            token_entry.token = installation_id
         else:
-            token_entry = UserGitHubToken(user_id=user_id, token=installation_id)
+            token_entry = UserGitHubToken(user_id=user.id, token=installation_id)
             db.session.add(token_entry)
 
         db.session.commit()
 
         return {
             "success": True,
-            "message": "Installation ID de GitHub guardado correctamente.",
+            "message": f"Installation ID {installation_id} guardado correctamente."
         }
 
 @github_namespace.route('/installations')
