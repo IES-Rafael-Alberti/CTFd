@@ -55,6 +55,10 @@ class GithubCallback(Resource):
     def get(self):
         installation_id = request.args.get("installation_id")
 
+        print("-------------------------------------------")
+        print(installation_id)
+        print("-------------------------------------------")
+
         if not installation_id:
             return {
                 "success": False,
@@ -78,10 +82,7 @@ class GithubCallback(Resource):
 
         db.session.commit()
 
-        return {
-            "success": True,
-            "message": f"Installation ID {installation_id} guardado correctamente."
-        }
+        return redirect("/admin/config")
 
 @github_namespace.route('/installations')
 class GithubInstallations(Resource):
