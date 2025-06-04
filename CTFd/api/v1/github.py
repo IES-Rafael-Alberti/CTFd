@@ -51,7 +51,6 @@ def get_installation_access_token(installation_id):
 
 @github_namespace.route('/callback')
 class GithubCallback(Resource):
-    @admins_only
     def get(self):
         installation_id = request.args.get("installation_id")
 
@@ -304,10 +303,32 @@ class GithubRepoImport(Resource):
             "errors": result["errors"]
         }
 
+import hmac
+import hashlib
+
+def is_valid_signature(request, secret):
+    signature = request.headers.get("X-Hub-Signature-256")
+    if not signature:
+        return False
+
+    sha_name, signature = signature.split('=')
+    if sha_name != 'sha256':
+        return False
+
+    mac = hmac.new(secret.encode(), msg=request.data, digestmod=hashlib.sha256)
+    return hmac.compare_digest(mac.hexdigest(), signature)
+
+
+
 # recibe los push del repositorio
 @github_namespace.route('/webhook', methods=["POST"])
 class GithubWebhook(Resource):
     def post(self):
+
+        secret = get_app_config("GITHUB_WEBHOOK_SECRET")
+        if not is_valid_signature(request, secret):
+            return {"success": False, "message": "Firma inválida"}, 403
+
         event = request.headers.get("X-GitHub-Event")
         payload = request.get_json()
 
