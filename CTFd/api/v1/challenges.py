@@ -13,7 +13,7 @@ from CTFd.exceptions.challenges import (
     ChallengeCreateException,
     ChallengeUpdateException,
 )
-from CTFd.models import ChallengeFiles as ChallengeFilesModel
+from CTFd.models import ChallengeFiles as ChallengeFilesModel, SelectedChallenges
 from CTFd.models import Challenges
 from CTFd.models import ChallengeTopics as ChallengeTopicsModel
 from CTFd.models import Fails, Flags, Hints, HintUnlocks, Solves, Submissions, Tags, db
@@ -164,7 +164,21 @@ class ChallengeList(Resource):
             # `None` for the solve count if visiblity checks fail
             solve_count_dfl = None
 
-        chal_q = get_all_challenges(admin=admin_view, field=field, q=q, **query_args)
+        # Get selected challenge IDs
+        selected_challenge_ids = (
+            db.session.query(SelectedChallenges.challenge_id).all()
+        )
+        selected_challenge_ids = [id[0] for id in selected_challenge_ids]
+
+        # Filter only selected challenges from `Challenges` table
+        chal_q = Challenges.query.filter(Challenges.id.in_(selected_challenge_ids))
+
+        # Apply additional filters based on query args
+        if q and field:
+            if Challenges.__mapper__.has_property(field):  # Validar campo válido
+                chal_q = chal_q.filter(getattr(Challenges, field).like(f"%{q}%"))
+
+        # chal_q = get_all_challenges(admin=admin_view, field=field, q=q, **query_args)
 
         # Iterate through the list of challenges, adding to the object which
         # will be JSONified back to the client
@@ -838,3 +852,64 @@ class ChallengeRequirements(Resource):
     def get(self, challenge_id):
         challenge = Challenges.query.filter_by(id=challenge_id).first_or_404()
         return {"success": True, "data": challenge.requirements}
+
+
+@challenges_namespace.route("/<challenge_id>/add_to_competition")
+class ChallengeSelection(Resource):
+    @admins_only
+    def post(self, challenge_id):
+        # Verify that the challenge ID exists
+        challenge = Challenges.query.filter_by(id=challenge_id).first()
+        
+        if not challenge:
+            return {"success": False, "errors": {"challenge_id": ["Challenge does not exist"]}}, 404
+
+        # Add to selected_challenges table only if it doesn't exist already
+        from CTFd.models import SelectedChallenges
+
+        # Check if the challenge is already selected
+        existing = SelectedChallenges.query.filter_by(challenge_id=challenge_id).first()
+        
+        if existing:
+            return {
+                "success": True, 
+                "data": {
+                    "message": "This challenge was already selected for the competition"
+                }
+            }
+
+        # Add the new challenge
+        selected = SelectedChallenges(challenge_id=challenge_id)
+        db.session.add(selected)
+        
+        try:
+            db.session.commit()
+            return {
+                "success": True, 
+                "data": {
+                    "message": "Challenge successfully added to competition"
+                }
+            }
+        except Exception as e:
+            db.session.rollback()
+            return {"success": False, "errors": {"database": [str(e)]}}, 500
+
+@challenges_namespace.route("/<challenge_id>/remove_from_competition")
+class SelectedChallenge(Resource):
+    @admins_only
+    def delete(self, challenge_id):
+        # Verify that the challenge ID exists
+        challenge = Challenges.query.filter_by(id=challenge_id).first()
+
+        if not challenge:
+            return {"success": False, "errors": {"challenge_id": ["Challenge does not exist"]}}, 404
+
+        from CTFd.models import SelectedChallenges
+
+        selected = SelectedChallenges.query.filter_by(challenge_id=challenge_id).first()
+
+        if selected:
+            db.session.delete(selected)
+            db.session.commit()
+            return {"success": True}
+        return {"success": False, "errors": {"": ["Challenge not found in selection"]}}, 404

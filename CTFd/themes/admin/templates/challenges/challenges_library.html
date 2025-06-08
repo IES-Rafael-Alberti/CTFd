@@ -8,8 +8,14 @@
 {% block content %}
 <div class="jumbotron">
 	<div class="container">
-		<h1>Challenges</h1>
-        <p>Here you can see all the challenges selected for the current competition. You can add more challenges from the Challenges Library section.</p>
+		<h1>Challenges library
+			<a class="no-decoration" href="{{ url_for('admin.challenges_new') }}">
+				<span role="button" data-toggle="tooltip" title="Create Challenge">
+					<i class="btn-fa fas fa-plus-circle"></i>
+				</span>
+			</a>
+		</h1>
+        <p>Here you can see all the challenges available. Select the ones you want to use in the competition. The selected ones will be listed in the Challenges secction.</p>
 	</div>
 </div>
 <div class="container">
@@ -48,10 +54,13 @@
 		<div class="col-md-12">
 			<div class="float-right pb-3">
 				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-outline-primary" data-toggle="tooltip" title="Add Challenges to the competition" id="challenges-add-to-competition-button">
+						<i class="btn-fa fas fa-plus"></i>
+					</button>
 					<button type="button" class="btn btn-outline-secondary" data-toggle="tooltip" title="Edit Challenges" id="challenges-edit-button">
 						<i class="btn-fa fas fa-pencil-alt"></i>
 					</button>
-					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="Remove Challenges from the competition" id="challenges-remove-from-competition-button">
+					<button type="button" class="btn btn-outline-danger" data-toggle="tooltip" title="Delete Challenges" id="challenges-delete-button">
 						<i class="btn-fa fas fa-trash-alt"></i>
 					</button>
 				</div>

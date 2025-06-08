@@ -223,6 +223,7 @@ def create_app(config="CTFd.config.Config"):
 
         from CTFd.models import (  # noqa: F401
             Challenges,
+            SelectedChallenges,
             Fails,
             Files,
             Flags,
@@ -230,6 +231,11 @@ def create_app(config="CTFd.config.Config"):
             Tags,
             Teams,
             Tracking,
+            GithubFlagSync,
+            GithubChallengeSync,
+            GithubRepositories,
+            UserGitHubToken,
+            GithubHintSync,
             db,
         )
 

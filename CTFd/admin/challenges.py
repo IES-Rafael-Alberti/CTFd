@@ -1,7 +1,7 @@
 from flask import abort, render_template, request, url_for
 
 from CTFd.admin import admin
-from CTFd.models import Challenges, Flags, Solves
+from CTFd.models import Challenges, Flags, Solves, SelectedChallenges, db
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
 from CTFd.schemas.tags import TagSchema
 from CTFd.utils.decorators import admins_only
@@ -9,9 +9,9 @@ from CTFd.utils.security.signing import serialize
 from CTFd.utils.user import get_current_team, get_current_user
 
 
-@admin.route("/admin/challenges")
+@admin.route("/admin/challenges_library")
 @admins_only
-def challenges_listing():
+def challenges_library_listing():
     q = request.args.get("q")
     field = request.args.get("field")
     filters = []
@@ -26,12 +26,48 @@ def challenges_listing():
     total = query.count()
 
     return render_template(
+        "admin/challenges/challenges_library.html",
+        challenges=challenges,
+        total=total,
+        q=q,
+        field=field,
+    )
+
+@admin.route("/admin/challenges")
+@admins_only
+def selected_challenges_listing():
+    q = request.args.get("q")
+    field = request.args.get("field")
+    filters = []
+
+    # Obtener los IDs de los desafíos seleccionados
+    selected_challenge_ids = db.session.query(SelectedChallenges.challenge_id).all()
+    selected_challenge_ids = [id[0] for id in selected_challenge_ids]  # Convertir a lista simple
+
+    # Construir el query base
+    query = Challenges.query.filter(Challenges.id.in_(selected_challenge_ids))
+
+    # Aplicar filtros adicionales si se proporcionan
+    if q:
+        # Si el campo existe como una columna expuesta
+        if Challenges.__mapper__.has_property(field):
+            filters.append(getattr(Challenges, field).like("%{}%".format(q)))
+            query = query.filter(*filters)
+
+    # Ordenar los resultados
+    query = query.order_by(Challenges.id.asc())
+    
+    challenges = query.all()
+    total = query.count()
+
+    return render_template(
         "admin/challenges/challenges.html",
         challenges=challenges,
         total=total,
         q=q,
         field=field,
     )
+
 
 
 @admin.route("/admin/challenges/<int:challenge_id>")
