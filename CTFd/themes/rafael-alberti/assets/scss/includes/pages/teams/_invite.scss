@@ -22,11 +22,12 @@
     color: #666;
 
     a {
-      color: #e93456;
+      color: var(--text-a-color);
       text-decoration: underline;
 
       &:hover {
-        color: #ab132f;
+        color: var(--text-a-color);
+        text-decoration: underline;
       }
     }
   }
