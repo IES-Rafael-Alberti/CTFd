@@ -34,6 +34,6 @@
   }
 
   &:nth-child(odd) {
-    background-color: #efefef;
+    background-color: var(--section-bg-color);
   }
 }
