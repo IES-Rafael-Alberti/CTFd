@@ -7,7 +7,7 @@
     margin-bottom: 1rem;
     display: flex;
     justify-content: center;
-    color: #e93456;
+    color: var(--text-h-color);
     font-weight: bold;
     font-size: 4rem;
   }
@@ -17,7 +17,7 @@
   }
 
   &__link {
-    color: #222222;
+    color: var(--text-a-color);
     text-decoration: underline;
   }
 
@@ -28,7 +28,7 @@
     flex-direction: row;
 
     &__link {
-      color: #e93456;
+      color: var(--text-a-color);
       font-size: 4rem;
     }
   }
