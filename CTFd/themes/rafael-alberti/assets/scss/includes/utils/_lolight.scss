@@ -37,6 +37,8 @@
   --text-color: var(--neutral-black-999);
   --text-a-color: var(--primary-red-500);
 
+  --pagination-color: var(--primary-red-500);
+
   /* ---- NAVBAR ---- */
   --navbar-bg-color: var(--neutral-black-999);
   --navbar-text-color: var(--neutral-white-000);
@@ -98,6 +100,6 @@ body {
   --text-label-color: var(--primary-red-200);
 
   body {
-  background-color: #2b2b2b;
-}
+    background-color: #2b2b2b;
+  }
 }
