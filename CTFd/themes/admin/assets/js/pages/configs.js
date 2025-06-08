@@ -561,7 +561,7 @@ $(() => {
   document.querySelector("#brackets-list").appendChild(bracketListContainer);
   new bracketList({}).$mount(bracketListContainer);
 
-    // --- GitHub Repository Sync Section ---
+  // --- GitHub Repository Sync Section ---
   const ITEMS_PER_PAGE = 10;
   let allRepos = [];
   let currentPage = 1;
@@ -620,42 +620,42 @@ $(() => {
 
   // Fetch repos desde la API
   fetch("/api/v1/github/repos")
-  .then(response => {
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("Usuario no autenticado con GitHub. Por favor, instala la app o asegúrate de tener permisos.");
+    .then(response => {
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Usuario no autenticado con GitHub. Por favor, instala la app o asegúrate de tener permisos.");
+        }
+        return response.json().then(err => {
+          throw new Error(err.message || "Error inesperado al comunicarse con la API.");
+        });
       }
-      return response.json().then(err => {
-        throw new Error(err.message || "Error inesperado al comunicarse con la API.");
-      });
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (!data.success) {
-      throw new Error(data.message || "La API respondió sin éxito.");
-    }
+      return response.json();
+    })
+    .then(data => {
+      if (!data.success) {
+        throw new Error(data.message || "La API respondió sin éxito.");
+      }
 
-    allRepos = data.repos || [];
+      allRepos = data.repos || [];
 
-    // Asegúrate de mostrar y ocultar las secciones correctamente
-    if (githubLoginSection) githubLoginSection.style.display = "none";
-    if (githubReposSection) githubReposSection.style.display = "block";
-    const errorSection = document.getElementById("github-error-section");
-    if (errorSection) errorSection.style.display = "none";
+      // Asegúrate de mostrar y ocultar las secciones correctamente
+      if (githubLoginSection) githubLoginSection.style.display = "none";
+      if (githubReposSection) githubReposSection.style.display = "block";
+      const errorSection = document.getElementById("github-error-section");
+      if (errorSection) errorSection.style.display = "none";
 
-    renderRepos();
-    loadSavedRepos();
-  })
-  .catch(error => {
-    console.error("Error al obtener los repos:", error);
-    const errorSection = document.getElementById("github-error-section");
-    const errorMessage = document.getElementById("github-error-message");
-    if (errorMessage) errorMessage.textContent = error.message;
-    if (errorSection) errorSection.style.display = "block";
-    if (githubLoginSection) githubLoginSection.style.display = "block";
-    if (githubReposSection) githubReposSection.style.display = "none";
-  });
+      renderRepos();
+      loadSavedRepos();
+    })
+    .catch(error => {
+      console.error("Error al obtener los repos:", error);
+      const errorSection = document.getElementById("github-error-section");
+      const errorMessage = document.getElementById("github-error-message");
+      if (errorMessage) errorMessage.textContent = error.message;
+      if (errorSection) errorSection.style.display = "block";
+      if (githubLoginSection) githubLoginSection.style.display = "block";
+      if (githubReposSection) githubReposSection.style.display = "none";
+    });
 
 
   // Guardar selección de repos
@@ -679,183 +679,132 @@ $(() => {
       },
       body: JSON.stringify({ repos: selected })
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          ezAlert({
+            title: "Éxito",
+            body: "Repositorios guardados correctamente.",
+            button: "Aceptar"
+          });
+        } else {
+          ezAlert({
+            title: "Error al guardar",
+            body: data.message || "Error inesperado.",
+            button: "Aceptar"
+          });
+        }
+      })
+      .catch(err => {
         ezAlert({
-          title: "Éxito",
-          body: "Repositorios guardados correctamente.",
+          title: "Error inesperado",
+          body: err.message,
           button: "Aceptar"
         });
-      } else {
-        ezAlert({
-          title: "Error al guardar",
-          body: data.message || "Error inesperado.",
-          button: "Aceptar"
-        });
-      }
-    })
-    .catch(err => {
-      ezAlert({
-        title: "Error inesperado",
-        body: err.message,
-        button: "Aceptar"
       });
-    });
   });
 
-function loadSavedRepos() {
-  const tableBody = document.querySelector("#github-saved-repos-table tbody");
-  tableBody.innerHTML = "";
+  function loadSavedRepos() {
+    const tableBody = document.querySelector("#github-saved-repos-table tbody");
+    tableBody.innerHTML = "";
 
-  CTFd.fetch("/api/v1/github/repos/saved", {
-    method: "GET",
-    credentials: "same-origin"
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (!data.success) {
-        throw new Error(data.message || "No se pudieron cargar los repositorios.");
-      }
+    CTFd.fetch("/api/v1/github/repos/saved", {
+      method: "GET",
+      credentials: "same-origin"
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.success) {
+          throw new Error(data.message || "No se pudieron cargar los repositorios.");
+        }
 
-      const repos = data.repos;
+        const repos = data.repos;
 
-      if (repos.length === 0) {
-        const emptyRow = document.createElement("tr");
-        const td = document.createElement("td");
-        td.setAttribute("colspan", "4");
-        td.classList.add("text-center", "text-muted");
-        td.textContent = "No hay repositorios guardados.";
-        emptyRow.appendChild(td);
-        tableBody.appendChild(emptyRow);
-        return;
-      }
+        if (repos.length === 0) {
+          const emptyRow = document.createElement("tr");
+          const td = document.createElement("td");
+          td.setAttribute("colspan", "4");
+          td.classList.add("text-center", "text-muted");
+          td.textContent = "No hay repositorios guardados.";
+          emptyRow.appendChild(td);
+          tableBody.appendChild(emptyRow);
+          return;
+        }
 
-      // Si hay repos, los renderizamos
-      repos.forEach((repo) => {
-        const tr = document.createElement("tr");
+        // Si hay repos, los renderizamos
+        repos.forEach((repo) => {
+          const tr = document.createElement("tr");
 
-        const nameTd = document.createElement("td");
-        nameTd.textContent = repo.full_name;
+          const nameTd = document.createElement("td");
+          nameTd.textContent = repo.full_name;
 
-        const syncTd = document.createElement("td");
-        syncTd.textContent = repo.last_synced_at
-          ? new Date(repo.last_synced_at).toLocaleString()
-          : "Nunca";
-
-        const selectedTd = document.createElement("td");
-        selectedTd.innerHTML = repo.selected
-          ? '<span class="badge badge-success">Sí</span>'
-          : '<span class="badge badge-secondary">No</span>';
-
-        const actionsTd = document.createElement("td");
-        actionsTd.innerHTML = `
-          ${
-            !repo.last_synced_at
-              ? `<button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">Importar</button>`
-              : ""
-          }
-          <button class="btn btn-sm btn-secondary toggle-sync-btn" data-id="${repo.id}">
-            ${repo.selected ? "Desactivar" : "Activar"} sync
-          </button>
+          const actionsTd = document.createElement("td");
+          actionsTd.innerHTML = `
+          <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">Importar</button>
           <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">Eliminar</button>
         `;
 
 
-        tr.appendChild(nameTd);
-        tr.appendChild(syncTd);
-        tr.appendChild(selectedTd);
-        tr.appendChild(actionsTd);
-        tableBody.appendChild(tr);
-      });
-
-      // Enlazar acciones
-      document.querySelectorAll(".delete-repo-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const repoId = btn.getAttribute("data-id");
-          ezQuery({
-            title: "¿Eliminar repositorio?",
-            body: "¿Estás seguro de que quieres eliminar este repositorio?",
-            success: () => {
-              CTFd.fetch(`/api/v1/github/repos/${repoId}`, {
-                method: "DELETE",
-                credentials: "same-origin",
-                headers: {
-                  "CSRF-Token": CTFd.config.csrfNonce
-                }
-              })
-                .then((r) => r.json())
-                .then((resp) => {
-                  if (resp.success) {
-                    ezAlert({
-                      title: "Eliminado",
-                      body: resp.message,
-                      button: "OK"
-                    });
-                    loadSavedRepos();
-                  } else {
-                    ezAlert({
-                      title: "Error",
-                      body: resp.message,
-                      button: "Cerrar"
-                    });
-                  }
-                });
-            }
-          });
+          tr.appendChild(nameTd);
+          tr.appendChild(actionsTd);
+          tableBody.appendChild(tr);
         });
-      });
 
-      document.querySelectorAll(".toggle-sync-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const repoId = btn.getAttribute("data-id");
-
-          CTFd.fetch(`/api/v1/github/repos/${repoId}/toggle`, {
-            method: "PATCH",
-            credentials: "same-origin",
-            headers: {
-              "CSRF-Token": CTFd.config.csrfNonce
-            }
-          })
-            .then((r) => r.json())
-            .then((resp) => {
-              if (resp.success) {
-                ezAlert({
-                  title: "Sincronización actualizada",
-                  body: resp.message,
-                  button: "OK"
-                });
-                loadSavedRepos(); // Recargar la tabla para reflejar el cambio
-              } else {
-                ezAlert({
-                  title: "Error",
-                  body: resp.message,
-                  button: "Cerrar"
-                });
+        // Enlazar acciones
+        document.querySelectorAll(".delete-repo-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const repoId = btn.getAttribute("data-id");
+            ezQuery({
+              title: "¿Eliminar repositorio?",
+              body: "¿Estás seguro de que quieres eliminar este repositorio?",
+              success: () => {
+                CTFd.fetch(`/api/v1/github/repos/${repoId}`, {
+                  method: "DELETE",
+                  credentials: "same-origin",
+                  headers: {
+                    "CSRF-Token": CTFd.config.csrfNonce
+                  }
+                })
+                  .then((r) => r.json())
+                  .then((resp) => {
+                    if (resp.success) {
+                      ezAlert({
+                        title: "Eliminado",
+                        body: resp.message,
+                        button: "OK"
+                      });
+                      loadSavedRepos();
+                    } else {
+                      ezAlert({
+                        title: "Error",
+                        body: resp.message,
+                        button: "Cerrar"
+                      });
+                    }
+                  });
               }
             });
+          });
         });
-      });
 
-      document.querySelectorAll(".sync-now-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const repoId = btn.getAttribute("data-id");
+        document.querySelectorAll(".sync-now-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const repoId = btn.getAttribute("data-id");
 
-          ezQuery({
-            title: "¿Importar retos?",
-            body: "¿Estás seguro de que quieres importar los retos desde este repositorio?",
-            success: () => {
-              // Encuentra los elementos relacionados
-              const row = btn.closest("tr");
-              const syncCell = row.querySelector("td:nth-child(2)");
-              const toggleBtn = row.querySelector(".toggle-sync-btn");
-              const deleteBtn = row.querySelector(".delete-repo-btn");
+            ezQuery({
+              title: "¿Importar retos?",
+              body: "¿Estás seguro de que quieres importar los retos desde este repositorio?",
+              success: () => {
+                // Encuentra los elementos relacionados
+                const row = btn.closest("tr");
+                const syncCell = row.querySelector("td:nth-child(2)");
+                const deleteBtn = row.querySelector(".delete-repo-btn");
 
-              // Guarda el contenido original de la celda de fecha
-              const originalSyncContent = syncCell.innerHTML;
+                // Guarda el contenido original de la celda de fecha
+                const originalSyncContent = syncCell.innerHTML;
 
-              // Reemplaza con spinner
-              syncCell.innerHTML = `
+                // Reemplaza con spinner
+                syncCell.innerHTML = `
                 <div class="text-center">
                   <div class="spinner-border spinner-border-sm text-warning" role="status">
                     <span class="sr-only">Importando...</span>
@@ -864,78 +813,81 @@ function loadSavedRepos() {
                 </div>
               `;
 
-              // Desactiva botones
-              btn.disabled = true;
-              toggleBtn.disabled = true;
-              deleteBtn.disabled = true;
+                // Desactiva botones
+                btn.disabled = true;
+                deleteBtn.disabled = true;
 
-              CTFd.fetch(`/api/v1/github/repos/${repoId}/import`, {
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                  "CSRF-Token": CTFd.config.csrfNonce
-                }
-              })
-                .then((r) => r.json())
-                .then((resp) => {
-                  if (resp.success) {
-                    let body = `<p>${resp.message}</p>`;
+                CTFd.fetch(`/api/v1/github/repos/${repoId}/import`, {
+                  method: "POST",
+                  credentials: "same-origin",
+                  headers: {
+                    "CSRF-Token": CTFd.config.csrfNonce
+                  }
+                })
+                  .then((r) => r.json())
+                  .then((resp) => {
+                    if (resp.success) {
+                      let body = `<p>${resp.message}</p>`;
 
-                    if (resp.errors && resp.errors.length > 0) {
-                      body += "<hr><b>Errores durante la importación:</b><ul>";
-                      resp.errors.forEach((err) => {
-                        body += `<li><code>${err.file}</code>: ${err.error}</li>`;
+                      if (resp.errors && resp.errors.length > 0) {
+                        body += "<hr><b>Errores durante la importación:</b><ul>";
+                        resp.errors.forEach((err) => {
+                          body += `<li><code>${err.file}</code>: ${err.error}</li>`;
+                        });
+                        body += "</ul>";
+                      }
+
+                      ezAlert({
+                        title: "Importación completada",
+                        body: body,
+                        button: "OK"
                       });
-                      body += "</ul>";
+
+                      loadSavedRepos(); // Actualiza toda la tabla
+                    } else {
+                      syncCell.innerHTML = originalSyncContent;
+                      btn.disabled = false;
+                      deleteBtn.disabled = false;
+
+                      ezAlert({
+                        title: "Error",
+                        body: resp.message,
+                        button: "Cerrar"
+                      });
                     }
-
-                    ezAlert({
-                      title: "Importación completada",
-                      body: body,
-                      button: "OK"
-                    });
-
-                    loadSavedRepos(); // Actualiza toda la tabla
-                  } else {
+                  })
+                  .catch((err) => {
                     syncCell.innerHTML = originalSyncContent;
                     btn.disabled = false;
-                    toggleBtn.disabled = false;
                     deleteBtn.disabled = false;
 
                     ezAlert({
-                      title: "Error",
-                      body: resp.message,
+                      title: "Error inesperado",
+                      body: err.message,
                       button: "Cerrar"
                     });
-                  }
-                })
-                .catch((err) => {
-                  syncCell.innerHTML = originalSyncContent;
-                  btn.disabled = false;
-                  toggleBtn.disabled = false;
-                  deleteBtn.disabled = false;
-
-                  ezAlert({
-                    title: "Error inesperado",
-                    body: err.message,
-                    button: "Cerrar"
+                  })
+                  .finally(() => {
+                    // Siempre reactivar los botones al final
+                    btn.disabled = false;
+                    deleteBtn.disabled = false;
+                    syncCell.innerHTML = originalSyncContent; // Restaurar contenido original
                   });
-                });
-            }
+              }
+            });
           });
         });
-      });
 
 
-    })
-    .catch((err) => {
-      ezAlert({
-        title: "Error",
-        body: err.message,
-        button: "OK"
+      })
+      .catch((err) => {
+        ezAlert({
+          title: "Error",
+          body: err.message,
+          button: "OK"
+        });
       });
-    });
-}
+  }
 
 
 });

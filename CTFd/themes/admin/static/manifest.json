@@ -1,15 +1,15 @@
 {
   "_CommentBox-!~{00n}~.js": {
-    "file": "assets/CommentBox-Cv-MSlYY.css",
+    "file": "assets/CommentBox-CLpRv8KL.css",
     "src": "_CommentBox-!~{00n}~.js"
   },
-  "_CommentBox-U4aMoM9O.js": {
-    "file": "assets/CommentBox-U4aMoM9O.js",
+  "_CommentBox-v3rzgEfZ.js": {
+    "file": "assets/CommentBox-v3rzgEfZ.js",
     "imports": [
       "assets/js/pages/main.js"
     ],
     "css": [
-      "assets/CommentBox-Cv-MSlYY.css"
+      "assets/CommentBox-CLpRv8KL.css"
     ]
   },
   "_echarts-l0sNRNKZ.js": {
@@ -66,16 +66,16 @@
     "isEntry": true
   },
   "assets/js/pages/challenge.js": {
-    "file": "assets/pages/challenge-0gxABRPi.js",
+    "file": "assets/pages/challenge-GS6Jt7s6.js",
     "src": "assets/js/pages/challenge.js",
     "isEntry": true,
     "imports": [
       "assets/js/pages/main.js",
       "_tab-CF9MHPAz.js",
-      "_CommentBox-U4aMoM9O.js"
+      "_CommentBox-v3rzgEfZ.js"
     ],
     "css": [
-      "assets/challenge-DY7T5JQl.css"
+      "assets/challenge-CCBTyrLt.css"
     ]
   },
   "assets/js/pages/challenges.js": {
@@ -87,7 +87,7 @@
     ]
   },
   "assets/js/pages/configs.js": {
-    "file": "assets/pages/configs-CCeu166D.js",
+    "file": "assets/pages/configs-BJQl2CP0.js",
     "src": "assets/js/pages/configs.js",
     "isEntry": true,
     "imports": [
@@ -97,13 +97,13 @@
     ]
   },
   "assets/js/pages/editor.js": {
-    "file": "assets/pages/editor-CM7-c1aL.js",
+    "file": "assets/pages/editor-DGfCvXak.js",
     "src": "assets/js/pages/editor.js",
     "isEntry": true,
     "imports": [
       "assets/js/pages/main.js",
       "_htmlmixed-Dk-3SxtY.js",
-      "_CommentBox-U4aMoM9O.js"
+      "_CommentBox-v3rzgEfZ.js"
     ]
   },
   "assets/js/pages/main.js": {
@@ -161,13 +161,13 @@
     ]
   },
   "assets/js/pages/team.js": {
-    "file": "assets/pages/team-rPRBysHl.js",
+    "file": "assets/pages/team-DD8cn496.js",
     "src": "assets/js/pages/team.js",
     "isEntry": true,
     "imports": [
       "assets/js/pages/main.js",
       "_graphs-R3o4n52j.js",
-      "_CommentBox-U4aMoM9O.js",
+      "_CommentBox-v3rzgEfZ.js",
       "_echarts.common-BaZ_dcCo.js"
     ]
   },
@@ -180,13 +180,13 @@
     ]
   },
   "assets/js/pages/user.js": {
-    "file": "assets/pages/user-D7AZ9Su7.js",
+    "file": "assets/pages/user-DMXTfXI-.js",
     "src": "assets/js/pages/user.js",
     "isEntry": true,
     "imports": [
       "assets/js/pages/main.js",
       "_graphs-R3o4n52j.js",
-      "_CommentBox-U4aMoM9O.js",
+      "_CommentBox-v3rzgEfZ.js",
       "_echarts.common-BaZ_dcCo.js"
     ]
   },

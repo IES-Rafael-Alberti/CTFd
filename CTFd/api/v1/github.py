@@ -260,27 +260,6 @@ class GithubRepoDelete(Resource):
 
         return {"success": True, "message": "Repositorio y datos relacionados eliminados correctamente."}
 
-
-# activa y desactiva la sincronizacion
-@github_namespace.route('/repos/<int:repo_id>/toggle')
-class GithubRepoToggle(Resource):
-    @admins_only
-    def patch(self, repo_id):
-        user_id = get_current_user().id
-        repo = GithubRepositories.query.filter_by(id=repo_id, user_id=user_id).first()
-
-        if not repo:
-            return {"success": False, "message": "Repositorio no encontrado"}, 404
-
-        repo.selected = not repo.selected
-        db.session.commit()
-
-        return {
-            "success": True,
-            "message": f"Sincronización {'activada' if repo.selected else 'desactivada'}",
-            "selected": repo.selected
-        }
-
 # importa desde el boton de la tabla
 @github_namespace.route('/repos/<int:repo_id>/import')
 class GithubRepoImport(Resource):
@@ -300,62 +279,6 @@ class GithubRepoImport(Resource):
         return {
             "success": result["success"],
             "message": f"{result['created']} retos importados, {result['skipped']} ya existentes.",
-            "errors": result["errors"]
-        }
-
-import hmac
-import hashlib
-
-def is_valid_signature(request, secret):
-    signature = request.headers.get("X-Hub-Signature-256")
-    if not signature:
-        return False
-
-    sha_name, signature = signature.split('=')
-    if sha_name != 'sha256':
-        return False
-
-    mac = hmac.new(secret.encode(), msg=request.data, digestmod=hashlib.sha256)
-    return hmac.compare_digest(mac.hexdigest(), signature)
-
-
-
-# recibe los push del repositorio
-@github_namespace.route('/webhook', methods=["POST"])
-class GithubWebhook(Resource):
-    def post(self):
-
-        # secret = get_app_config("GITHUB_WEBHOOK_SECRET")
-        # if not is_valid_signature(request, secret):
-        #     return {"success": False, "message": "Firma inválida"}, 403
-
-        event = request.headers.get("X-GitHub-Event")
-        payload = request.get_json()
-
-        if event != "push":
-            return {"success": True, "message": "Evento ignorado"}, 200
-
-        repo_full_name = payload.get("repository", {}).get("full_name")
-        if not repo_full_name:
-            return {"success": False, "message": "No se encontró el nombre del repo"}, 400
-
-        modified_files = []
-        for commit in payload.get("commits", []):
-            modified_files.extend(commit.get("added", []) + commit.get("modified", []))
-        modified_files = list(set(modified_files))
-
-        repo = GithubRepositories.query.filter_by(full_name=repo_full_name).first()
-        if not repo:
-            return {"success": False, "message": "Repositorio no registrado"}, 404
-
-        token_entry = UserGitHubToken.query.filter_by(user_id=repo.user_id).first()
-        access_token = get_installation_access_token(token_entry.token)
-
-        result = import_challenges_from_repo(repo, access_token, only_paths=modified_files, overwrite_existing=True)
-
-        return {
-            "success": result["success"],
-            "message": f"{result['updated']} retos actualizados, {result['created']} creados.",
             "errors": result["errors"]
         }
 
