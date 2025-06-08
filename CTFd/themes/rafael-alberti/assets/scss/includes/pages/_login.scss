@@ -46,7 +46,7 @@
   &__label {
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #e93456;
+    color: var(--text-label-color);
   }
 
   &__input {

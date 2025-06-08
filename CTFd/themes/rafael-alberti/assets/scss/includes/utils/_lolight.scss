@@ -1,3 +1,37 @@
+:root {
+  --primary-red-100: #fbd6dd;
+  --primary-red-200: #f6aebb;
+  --primary-red-300: #f2859a;
+  --primary-red-400: #ed5d78;
+  --primary-red-500: #e93456;
+  --primary-red-600: #d6173b;
+  --primary-red-700: #ab132f;
+  --primary-red-800: #810e23;
+  --primary-red-900: #560918;
+
+  --secondary-blue-100: #bcd4ff;
+  --secondary-blue-200: #7aa8ff;
+  --secondary-blue-300: #377dff;
+  --secondary-blue-400: #0055f4;
+  --secondary-blue-500: #003eb1;
+  --secondary-blue-600: #00369b;
+  --secondary-blue-700: #002e85;
+  --secondary-blue-800: #00276f;
+  --secondary-blue-900: #001f59;
+
+  --neutral-white-000: #ffffff;
+  --neutral-grey-100: #efefef;
+  --neutral-grey-300: #b5b5b5;
+  --neutral-black-999: #222222;
+
+  /* ---- FORMULARIOS ---- */
+  --text-label-color: var(--primary-red-500);
+}
+
+body {
+  background-color: var(--neutral-white-000);
+}
+
 .ll-nam {
   /* words */
   color: #24292f;
@@ -29,6 +63,14 @@
 }
 
 [data-bs-theme="dark"] {
+
+  /* ---- FORMULARIOS ---- */
+  --text-label-color: var(--primary-red-200);
+
+  body {
+  background-color: #2b2b2b;
+}
+
   .ll-nam {
     color: #c9d1d9;
   }
