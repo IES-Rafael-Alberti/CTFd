@@ -12,7 +12,7 @@ window.CTFd = CTFd;
 const scoreboardUpdateInterval = window.scoreboardUpdateInterval || 300000;
 
 // Initialize WebSocket connection
-const socket = io('http://127.0.0.1:4000');
+const socket = io('https://ctfd-ies-rafael-alberti.onrender.com');
 
 // Store a reference to the ECharts instance
 let chartInstance = null;

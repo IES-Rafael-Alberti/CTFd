@@ -12,7 +12,7 @@ const api_func = {
 };
 
 // Connect to the Socket.IO server
-const socket = io('http://127.0.0.1:4000');
+const socket = io('https://ctfd-ies-rafael-alberti.onrender.com');
 
 // Connection event handler
 socket.on('connect', function () {
