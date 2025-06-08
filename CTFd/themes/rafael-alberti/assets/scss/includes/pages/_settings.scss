@@ -58,19 +58,19 @@
   &__label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #e93456;
+    color: var(--input-label-color);
   }
 
   &__input,
   &__select {
     padding: 0.5rem 0.75rem;
-    border: 2px solid #b5b5b5;
+    border: 2px solid var(--input-border-color);
     font-size: 1rem;
-    background-color: #efefef;
+    background-color: var(--input-bg-color);
 
     &:focus {
       outline: none;
-      border-color: #e93456;
+      border-color: var(--input-focus-border-color);
     }
   }
 
