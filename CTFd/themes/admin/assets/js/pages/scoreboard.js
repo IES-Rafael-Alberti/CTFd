@@ -12,7 +12,7 @@ const api_func = {
 };
 
 // Connect to the Socket.IO server
-const socket = io('https://ctfd-ies-rafael-alberti.onrender.com');
+const socket = io();
 
 // Connection event handler
 socket.on('connect', function () {
