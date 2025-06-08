@@ -46,7 +46,7 @@
   }
 
   &__enlace {
-    color: #e93456;
+    color: var(--text-a-color);
     text-decoration: none;
   }
 
@@ -55,11 +55,11 @@
   }
 
   &__fila:nth-child(odd) {
-    background-color: #efefef;
+    background-color: var(--table-bg-odd);
   }
 
   &__fila:nth-child(even) {
-    background-color: #ffffff;
+    background-color: var(--table-bg-even);
   }
 }
 
