@@ -3,7 +3,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #e93456, #007bff);
+    background: linear-gradient(135deg, var(--card-border-color1), var(--card-border-color2));
     padding: 3rem;
     cursor: pointer;
     transition:

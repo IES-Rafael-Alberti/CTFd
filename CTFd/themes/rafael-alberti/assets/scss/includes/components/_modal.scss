@@ -19,7 +19,7 @@
 
   &__dialog {
     position: relative;
-    background: #fff;
+    background: var(--modal-bg-color);
     padding: 1.5rem;
     border-radius: 8px;
     width: 90%;
@@ -38,7 +38,7 @@
 
     &__title {
       margin: 0;
-      color: #e93456;
+      color: var(--modal-title-color);
     }
 
     &__close {
@@ -46,10 +46,10 @@
       border: none;
       font-size: 3rem;
       cursor: pointer;
-      color: #888;
+      color: var(--modal-close-color);
 
       &:hover {
-        color: #e93456;
+        color: var(--modal-close-hover-color);
       }
     }
   }
@@ -69,8 +69,8 @@
 }
 
 .btn--success {
-  background-color: #e93456;
-  color: #fff;
+  background-color: var(--modal-boton-sucess);
+  color: var(--modal-boton-sucess-text-color);
   font-weight: bold;
   border: none;
   padding: 8px 24px;
@@ -78,19 +78,19 @@
   cursor: pointer;
 
   &:hover {
-    background-color: #ab132f;
+    background-color: var(--modal-boton-sucess-hover);
   }
 }
 
 .btn--cancel {
-  background-color: #ccc;
-  color: #000;
+  background-color: var(--modal-boton-cancel);
+  color: var(--modal-boton-cancel-text-color);
   border: none;
   padding: 8px 24px;
   font-size: 1rem;
   cursor: pointer;
 
   &:hover {
-    background-color: #aaa;
+    background-color: var(--modal-boton-cancel-hover);
   }
 }

@@ -58,6 +58,22 @@
   /* ---- CARD DESAFIOS ---- */
   --card-name: var(--primary-red-500);
   --card-value: var(--primary-red-500);
+  --card-border-color1: var(--primary-red-500);
+  --card-border-color2: var(--secondary-blue-400);
+
+  /* ---- MODALES ---- */
+  --modal-bg-color: var(--neutral-white-000);
+  --modal-title-color: var(--primary-red-500);
+  --modal-close-color: var(--neutral-grey-400);
+  --modal-close-hover-color: var(--primary-red-500);
+
+  --modal-boton-sucess: var(--primary-red-500);
+  --modal-boton-sucess-hover: var(--primary-red-700);
+  --modal-boton-sucess-text-color: var(--neutral-white-000);
+
+  --modal-boton-cancel: var(--neutral-grey-300);
+  --modal-boton-cancel-hover: var(--neutral-grey-400);
+  --modal-boton-cancel-text-color: var(--neutral-black-999);
 }
 
 body {
