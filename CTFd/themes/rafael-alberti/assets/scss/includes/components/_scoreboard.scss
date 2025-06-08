@@ -48,7 +48,7 @@
     width: 100%;
   }
 
-  &__row {
+  &__row, &__row-header {
     border-bottom: 1px solid #ddd;
   }
 
@@ -56,6 +56,14 @@
   &__cell {
     padding: 0.75rem;
     text-align: left;
+  }
+
+  &__row:nth-child(odd) {
+    background-color: var(--table-bg-odd);
+  }
+
+  &__row:nth-child(even) {
+    background-color: var(--table-bg-even);
   }
 
   &__column--rank,
@@ -70,8 +78,12 @@
   }
 
   &__link {
-    color: #e93456;
+    color: var(--text-a-color);
     text-decoration: none;
+  }
+
+  &__link:hover {
+    text-decoration: underline;
   }
 
   &__badge {
