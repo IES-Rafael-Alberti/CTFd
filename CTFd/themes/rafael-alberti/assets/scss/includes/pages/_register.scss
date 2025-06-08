@@ -46,19 +46,24 @@
   &__label {
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #e93456;
+    color: var(--input-label-color);
   }
 
   &__input {
     padding: 0.5rem 0.75rem;
-    border: 2px solid #b5b5b5;
+    border: 2px solid var(--input-border-color);
     font-size: 1rem;
-    background-color: #efefef;
+    background-color: var(--input-bg-color);
 
     &:focus {
       outline: none;
-      border-color: #e93456;
+      border-color: var(--input-focus-border-color);
     }
+  }
+
+  &__help-text {
+    font-size: 0.875rem;
+    color: var(--input-text-help-color);
   }
 
   &__actions {
@@ -71,7 +76,7 @@
 
   &__link {
     font-size: 0.875rem;
-    color: #e93456;
+    color: var(--text-a-color);
     text-decoration: none;
 
     &:hover {

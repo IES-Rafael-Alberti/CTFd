@@ -34,12 +34,13 @@
   --text-a-color: var(--primary-red-500);
 
   /* ---- FORMULARIOS ---- */
-  --text-label-color: var(--primary-red-500);
+  --input-label-color: var(--primary-red-500);
 
   --input-border-color: var(--neutral-grey-300);
   --input-bg-color: var(--neutral-grey-100);
   --input-text-color: var(--neutral-black-999);
   --input-focus-border-color: var(--primary-red-500);
+  --input-text-help-color: var(--neutral-black-999);
 }
 
 body {
