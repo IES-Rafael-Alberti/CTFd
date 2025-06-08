@@ -565,8 +565,8 @@ $(() => {
   const ITEMS_PER_PAGE = 10;
   let allRepos = [];
   let currentPage = 1;
-
   const githubLoginSection = document.getElementById("github-login-section");
+  const githubInstallationSection = document.getElementById("github-installation-button");
   const githubReposSection = document.getElementById("github-repos-section");
   const githubReposList = document.getElementById("github-repos-list");
   const githubRepoSearch = document.getElementById("github-repo-search");
@@ -687,6 +687,7 @@ $(() => {
           body: "Repositorios guardados correctamente.",
           button: "Aceptar"
         });
+        loadSavedRepos();
       } else {
         ezAlert({
           title: "Error al guardar",
@@ -768,6 +769,48 @@ function loadSavedRepos() {
         tr.appendChild(actionsTd);
         tableBody.appendChild(tr);
       });
+
+
+      document.getElementById("github-installation-button")?.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        CTFd.fetch("/api/v1/github/installations", {
+          method: "GET",
+          credentials: "same-origin",
+          headers: {
+            "CSRF-Token": CTFd.config.csrfNonce
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            ezAlert({
+              title: "Instalación vinculada",
+              body: data.message,
+              button: "Aceptar"
+            });
+            // Recarga o muestra la tabla de repos automáticamente
+            //window.location.reload();
+            renderRepos();
+            // O, si prefieres evitar el reload:
+            // loadSavedRepos();
+          } else {
+            ezAlert({
+              title: "Error al vincular",
+              body: data.message || "No se pudo completar la vinculación.",
+              button: "Cerrar"
+            });
+          }
+        })
+        .catch(err => {
+          ezAlert({
+            title: "Error inesperado",
+            body: err.message,
+            button: "Cerrar"
+          });
+        });
+      });
+
 
       // Enlazar acciones
       document.querySelectorAll(".delete-repo-btn").forEach((btn) => {

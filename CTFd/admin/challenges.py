@@ -1,7 +1,7 @@
 from flask import abort, render_template, request, url_for
 
 from CTFd.admin import admin
-from CTFd.models import Challenges, Flags, Solves, SelectedChallenges, db
+from CTFd.models import Challenges, Flags, Solves, SelectedChallenges, db, GithubChallengeSync, GithubRepositories
 from CTFd.plugins.challenges import CHALLENGE_CLASSES, get_chal_class
 from CTFd.schemas.tags import TagSchema
 from CTFd.utils.decorators import admins_only
@@ -16,14 +16,29 @@ def challenges_library_listing():
     field = request.args.get("field")
     filters = []
 
-    if q:
-        # The field exists as an exposed column
-        if Challenges.__mapper__.has_property(field):
-            filters.append(getattr(Challenges, field).like("%{}%".format(q)))
+    if q and Challenges.__mapper__.has_property(field):
+        filters.append(getattr(Challenges, field).like(f"%{q}%"))
 
-    query = Challenges.query.filter(*filters).order_by(Challenges.id.asc())
-    challenges = query.all()
+    # Outerjoin con GithubChallengeSync y GithubRepositories
+    query = (
+        db.session.query(Challenges, GithubRepositories.name.label("repo_name"))
+        .outerjoin(GithubChallengeSync, GithubChallengeSync.challenge_id == Challenges.id)
+        .outerjoin(GithubRepositories, GithubChallengeSync.github_repo_id == GithubRepositories.id)
+        .filter(*filters)
+        .order_by(Challenges.id.asc())
+    )
+
+    results = query.all()
     total = query.count()
+
+    # Empaquetar los resultados para la plantilla
+    challenges = [
+        {
+            "challenge": row[0],
+            "repo_name": row[1] or "",  # Si no hay repo, cadena vacía
+        }
+        for row in results
+    ]
 
     return render_template(
         "admin/challenges/challenges_library.html",
