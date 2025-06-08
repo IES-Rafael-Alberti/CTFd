@@ -1,7 +1,7 @@
 .notifications {
   margin: 0 auto;
   padding: 2rem 5vw;
-  background-color: #efefef;
+  background-color: var(--section-bg-color);
 
   &__empty {
     text-align: center;
@@ -15,7 +15,7 @@
 
 .notification {
   position: relative;
-  background: linear-gradient(135deg, #e93456, #007bff);
+  background: linear-gradient(135deg, var(--notification-border-color1), var(--notification-border-color2));
   margin-bottom: 2rem;
   padding: 3rem;
   z-index: 0;
@@ -39,7 +39,7 @@
       0 20%
     );
     z-index: -1;
-    background-color: #fff;
+    background-color: var(--notification-bg-color);
   }
 
   &__content {
@@ -48,15 +48,15 @@
 
   &__title {
     margin: 0 0 0.5rem;
-    color: #e93456;
+    color: var(--notification-title-color);
   }
 
   &__text {
     margin: 0 0 1rem;
-    color: #212529;
+    color: var(--notification-text-color);
   }
 
   &__date {
-    color: #212529;
+    color: var(--notification-text-color);
   }
 }
