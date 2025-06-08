@@ -28,9 +28,9 @@ main {
 
   &__title {
     text-shadow:
-      -20px -10px 1px #0055f480,
-      15px 10px 1px #e9345584;
-    color: #fff;
+      -20px -10px 1px var(--header-text-shadow1),
+      15px 10px 1px var(--header-text-shadow2);
+    color: var(--header-text-color);
     text-transform: uppercase;
   }
 

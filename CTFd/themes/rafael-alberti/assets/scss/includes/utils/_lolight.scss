@@ -9,6 +9,8 @@
   --primary-red-800: #810e23;
   --primary-red-900: #560918;
 
+  --primary-red-500-50percent: #e9345584;
+
   --secondary-blue-100: #bcd4ff;
   --secondary-blue-200: #7aa8ff;
   --secondary-blue-300: #377dff;
@@ -18,6 +20,8 @@
   --secondary-blue-700: #002e85;
   --secondary-blue-800: #00276f;
   --secondary-blue-900: #001f59;
+
+  --secondary-blue-400-50percent: #0055f480;
 
   --neutral-white-000: #ffffff;
   --neutral-grey-100: #efefef;
@@ -32,6 +36,11 @@
   /* ---- GENERAL ---- */
   --text-color: var(--neutral-black-999);
   --text-a-color: var(--primary-red-500);
+
+  /* ---- ENCABEZADO ---- */
+  --header-text-color: var(--neutral-white-000);
+  --header-text-shadow1: var(--secondary-blue-400-50percent);
+  --header-text-shadow2: var(--primary-red-500-50percent);
 
   /* ---- FORMULARIOS ---- */
   --input-label-color: var(--primary-red-500);
