@@ -85,12 +85,12 @@
   }
 
   &__name {
-    color: #e93456;
+    color: var(--card-name);
     text-transform: uppercase;
   }
 
   &__value {
-    color: #e93456;
+    color: var(--card-value);;
     margin-top: auto;
   }
 
