@@ -22,47 +22,35 @@
   --neutral-white-000: #ffffff;
   --neutral-grey-100: #efefef;
   --neutral-grey-300: #b5b5b5;
+  --neutral-grey-400: #56585e;
+  --neutral-grey-900: #2b2b2b;
   --neutral-black-999: #222222;
+
+
+  // Modo claro
+
+  /* ---- GENERAL ---- */
+  --text-color: var(--neutral-black-999);
+  --text-a-color: var(--primary-red-500);
 
   /* ---- FORMULARIOS ---- */
   --text-label-color: var(--primary-red-500);
+
+  --input-border-color: var(--neutral-grey-300);
+  --input-bg-color: var(--neutral-grey-100);
+  --input-text-color: var(--neutral-black-999);
+  --input-focus-border-color: var(--primary-red-500);
 }
 
 body {
   background-color: var(--neutral-white-000);
 }
 
-.ll-nam {
-  /* words */
-  color: #24292f;
-}
-.ll-num {
-  /* numbers */
-  color: #005cc5;
-}
-.ll-str {
-  /* strings */
-  color: #0a3069;
-}
-.ll-rex {
-  /* regular expressions */
-  color: #032f62;
-}
-.ll-pct {
-  /* operators, punctuation */
-  color: #24292f;
-}
-.ll-key {
-  /* keywords */
-  color: #d73a49;
-}
-.ll-com {
-  /* comments */
-  color: #6a737d;
-  font-style: italic;
-}
-
 [data-bs-theme="dark"] {
+
+  /* ---- GENERAL ---- */
+  --text-color: var(--neutral-black-999);
+  --text-a-color: var(--primary-red-200);
 
   /* ---- FORMULARIOS ---- */
   --text-label-color: var(--primary-red-200);
@@ -70,26 +58,4 @@ body {
   body {
   background-color: #2b2b2b;
 }
-
-  .ll-nam {
-    color: #c9d1d9;
-  }
-  .ll-num {
-    color: #79c0ff;
-  }
-  .ll-str {
-    color: #a5d6ff;
-  }
-  .ll-rex {
-    color: #96cefb;
-  }
-  .ll-pct {
-    color: #c9d1d9;
-  }
-  .ll-key {
-    color: #ff7b72;
-  }
-  .ll-com {
-    color: #8b949e;
-  }
 }
