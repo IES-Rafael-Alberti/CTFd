@@ -1,5 +1,5 @@
 .navbar {
-  background-color: #222222;
+  background-color: var(--navbar-bg-color);
   padding: 2rem 6rem;
   display: flex;
   justify-content: space-between;
@@ -14,7 +14,7 @@
   }
 
   &--dark {
-    color: #ffffff;
+    color: var(--navbar-text-color);
   }
 
   &__container {
@@ -27,7 +27,7 @@
   &__brand {
     display: flex;
     align-items: center;
-    color: #ffffff;
+    color: var(--navbar-text-color);
     font-weight: bold;
     font-size: 1.2rem;
     text-decoration: none;
@@ -46,7 +46,7 @@
     display: none;
     background: none;
     border: none;
-    color: #ffffff;
+    color: var(--navbar-text-color);
     font-size: 1.5rem;
     cursor: pointer;
   }
@@ -55,7 +55,7 @@
     display: block;
     width: 1.5rem;
     height: 2px;
-    background-color: #ffffff;
+    background-color: var(--navbar-text-color);
     position: relative;
 
     &::before,
@@ -64,7 +64,7 @@
       position: absolute;
       width: 100%;
       height: 2px;
-      background-color: #ffffff;
+      background-color: var(--navbar-text-color);
       left: 0;
     }
 
@@ -110,7 +110,7 @@
   }
 
   &__link {
-    color: #ffffff;
+    color: var(--navbar-text-color);
     text-decoration: none;
     transition: color 0.3s ease;
     display: flex;
@@ -118,7 +118,7 @@
     gap: 0.5rem;
 
     &:hover {
-      color: #cccccc;
+      color: var(--navbar-text-hover-color);
     }
   }
 
@@ -133,8 +133,8 @@
   }
 
   &__badge {
-    background-color: #dc3545;
-    color: white;
+    background-color: var(--header-badge-bg);
+    color: var(--header-badge-text-color);
     font-size: 0.75rem;
     padding: 0 0.4rem;
     border-radius: 0.75rem;
@@ -155,11 +155,11 @@
   &__theme-switch {
     background: none;
     border: none;
-    color: #ffffff;
+    color: var(--navbar-text-color);
     cursor: pointer;
 
     &:hover {
-      color: #cccccc;
+      color: var(--navbar-text-hover-color);
     }
   }
 

@@ -37,10 +37,18 @@
   --text-color: var(--neutral-black-999);
   --text-a-color: var(--primary-red-500);
 
+  /* ---- NAVBAR ---- */
+  --navbar-bg-color: var(--neutral-black-999);
+  --navbar-text-color: var(--neutral-white-000);
+  --navbar-text-hover-color: var(--neutral-grey-100);
+
   /* ---- ENCABEZADO ---- */
   --header-text-color: var(--neutral-white-000);
   --header-text-shadow1: var(--secondary-blue-400-50percent);
   --header-text-shadow2: var(--primary-red-500-50percent);
+
+  --header-badge-bg: var(--primary-red-500);
+  --header-badge-text-color: var(--neutral-white-000);
 
   /* ---- FORMULARIOS ---- */
   --input-label-color: var(--primary-red-500);
