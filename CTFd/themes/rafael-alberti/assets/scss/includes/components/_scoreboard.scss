@@ -48,9 +48,9 @@
     width: 100%;
   }
 
-  &__row, &__row-header {
-    border-bottom: 1px solid #ddd;
-  }
+  //&__row, &__row-header {
+  //  border-bottom: 1px solid #ddd;
+  //}
 
   &__column,
   &__cell {
@@ -59,11 +59,11 @@
   }
 
   &__row:nth-child(odd) {
-    background-color: var(--table-bg-odd);
+    background-color: var(--table-bg-even);
   }
 
   &__row:nth-child(even) {
-    background-color: var(--table-bg-even);
+    background-color: var(--table-bg-odd);
   }
 
   &__column--rank,
@@ -80,6 +80,7 @@
   &__link {
     color: var(--text-a-color);
     text-decoration: none;
+    font-weight: bold;
   }
 
   &__link:hover {

@@ -43,9 +43,16 @@
         <thead>
           <tr class="scoreboard__row-header">
             <th class="scoreboard__column scoreboard__column--rank">Lugar</th>
-            <th class="scoreboard__column scoreboard__column--name">
-              {{ get_mode_as_word(capitalize=True) }}
-            </th>
+              {% if get_mode_as_word(capitalize=True) == "Team" %}
+                <th class="scoreboard__column scoreboard__column--name">
+                  Equipo
+                </th>
+              {% endif %}
+              {% if get_mode_as_word(capitalize=True) == "User" %}
+                <th class="scoreboard__column scoreboard__column--name">
+                  Usuario
+                </th>
+              {% endif %}
             <th class="scoreboard__column scoreboard__column--score">Puntuación</th>
           </tr>
         </thead>
