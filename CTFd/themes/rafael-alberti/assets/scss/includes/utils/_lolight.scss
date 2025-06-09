@@ -106,13 +106,71 @@ body {
 [data-bs-theme="dark"] {
 
   /* ---- GENERAL ---- */
-  --text-color: var(--neutral-black-999);
+  --text-color: var(--neutral-white-000);
   --text-a-color: var(--primary-red-200);
+  --text-h-color: var(--primary-red-200);
+
+  --pagination-color: var(--primary-red-200);
+
+  --section-bg-color: var(--neutral-black-999);
+
+  /* ---- NAVBAR ---- */
+  --navbar-bg-color: var(--neutral-black-999);
+  --navbar-text-color: var(--neutral-white-000);
+  --navbar-text-hover-color: var(--neutral-grey-100);
+
+  /* ---- ENCABEZADO ---- */
+  --header-text-color: var(--neutral-white-000);
+  --header-text-shadow1: var(--secondary-blue-400-50percent);
+  --header-text-shadow2: var(--primary-red-500-50percent);
+
+  --header-badge-bg: var(--primary-red-500);
+  --header-badge-text-color: var(--neutral-white-000);
 
   /* ---- FORMULARIOS ---- */
-  --text-label-color: var(--primary-red-200);
+  --input-label-color: var(--primary-red-200);
+
+  --input-border-color: var(--neutral-grey-300);
+  --input-bg-color: var(--neutral-grey-400);
+  --input-text-color: var(--neutral-white-000);
+  --input-focus-border-color: var(--primary-red-200);
+  --input-text-help-color: var(--neutral-white-000);
+
+  /* ---- TABLAS ---- */
+  --table-bg-odd: var(--neutral-black-999);
+  --table-bg-even: var(--neutral-grey-900);
+
+  /* ---- CARD DESAFIOS ---- */
+  --card-name: var(--neutral-white-000);
+  --card-value: var(--neutral-white-000);
+  --card-border-color1: var(--primary-red-500);
+  --card-border-color2: var(--secondary-blue-400);
+
+  /* ---- MODALES ---- */
+  --modal-bg-color: var(--neutral-grey-900);
+  --modal-title-color: var(--neutral-white-000);
+  --modal-close-color: var(--neutral-grey-400);
+  --modal-close-hover-color: var(--primary-red-200);
+
+  --modal-boton-sucess: var(--primary-red-500);
+  --modal-boton-sucess-hover: var(--primary-red-700);
+  --modal-boton-sucess-text-color: var(--neutral-white-000);
+
+  --modal-boton-cancel: var(--neutral-grey-300);
+  --modal-boton-cancel-hover: var(--neutral-grey-400);
+  --modal-boton-cancel-text-color: var(--neutral-black-999);
+
+  /* ---- NOTIFICACIONES ---- */
+  --notification-border-color1: var(--primary-red-500);
+  --notification-border-color2: var(--secondary-blue-400);
+  --notification-bg-color: var(--neutral-black-999);
+
+  --notification-title-color: var(--neutral-white-000);
+  --notification-text-color: var(--neutral-white-000);
+  --notificacion-text-empty: var(--neutral-white-000);
+
 
   body {
-    background-color: #2b2b2b;
+    background-color: var(--neutral-grey-900);
   }
 }
