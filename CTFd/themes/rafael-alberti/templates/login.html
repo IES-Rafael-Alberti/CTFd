@@ -37,12 +37,7 @@
             <a href="{{ url_for('auth.reset_password') }}" class="login__link">
               ¿Olvidaste tu contraseña?
             </a>
-            <div class="login__submit-wrapper"
-                  onmouseover="this.style.backgroundImage='url({{ bordes_svg }})'"
-                  onmouseout="this.style.backgroundImage='none'"
-                  style="background-size: contain; background-repeat: no-repeat; background-position: center; transition: background-image 0.3s ease;">
-              {{ form.submit(class="login__submit") }}
-            </div>
+              <button type="submit" class="boton">Enviar</button>
           </div>
 
           {{ form.nonce() }}

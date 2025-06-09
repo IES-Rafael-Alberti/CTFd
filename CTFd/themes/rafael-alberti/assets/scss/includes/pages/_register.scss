@@ -68,10 +68,7 @@
 
   &__actions {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
+    justify-content: flex-end;
   }
 
   &__link {
@@ -81,25 +78,6 @@
 
     &:hover {
       text-decoration: underline;
-    }
-  }
-
-  &__submit-wrapper {
-    padding: 0.5rem;
-    display: inline-block;
-  }
-
-  &__submit {
-    background-color: #e93456;
-    color: #fff;
-    font-weight: bold;
-    border: none;
-    padding: 8px 32px;
-    font-size: 16px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #ab132f;
     }
   }
 }

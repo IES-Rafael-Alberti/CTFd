@@ -50,14 +50,9 @@
 
           {{ render_extra_fields(form.extra) }}
 
-          <div class="register__actions">
-            <div class="register__submit-wrapper"
-                 onmouseover="this.style.backgroundImage='url({{ bordes_svg }})'"
-                 onmouseout="this.style.backgroundImage='none'"
-                 style="background-size: contain; background-repeat: no-repeat; background-position: center; transition: background-image 0.3s ease;">
-              {{ form.submit(class="register__submit") }}
+            <div class="register__actions">
+                <button type="submit" class="boton">Enviar</button>
             </div>
-          </div>
 
           {% if Configs.tos_or_privacy %}
             <div class="register__terms">
