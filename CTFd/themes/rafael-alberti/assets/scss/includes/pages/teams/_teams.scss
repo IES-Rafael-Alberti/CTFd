@@ -3,6 +3,23 @@
   margin: 0 auto;
   width: 80vw;
 
+    &__filtro-equipo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 2rem;
+
+          &__mensaje {
+            text-align: center;
+            color: var(--text-message-color);
+
+            &--sub {
+              font-size: 0.9rem;
+              padding-bottom: 1rem;
+            }
+          }
+    }
+
   &__mensaje {
     text-align: center;
     color: #555;

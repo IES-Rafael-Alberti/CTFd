@@ -6,12 +6,14 @@
 
   <div class="equipos">
     {% if q and field %}
-      <h5 class="equipos__mensaje">
-        Buscando equipos con <strong>{{ campo }}</strong> que coincida con <strong>{{ q }}</strong>
-      </h5>
-      <h6 class="equipos__mensaje--sub">
-        Página {{ teams.page }} de {{ teams.total }} resultados
-      </h6>
+      <section class="equipos__filtro-equipo">
+          <h5 class="filtro-equipo__mensaje">
+            Buscando equipos con <strong>{{ campo }}</strong> que coincida con <strong>{{ q }}</strong>
+          </h5>
+          <h6 class="filtro-equipo__mensaje--sub">
+            Página {{ teams.page }} de {{ teams.total }} resultados
+          </h6>
+      </section>
     {% endif %}
 
     {% with form = Forms.teams.PublicTeamSearchForm(field=field, q=q) %}
@@ -28,7 +30,7 @@
         </div>
 
         <div class="equipos__campo equipos__campo--boton">
-          <button type="submit" class="boton-busqueda boton-busqueda--buscar">
+          <button type="submit" class="boton">
             <i class="fas fa-search" aria-hidden="true"></i>
           </button>
         </div>

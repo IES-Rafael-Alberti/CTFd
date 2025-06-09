@@ -6,12 +6,14 @@
 
   <div class="usuarios">
     {% if q and field %}
-      <h5 class="usuarios__mensaje">
-        Buscando usuarios con <strong>{{ field }}</strong> que coincida con <strong>{{ q }}</strong>
-      </h5>
-      <h6 class="usuarios__mensaje--sub">
-        Página {{ users.page }} de {{ users.total }} resultados
-      </h6>
+      <section class="usuarios__filtro-usuarios">
+          <h5 class="filtro-usuarios__mensaje">
+            Buscando usuarios con <strong>{{ field }}</strong> que coincida con <strong>{{ q }}</strong>
+          </h5>
+          <h6 class="filtro-usuarios__mensaje--sub">
+            Página {{ users.page }} de {{ users.total }} resultados
+          </h6>
+      </section>
     {% endif %}
 
     {% with form = Forms.users.PublicUserSearchForm(field=field, q=q) %}
@@ -26,7 +28,7 @@
           </div>
         </div>
         <div class="usuarios__campo usuarios__campo--boton">
-          <button type="submit" class="boton-busqueda boton-busqueda--buscar">
+          <button type="submit" class="boton">
             <i class="fas fa-search" aria-hidden="true"></i>
           </button>
         </div>
