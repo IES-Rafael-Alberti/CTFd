@@ -14,15 +14,21 @@
       </h3>
     </div>
     {% endif %}
-    {% for notification in notifications %}
-    <div class="notification">
-      <div class="notification__content">
-        <h3 class="notification__title">{{ notification.title }}</h3>
-          <p class="notification__text">{{ notification.html }}</p>
-          <small class="notification__date"><span data-time="{{ notification.date | isoformat }}"></span></small>
-      </div>
-    </div>
-    {% endfor %}
+
+
+    <section class="notifications__list">
+        {% for notification in notifications %}
+            <article class="notification">
+              <div class="notification__content">
+                <h3 class="notification__title">{{ notification.title }}</h3>
+                  <p class="notification__text">{{ notification.html }}</p>
+                  <small class="notification__date"><span data-time="{{ notification.date | isoformat }}"></span></small>
+              </div>
+            </article>
+            {% endfor %}
+    </section>
+
+
   </div>
 	<div class="container-path container-path--bottom"></div>
 {% endblock %}
