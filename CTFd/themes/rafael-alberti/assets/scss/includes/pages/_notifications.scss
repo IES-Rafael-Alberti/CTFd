@@ -7,16 +7,22 @@
 .notifications {
   margin: 0 auto;
   padding: 2rem 5vw;
-  background-color: var(--section-bg-color);
   width: 100%;
 
   &__empty {
-    text-align: center;
-    margin-top: 2rem;
+    margin: 0 auto;
+    width: 100%;
+
+    &-message {
+      text-align: center;
+      margin: 0 auto;
+      padding: 2rem 5vw;
+      background-color: var(--section-bg-color);
   }
 
-  &__empty-title {
+  &-title {
     color: var(--text-empty-color);
+  }
   }
 }
 

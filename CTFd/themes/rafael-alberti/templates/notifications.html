@@ -4,16 +4,21 @@
 
   {% set titulo = "Notificaciones" %}
   {% include "components/jumbotron.html" with context %}
-  
-	<div class="container-path container-path--top"></div>
-  <div class="notifications">
+
     {% if not notifications %}
-    <div class="notifications__empty">
-      <h3 class="notifications__empty-title">
-        No hay notificaciones todavía
-      </h3>
-    </div>
+      <section class="notifications__empty">
+        <div class="container-path container-path--top"></div>
+        <div class="notifications__empty-message">
+          <h3 class="notifications__empty-title">
+            No hay notificaciones todavía
+          </h3>
+        </div>
+        <div class="container-path container-path--bottom"></div>
+      </section>
     {% endif %}
+  
+
+  <div class="notifications">
 
 
     <section class="notifications__list">
@@ -30,7 +35,6 @@
 
 
   </div>
-	<div class="container-path container-path--bottom"></div>
 {% endblock %}
 
 {% block scripts %}
