@@ -72,11 +72,15 @@
         </tbody>
       </table>
     </div>
+  </div>
 
     <div class="scoreboard__empty" x-show="! standings.length">
-      <h3 class="scoreboard__empty-title">El marcador está vacío</h3>
+        <div class="container-path container-path--top"></div>
+        <div class="scoreboard__empty-message">
+            <h3 class="scoreboard__empty-title">El marcador está vacío</h3>
+        </div>
+        <div class="container-path container-path--bottom"></div>
     </div>
-  </div>
 {% endblock %}
 
 {% block scripts %}

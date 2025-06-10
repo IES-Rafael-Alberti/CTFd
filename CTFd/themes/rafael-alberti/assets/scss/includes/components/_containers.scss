@@ -1,7 +1,7 @@
 .container-path {
   width: 100vw;
   height: 100px;
-  background-color: #efefef;
+  background-color: var(--section-bg-color);
 
   &--jumbotron-bottom {
     background-color: #222222;

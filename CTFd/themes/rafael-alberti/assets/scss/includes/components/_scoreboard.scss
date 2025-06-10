@@ -101,8 +101,14 @@
     margin-top: 2rem;
     text-align: center;
 
+    &-message {
+      margin: 0 auto;
+      padding: 2rem 5vw;
+      background-color: var(--section-bg-color);
+    }
+
     &-title {
-      color: #6c757d;
+      color: var(--text-empty-color);
     }
   }
 }

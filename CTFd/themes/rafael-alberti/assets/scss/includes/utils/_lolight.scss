@@ -38,6 +38,7 @@
   --text-message-color: var(--neutral-grey-400);
   --text-a-color: var(--primary-red-500);
   --text-h-color: var(--primary-red-500);
+  --text-empty-color: var(--neutral-grey-400);
 
   --pagination-color: var(--primary-red-500);
 
@@ -117,6 +118,7 @@ body {
   --text-message-color: var(--neutral-grey-300);
   --text-a-color: var(--primary-red-200);
   --text-h-color: var(--primary-red-200);
+  --text-empty-color: var(--neutral-grey-100);
 
   --pagination-color: var(--primary-red-200);
 
@@ -175,7 +177,6 @@ body {
 
   --notification-title-color: var(--neutral-white-000);
   --notification-text-color: var(--neutral-white-000);
-  --notificacion-text-empty: var(--neutral-white-000);
 
 
   body {
