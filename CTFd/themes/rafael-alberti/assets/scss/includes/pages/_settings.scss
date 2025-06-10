@@ -22,23 +22,7 @@
   &__nav {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  &__link {
-    padding: 8px 32px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    text-align: left;
-    display: flex;
-    justify-content: center;
-    color: #e93456;
-    font-weight: bold;
-
-    &--active {
-      background-color: #ffe5ea;
-    }
+    gap: 1.5rem;
   }
 
   &__content {

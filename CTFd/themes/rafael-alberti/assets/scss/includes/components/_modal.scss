@@ -67,30 +67,3 @@
     gap: 1rem;
   }
 }
-
-.btn--success {
-  background-color: var(--modal-boton-sucess);
-  color: var(--modal-boton-sucess-text-color);
-  font-weight: bold;
-  border: none;
-  padding: 8px 24px;
-  font-size: 1rem;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--modal-boton-sucess-hover);
-  }
-}
-
-.btn--cancel {
-  background-color: var(--modal-boton-cancel);
-  color: var(--modal-boton-cancel-text-color);
-  border: none;
-  padding: 8px 24px;
-  font-size: 1rem;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--modal-boton-cancel-hover);
-  }
-}

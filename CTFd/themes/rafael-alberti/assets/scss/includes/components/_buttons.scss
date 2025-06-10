@@ -12,14 +12,18 @@
 
 .boton--secundario {
   position: relative;
-  background-color: var(--button-primary-bg-color);
-  color: var(--button-primary-text-color);
+  background-color: var(--button-secondary-bg-color);
+  color: var(--button-secondary-text-color);
   font-weight: bold;
   padding: 0.5rem 2rem;
   border: none;
   cursor: pointer;
   z-index: 1;
   transition: transform 0.3s ease;
+
+  &-active {
+    color: var(--button-secondary-text-color);
+}
 }
 
 .boton::before,

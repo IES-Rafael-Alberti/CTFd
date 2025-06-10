@@ -11,15 +11,15 @@
       <div class="ajustes__sidebar">
         <div class="tabs__nav">
           <button
-            class="tabs__link"
-            :class="{ 'tabs__link--active': tab === 'profile' }"
+            class="boton--secundario"
+            :class="{ 'boton--secundario-active': tab === 'profile' }"
             @click="tab = 'profile'"
           >
             Perfil
           </button>
           <button
-            class="tabs__link"
-            :class="{ 'tabs__link--active': tab === 'tokens' }"
+            class="boton--secundario"
+            :class="{ 'boton--secundario-active': tab === 'tokens' }"
             @click="tab = 'tokens'"
           >
             Tokens de acceso
@@ -101,7 +101,7 @@
               </div>
 
               <div class="form__group--right">
-                {{ form.submit(class="submit") }}
+                  <button type="submit" class="boton">Enviar</button>
               </div>
             </form>
           {% endwith %}
@@ -121,7 +121,7 @@
               </div>
 
               <div class="form__group--right">
-                {{ form.submit(class="submit") }}
+                <button type="submit" class="boton">Genere</button>
               </div>
             </form>
           {% endwith %}
@@ -135,7 +135,7 @@
                 <div class="modals__overlay"></div>
                 <div class="modals__dialog">
                   <div class="modals__header">
-                    <h5 class="modals__header__title">Eliminar token</h5>
+                    <h4 class="modals__header__title">Eliminar token</h4>
                     <span class="modals__header__close" @click="$refs.confirmModal.style.display = 'none'" aria-label="Cerrar">
                       &times;
                     </span>
@@ -144,8 +144,8 @@
                     <p>¿Estás seguro de que deseas eliminar este token?</p>
                   </div>
                   <div class="modals__footer">
-                    <button type="button" class="btn--cancel" @click="$refs.confirmModal.style.display = 'none'">No</button>
-                    <button type="button" class="btn--success" @click="deleteSelectedToken(); $refs.confirmModal.style.display = 'none'">Sí</button>
+                    <button type="button" class="boton--secundario" @click="$refs.confirmModal.style.display = 'none'">No</button>
+                    <button type="button" class="boton" @click="deleteSelectedToken(); $refs.confirmModal.style.display = 'none'">Sí</button>
                   </div>
                 </div>
               </div>
