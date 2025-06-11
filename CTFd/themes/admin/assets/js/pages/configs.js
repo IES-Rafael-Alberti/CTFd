@@ -966,5 +966,9 @@ $(() => {
       });
   }
 
+  // Help Button Event Listener
+  document.getElementById("help-button")?.addEventListener("click", () => {
+    $('#help-modal').modal('show');
+  });
 
 });
