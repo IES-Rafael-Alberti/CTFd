@@ -9,7 +9,7 @@
 
       {% if user.team_id %}
         <h2 class="jumbotron__subtitle">
-          <a href="{{ url_for('teams.public', team_id=user.team_id) }}" class="etiqueta etiqueta--gris">
+          <a href="{{ url_for('teams.public', team_id=user.team_id) }}" class="etiqueta etiqueta--principal">
             {{ user.team.name }}
           </a>
         </h2>
@@ -17,17 +17,17 @@
 
       <div class="jumbotron__badges">
         {% if user.oauth_id %}
-          <a href="https://majorleaguecyber.org/u/{{ user.name }}" class="etiqueta etiqueta--azul">
+          <a href="https://majorleaguecyber.org/u/{{ user.name }}" class="etiqueta etiqueta--secundaria">
             Oficial
           </a>
         {% endif %}
 
         {% if user.affiliation %}
-          <span class="etiqueta etiqueta--azul">{{ user.affiliation }}</span>
+          <span class="etiqueta etiqueta--secundaria">{{ user.affiliation }}</span>
         {% endif %}
 
         {% if user.country %}
-          <span class="etiqueta etiqueta--azul">
+          <span class="etiqueta etiqueta--secundaria">
             <i class="flag-{{ user.country.lower() }}"></i>
             {{ lookup_country_code(user.country) }}
           </span>
@@ -36,7 +36,7 @@
 
       {% if user.bracket_id %}
         <div class="jumbotron__bracket">
-          <span class="etiqueta etiqueta--gris">
+          <span class="etiqueta etiqueta--principal">
             {{ user.bracket.name }}
           </span>
         </div>
@@ -70,7 +70,7 @@
       {% if user.website %}
         <div class="jumbotron__website">
           <a href="{{ user.website }}" target="_blank" rel="noopener" title="{{ user.website }}">
-            <i class="fas fa-external-link-alt fa-2x"></i>
+            <i class="fas fa-external-link-alt fa-2x jumbotron__website-a"></i>
           </a>
         </div>
       {% endif %}

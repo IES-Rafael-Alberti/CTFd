@@ -40,7 +40,8 @@
 }
 
 .contenido {
-  max-width: 1200px;
+  //max-width: 1200px;
+  width: 80vw;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
@@ -150,8 +151,7 @@
     margin-top: 3rem;
 
     h3 {
-      font-size: 1.25rem;
-      color: #999;
+      color: var(--text-empty-color);
     }
   }
 }

@@ -58,12 +58,12 @@
                 {% endif %}
 
                 {% if user.bracket_id %}
-                  <span class="etiqueta etiqueta--gris">{{ user.bracket.name }}</span>
+                  <span class="etiqueta etiqueta--principal">{{ user.bracket.name }}</span>
                 {% endif %}
 
                 {% if user.oauth_id %}
                   <a href="https://majorleaguecyber.org/u/{{ user.name }}">
-                    <span class="etiqueta etiqueta--azul">Oficial</span>
+                    <span class="etiqueta etiqueta--secundaria">Oficial</span>
                   </a>
                 {% endif %}
               </td>

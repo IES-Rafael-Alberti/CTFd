@@ -40,6 +40,8 @@
   --text-h-color: var(--primary-red-500);
   --text-empty-color: var(--neutral-grey-400);
 
+  --icon-a-color: var(--primary-white-000);
+
   --pagination-color: var(--primary-red-500);
 
   --section-bg-color: var(--neutral-grey-100);
@@ -53,9 +55,17 @@
   --header-text-color: var(--neutral-white-000);
   --header-text-shadow1: var(--secondary-blue-400-50percent);
   --header-text-shadow2: var(--primary-red-500-50percent);
+  --header-bg-color: var(--neutral-black-999);
+
+  --header-divider-color: var(--neutral-grey-300);
 
   --header-badge-bg: var(--primary-red-500);
   --header-badge-text-color: var(--neutral-white-000);
+
+  /* ---- ETIQUETAS ---- */
+  --etiqueta-text-color: var(--neutral-white-000);
+  --etiqueta-principal-bg-color: var(--primary-red-500);
+  --etiqueta-secundaria-bg-color: var(--secondary-blue-500);
 
   /* ---- FORMULARIOS ---- */
   --input-label-color: var(--primary-red-500);

@@ -23,9 +23,10 @@
 
 .tabla {
   overflow-x: auto;
+  width: 100%;
 
   &__tabla {
-    width: 60vw;
+    //width: 70vw;
     margin: 0 auto;
     border-collapse: collapse;
   }
@@ -72,20 +73,5 @@
 
   .tabla__tabla {
     width: 70vw;
-  }
-}
-
-.etiqueta {
-  display: inline-block;
-  padding: 0.5rem 0.75rem;
-
-  &--gris {
-    background-color: #e93456;
-    color: #fff;
-  }
-
-  &--azul {
-    background-color: #007bff;
-    color: #fff;
   }
 }

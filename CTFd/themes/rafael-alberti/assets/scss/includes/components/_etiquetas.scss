@@ -1,0 +1,14 @@
+.etiqueta {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+
+  &--principal {
+    background-color: var(--etiqueta-principal-bg-color);
+    color: var(--etiqueta-text-color);
+  }
+
+  &--secundaria {
+    background-color: var(--etiqueta-secundaria-bg-color);
+    color: var(--etiqueta-text-color);
+  }
+}
