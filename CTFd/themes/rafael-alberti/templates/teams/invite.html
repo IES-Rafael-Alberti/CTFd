@@ -10,7 +10,7 @@
 
     <div class="team-join__body">
       <h2 class="team-join__title">
-        Bienvenid@ a <strong>{{ team.name }}</strong>!
+        ¡Bienvenid@ a <strong>{{ team.name }}</strong>!
       </h2>
 
       <p class="team-join__text">
@@ -23,7 +23,7 @@
 
       {% with form = Forms.teams.TeamInviteJoinForm() %}
         <form method="POST" class="team-join__form">
-          {{ form.submit(class="btn--success") }}
+            <button type="submit" class="boton form-team-join__button">Unirse</button>
           {{ form.nonce() }}
         </form>
       {% endwith %}
