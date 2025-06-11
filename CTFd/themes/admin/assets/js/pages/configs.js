@@ -588,9 +588,9 @@ $(() => {
       const div = document.createElement("div");
       div.className = "form-check";
       div.innerHTML = `
-        <input class="form-check-input" type="checkbox" value="${repo.full_name}" id="${id}">
-        <label class="form-check-label" for="${id}">${repo.full_name}</label>
-      `;
+      <input class="form-check-input" type="checkbox" value="${repo.full_name}" id="${id}">
+      <label class="form-check-label" for="${id}">${repo.full_name}</label>
+    `;
       githubReposList.appendChild(div);
     });
 
@@ -656,7 +656,6 @@ $(() => {
       if (githubLoginSection) githubLoginSection.style.display = "block";
       if (githubReposSection) githubReposSection.style.display = "none";
     });
-
 
   // Guardar selección de repos
   document.getElementById("save-selected-repos")?.addEventListener("click", () => {
@@ -735,6 +734,14 @@ $(() => {
         repos.forEach((repo) => {
           const tr = document.createElement("tr");
 
+          // Checkbox column
+          const checkboxTd = document.createElement("td");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "sync-checkbox";
+          checkbox.value = repo.id;
+          checkboxTd.appendChild(checkbox);
+
           const nameTd = document.createElement("td");
           nameTd.textContent = repo.full_name;
 
@@ -748,7 +755,7 @@ $(() => {
             </button>
           `;
 
-
+          tr.appendChild(checkboxTd);
           tr.appendChild(nameTd);
           tr.appendChild(actionsTd);
           tableBody.appendChild(tr);
@@ -801,7 +808,7 @@ $(() => {
               success: () => {
                 // Encuentra los elementos relacionados
                 const row = btn.closest("tr");
-                const syncCell = row.querySelector("td:nth-child(2)");
+                const syncCell = row.querySelector("td:nth-child(3)");
                 const deleteBtn = row.querySelector(".delete-repo-btn");
 
                 // Guarda el contenido original de la celda de fecha
@@ -809,11 +816,11 @@ $(() => {
 
                 // Reemplaza con spinner
                 syncCell.innerHTML = `
-                  <div class="text-center">
-                    <i class="fas fa-spinner fa-spin text-warning"></i>
-                    <div class="small text-muted">Importando...</div>
-                  </div>
-                `;
+              <div class="text-center">
+                <i class="fas fa-spinner fa-spin text-warning"></i>
+                <div class="small text-muted">Importando...</div>
+              </div>
+            `;
 
                 // Desactiva botones
                 btn.disabled = true;
@@ -830,7 +837,6 @@ $(() => {
                   .then((resp) => {
                     if (resp.success) {
                       let body = `<p>${resp.message}</p>`;
-
                       if (resp.errors && resp.errors.length > 0) {
                         body += "<hr><b>Errores durante la importación:</b><ul>";
                         resp.errors.forEach((err) => {
@@ -880,7 +886,7 @@ $(() => {
           });
         });
 
-        document.getElementById("sync-selected-repos")?.addEventListener("click", () => {
+        document.getElementById("import-selected-repos")?.addEventListener("click", () => {
           const checkboxes = document.querySelectorAll(".sync-checkbox:checked");
           if (checkboxes.length === 0) {
             ezAlert({ title: "Sin selección", body: "Selecciona al menos un repositorio para importar.", button: "Aceptar" });
@@ -899,8 +905,6 @@ $(() => {
             }
           });
         });
-
-
       })
       .catch((err) => {
         ezAlert({
@@ -912,17 +916,17 @@ $(() => {
   }
 
   function importRepoById(repoId, row) {
-    const syncCell = row.querySelector("td:nth-child(2)");
+    const syncCell = row.querySelector("td:nth-child(3)");
     const deleteBtn = row.querySelector(".delete-repo-btn");
     const btn = row.querySelector(".sync-now-btn");
     const originalSyncContent = syncCell.innerHTML;
 
     syncCell.innerHTML = `
-      <div class="text-center">
-        <i class="fas fa-spinner fa-spin text-warning"></i>
-        <div class="small text-muted">Importando...</div>
-      </div>
-    `;
+    <div class="text-center">
+      <i class="fas fa-spinner fa-spin text-warning"></i>
+      <div class="small text-muted">Importando...</div>
+    </div>
+  `;
 
     btn.disabled = true;
     deleteBtn.disabled = true;

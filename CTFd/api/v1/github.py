@@ -200,7 +200,7 @@ class GithubRepoSelection(Resource):
                     github_repo_id=repo["id"],
                     name=repo["name"],
                     full_name=repo["full_name"],
-                    selected=True,
+                    selected=False,
                     last_synced_at=None
                 )
                 db.session.add(new_repo)
