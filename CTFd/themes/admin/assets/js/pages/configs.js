@@ -745,6 +745,9 @@ $(() => {
           const nameTd = document.createElement("td");
           nameTd.textContent = repo.full_name;
 
+          const lastImportTd = document.createElement("td");
+          lastImportTd.textContent = repo.last_synced_at ? repo.last_synced_at : "-";
+
           const actionsTd = document.createElement("td");
           actionsTd.innerHTML = `
             <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">
@@ -757,6 +760,7 @@ $(() => {
 
           tr.appendChild(checkboxTd);
           tr.appendChild(nameTd);
+          tr.appendChild(lastImportTd);
           tr.appendChild(actionsTd);
           tableBody.appendChild(tr);
         });
