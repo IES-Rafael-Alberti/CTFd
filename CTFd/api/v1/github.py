@@ -11,6 +11,7 @@ from CTFd.utils.decorators import admins_only
 from CTFd.utils.user import get_current_user
 
 from datetime import datetime
+import pytz
 import base64
 import time
 import jwt
@@ -61,14 +62,14 @@ class GithubCallback(Resource):
         if not installation_id:
             return {
                 "success": False,
-                "message": "No se recibió installation_id."
+                "message": "No installation_id received."
             }, 400
 
         user = get_current_user()
         if not user:
             return {
                 "success": False,
-                "message": "Usuario no autenticado"
+                "message": "User not authenticated"
             }, 401
 
         token_entry = UserGitHubToken.query.filter_by(user_id=user.id).first()
@@ -97,16 +98,16 @@ class GithubInstallations(Resource):
         r = requests.get("https://api.github.com/app/installations", headers=headers)
 
         if r.status_code != 200:
-            return {"success": False, "message": "Error al obtener instalaciones"}, 400
+            return {"success": False, "message": "Error retrieving installations"}, 400
 
         installations = r.json()
         if not isinstance(installations, list):
-            return {"success": False, "message": "Respuesta inesperada"}, 400
+            return {"success": False, "message": "Unexpected response"}, 400
 
         if len(installations) == 1:
             installation_id = installations[0]["id"]
         else:
-            return {"success": False, "message": "Hay múltiples instalaciones. Filtro requerido.", "r": r.json()}, 400
+            return {"success": False, "message": "Multiple installations. Filter required.", "r": r.json()}, 400
 
         user_id = get_current_user().id
         token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
@@ -119,9 +120,9 @@ class GithubInstallations(Resource):
 
         db.session.commit()
 
-        return {"success": True, "message": f"Installation ID {installation_id} guardado correctamente."}
+        return {"success": True, "message": f"Installation ID {installation_id} saved correctly."}
 
-# lista los repositorios de la cuenta de usuario
+# List the repositories of the user's account
 @github_namespace.route('/repos')
 class GithubRepos(Resource):
     @admins_only
@@ -130,12 +131,12 @@ class GithubRepos(Resource):
         token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
 
         if not token_entry:
-            return {"success": False, "message": "Installation ID no encontrado"}, 401
+            return {"success": False, "message": "Installation ID not found"}, 401
 
         installation_id = get_installation_access_token(token_entry.token)
 
         if not installation_id:
-            return {"success": False, "message": "No se pudo obtener el id de instalación"}, 400
+            return {"success": False, "message": "Could not obtain installation ID"}, 400
 
         headers = {
             "Authorization": f"token {installation_id}",
@@ -155,14 +156,14 @@ class GithubRepos(Resource):
             if response.status_code != 200:
                 return {
                     "success": False,
-                    "message": "No se pudo obtener los repositorios",
+                    "message": "Could not retrieve repositories",
                     "details": response.json()
                 }, 400
 
             repos_page = response.json().get("repositories", [])
             all_repos.extend(repos_page)
 
-            # Si no hay más repos, termina
+            # If no more repos, break
             if "next" not in response.links:
                 break
 
@@ -175,8 +176,7 @@ class GithubRepos(Resource):
 
         return {"success": True, "repos": repo_names}
 
-
-# guarda los repositorios seleccionados en la tabla
+# Save the selected repositories in the table
 @github_namespace.route('/repos/selection')
 class GithubRepoSelection(Resource):
     @admins_only
@@ -186,7 +186,7 @@ class GithubRepoSelection(Resource):
         user = get_current_user()
 
         if not isinstance(selected_repos, list):
-            return {"success": False, "message": "Formato de datos inválido"}, 400
+            return {"success": False, "message": "Invalid data format"}, 400
 
         for repo in selected_repos:
             existing = GithubRepositories.query.filter_by(
@@ -207,9 +207,9 @@ class GithubRepoSelection(Resource):
 
         db.session.commit()
 
-        return {"success": True, "message": "Repositorios guardados correctamente"}
+        return {"success": True, "message": "Repositories saved correctly"}
 
-# lista los retos guardados
+# List the saved challenges
 @github_namespace.route('/repos/saved')
 class GithubSavedRepos(Resource):
     @admins_only
@@ -229,7 +229,7 @@ class GithubSavedRepos(Resource):
 
         return {"success": True, "repos": result}
 
-# elimina un repositorio de la tabla
+# Delete a repository from the table
 @github_namespace.route('/repos/<int:repo_id>')
 class GithubRepoDelete(Resource):
     @admins_only
@@ -238,19 +238,19 @@ class GithubRepoDelete(Resource):
         repo = GithubRepositories.query.filter_by(id=repo_id, user_id=user_id).first()
 
         if not repo:
-            return {"success": False, "message": "Repositorio no encontrado"}, 404
+            return {"success": False, "message": "Repository not found"}, 404
 
-        # Obtener y eliminar sincronizaciones de retos
+        # Get and delete challenge syncs
         challenge_syncs = GithubChallengeSync.query.filter_by(github_repo_id=repo.id).all()
         for sync in challenge_syncs:
             db.session.delete(sync)
 
-        # Obtener y eliminar sincronizaciones de flags
+        # Get and delete flag syncs
         flag_syncs = GithubFlagSync.query.filter_by(github_repo_id=repo.id).all()
         for sync in flag_syncs:
             db.session.delete(sync)
 
-        # 🔁 Eliminar sincronizaciones de pistas
+        # Delete hint syncs
         hint_syncs = GithubHintSync.query.filter_by(github_repo_id=repo.id).all()
         for sync in hint_syncs:
             db.session.delete(sync)
@@ -258,9 +258,9 @@ class GithubRepoDelete(Resource):
         db.session.delete(repo)
         db.session.commit()
 
-        return {"success": True, "message": "Repositorio y datos relacionados eliminados correctamente."}
+        return {"success": True, "message": "Repository and related data deleted correctly."}
 
-# importa desde el boton de la tabla
+# Import from the table button
 @github_namespace.route('/repos/<int:repo_id>/import')
 class GithubRepoImport(Resource):
     @admins_only
@@ -268,52 +268,52 @@ class GithubRepoImport(Resource):
         user_id = get_current_user().id
         repo = GithubRepositories.query.filter_by(id=repo_id, user_id=user_id).first()
         if not repo:
-            return {"success": False, "message": "Repositorio no encontrado"}, 404
+            return {"success": False, "message": "Repository not found"}, 404
 
-        # Obtener token
+        # Get token
         token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
         access_token = get_installation_access_token(token_entry.token)
 
         result = import_challenges_from_repo(repo, access_token, overwrite_existing=False)
         
         repo.selected = True
-        repo.last_synced_at = datetime.now(datetime.timezone.utc)
+        repo.last_synced_at = datetime.now().astimezone(pytz.utc)
         db.session.commit()
 
         return {
             "success": result["success"],
-            "message": f"{result['created']} retos importados, {result['skipped']} ya existentes.",
+            "message": f"{result['created']} challenges imported, {result['skipped']} already existing.",
             "errors": result["errors"]
         }
 
-# valida los retos
+# Validate challenges
 def validate_challenge_data(data, path):
     required_fields = ["uuid", "name", "description", "category", "value", "type", "state"]
 
     for field in required_fields:
         if field not in data:
-            raise ValueError(f"{path}: Falta el campo obligatorio '{field}'")
+            raise ValueError(f"{path}: Missing required field '{field}'")
 
     if not isinstance(data["uuid"], str):
-        raise ValueError(f"{path}: 'uuid' debe ser una cadena")
+        raise ValueError(f"{path}: 'uuid' must be a string")
 
     if not isinstance(data["name"], str) or len(data["name"]) > 80:
-        raise ValueError(f"{path}: 'name' debe ser una cadena de hasta 80 caracteres")
+        raise ValueError(f"{path}: 'name' must be a string of up to 80 characters")
 
     if not isinstance(data["category"], str) or len(data["category"]) > 80:
-        raise ValueError(f"{path}: 'category' debe ser una cadena de hasta 80 caracteres")
+        raise ValueError(f"{path}: 'category' must be a string of up to 80 characters")
 
     if not isinstance(data["description"], str):
-        raise ValueError(f"{path}: 'description' debe ser una cadena")
+        raise ValueError(f"{path}: 'description' must be a string")
 
     if not isinstance(data["value"], int) or data["value"] < 0:
-        raise ValueError(f"{path}: 'value' debe ser un número entero positivo")
+        raise ValueError(f"{path}: 'value' must be a positive integer")
 
     if data["type"] not in ["standard", "dynamic"]:
-        raise ValueError(f"{path}: 'type' no es válido")
+        raise ValueError(f"{path}: 'type' is not valid")
 
     if data["state"] not in ["visible", "hidden"]:
-        raise ValueError(f"{path}: 'state' no es válido")
+        raise ValueError(f"{path}: 'state' is not valid")
 
     return data
 
@@ -322,55 +322,54 @@ def validate_flag_data(flag, path):
 
     for field in required_fields:
         if field not in flag:
-            raise ValueError(f"{path}: flag sin campo obligatorio '{field}'")
+            raise ValueError(f"{path}: Flag missing required field '{field}'")
 
     if not isinstance(flag["uuid"], str):
-        raise ValueError(f"{path}: 'uuid' de flag debe ser cadena")
+        raise ValueError(f"{path}: 'uuid' of flag must be a string")
 
     if flag["type"] not in ["static", "regex"]:
-        raise ValueError(f"{path}: tipo de flag no soportado")
+        raise ValueError(f"{path}: Flag type not supported")
 
     if not isinstance(flag["content"], str):
-        raise ValueError(f"{path}: contenido de flag no válido")
+        raise ValueError(f"{path}: Flag content is not valid")
 
     if flag["data"] not in ["case_insensitive", ""]:
-        raise ValueError(f"{path}: data de flag no soportado")
+        raise ValueError(f"{path}: Flag data not supported")
 
 def validate_tags_data(tags, path):
     if not isinstance(tags, list):
-        raise ValueError(f"{path}: El campo 'tags' debe ser una lista.")
+        raise ValueError(f"{path}: The 'tags' field must be a list.")
     for tag in tags:
         if not isinstance(tag, str):
-            raise ValueError(f"{path}: Las tags deben ser cadenas de texto.")
+            raise ValueError(f"{path}: Tags must be strings.")
 
 def validate_hints_data(hints, path):
     if not isinstance(hints, list):
-        raise ValueError(f"{path}: El campo 'hints' debe ser una lista.")
+        raise ValueError(f"{path}: The 'hints' field must be a list.")
 
     for i, hint in enumerate(hints):
         if not isinstance(hint, dict):
-            raise ValueError(f"{path}: Cada pista debe ser un objeto JSON (índice {i}).")
+            raise ValueError(f"{path}: Each hint must be a JSON object (index {i}).")
 
         required_fields = ["uuid", "content", "type"]
         for field in required_fields:
             if field not in hint:
-                raise ValueError(f"{path}: Falta el campo obligatorio '{field}' en la pista (índice {i}).")
+                raise ValueError(f"{path}: Missing required field '{field}' in hint (index {i}).")
 
         if not isinstance(hint["uuid"], str):
-            raise ValueError(f"{path}: El campo 'uuid' de la pista (índice {i}) debe ser una cadena.")
+            raise ValueError(f"{path}: The 'uuid' field of the hint (index {i}) must be a string.")
 
         if not isinstance(hint["content"], str):
-            raise ValueError(f"{path}: El campo 'content' de la pista (índice {i}) debe ser una cadena.")
+            raise ValueError(f"{path}: The 'content' field of the hint (index {i}) must be a string.")
 
         if not isinstance(hint["type"], str):
-            raise ValueError(f"{path}: El campo 'type' de la pista (índice {i}) debe ser una cadena.")
+            raise ValueError(f"{path}: The 'type' field of the hint (index {i}) must be a string.")
 
         if "title" in hint and not isinstance(hint["title"], str):
-            raise ValueError(f"{path}: El campo 'title' de la pista (índice {i}) debe ser una cadena si está presente.")
+            raise ValueError(f"{path}: The 'title' field of the hint (index {i}) must be a string if present.")
 
         if "cost" in hint and not isinstance(hint["cost"], int):
-            raise ValueError(f"{path}: El campo 'cost' de la pista (índice {i}) debe ser un número entero si está presente.")
-
+            raise ValueError(f"{path}: The 'cost' field of the hint (index {i}) must be an integer if present.")
 
 
 from CTFd.models import Tags
@@ -384,7 +383,6 @@ def import_tags(challenge, tags_data, path, overwrite_existing):
     for tag in tags_data:
         tag_entry = Tags(challenge_id=challenge.id, value=tag)
         db.session.add(tag_entry)
-
 
 
 def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_existing):
@@ -428,7 +426,7 @@ def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_e
                 last_updated_at=now
             ))
 
-    # Eliminar flags que ya no existen en el JSON
+    # Delete flags that no longer exist in the JSON
     synced_flags = GithubFlagSync.query.filter_by(
         github_repo_id=repo_id,
         challenge_uuid=challenge_uuid
@@ -452,7 +450,7 @@ def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrit
     for hint_data in hints:
         uuid = hint_data.get("uuid")
         if not uuid:
-            raise ValueError("Una de las pistas no tiene campo 'uuid'.")
+            raise ValueError("One of the hints is missing the 'uuid' field.")
 
         existing_sync = GithubHintSync.query.filter_by(hint_uuid=uuid).first()
 
@@ -489,14 +487,13 @@ def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrit
         ))
 
 
-
 from datetime import datetime
 from CTFd.models import Challenges
 
 def import_or_update_challenge(challenge_info, repo, path, overwrite_existing):
     uuid = challenge_info.get("uuid")
     if not uuid:
-        return None, False, "Falta el campo 'uuid'"
+        return None, False, "Missing 'uuid' field"
 
     try:
         validated_data = validate_challenge_data(challenge_info, path)
@@ -521,9 +518,9 @@ def import_or_update_challenge(challenge_info, repo, path, overwrite_existing):
                 existing_sync.last_updated_at = datetime.utcnow()
                 return challenge, False, None
             else:
-                return None, False, "No se encontró el reto sincronizado en la base de datos"
+                return None, False, "Synchronized challenge not found in the database"
         else:
-            return None, False, "Reto ya sincronizado (sin sobrescritura)"
+            return None, False, "Challenge already synchronized (no overwrite)"
     else:
         challenge = Challenges(
             name=validated_data["name"],
@@ -549,7 +546,7 @@ def import_or_update_challenge(challenge_info, repo, path, overwrite_existing):
 
         return challenge, True, None
 
-# importa los retos
+# Import challenges
 def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_existing=False):
     headers = {
         "Authorization": f"token {access_token}",
@@ -560,7 +557,7 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
     file_list_resp = requests.get(base_url, headers=headers)
 
     if file_list_resp.status_code != 200:
-        return {"success": False, "message": "No se pudo acceder a /challenges en el repositorio."}
+        return {"success": False, "message": "Could not access /challenges in the repository."}
 
     file_list = file_list_resp.json()
     count_created = 0
@@ -588,7 +585,7 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
             challenge, created, error_msg = import_or_update_challenge(challenge_info, repo, path, overwrite_existing)
 
             if error_msg:
-                if error_msg != "Reto ya sincronizado (sin sobrescritura)":
+                if error_msg != "Challenge already synchronized (no overwrite)":
                     errors.append({"file": path, "error": error_msg})
                 else:
                     count_skipped += 1
@@ -608,7 +605,7 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                 errors.append({"file": path, "error": str(ve)})
                 continue
 
-            # Después de importar las flags
+            # After importing flags
             try:
                 import_hints(
                     challenge_id=challenge.id,
@@ -622,7 +619,7 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                 errors.append({"file": path, "error": str(ve)})
                 continue
 
-            # Importar tags
+            # Import tags
             tags_data = challenge_info.get("tags", [])
             if tags_data:
                 try:
