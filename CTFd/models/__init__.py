@@ -607,7 +607,8 @@ class GithubRepositories(db.Model):
     github_repo_id = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(255), nullable=False)
     full_name = db.Column(db.String(255), nullable=False)
-    imported = db.Column(db.Boolean, default=False)
+    selected = db.Column(db.Boolean, default=False)
+    last_synced_at = db.Column(db.DateTime, nullable=True)
 
     user = db.relationship("Users", backref="github_repositories")
 

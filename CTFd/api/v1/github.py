@@ -269,6 +269,9 @@ class GithubRepoImport(Resource):
         repo = GithubRepositories.query.filter_by(id=repo_id, user_id=user_id).first()
         if not repo:
             return {"success": False, "message": "Repositorio no encontrado"}, 404
+        
+        repo.selected = True
+        db.session.commit()
 
         # Obtener token
         token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
