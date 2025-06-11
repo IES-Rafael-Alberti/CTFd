@@ -731,26 +731,32 @@ $(() => {
           return;
         }
 
-        // Si hay repos, los renderizamos
+        // Render repos
         repos.forEach((repo) => {
           const tr = document.createElement("tr");
 
           const nameTd = document.createElement("td");
-          nameTd.textContent = repo.full_name;
+          nameTd.innerHTML = `
+            <input type="checkbox" class="form-check-input me-2 sync-checkbox" value="${repo.id}">
+            ${repo.full_name}
+          `;
 
           const actionsTd = document.createElement("td");
           actionsTd.innerHTML = `
-          <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">Importar</button>
-          <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">Eliminar</button>
-        `;
-
+            <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">
+              <i class="fas fa-download me-1"></i> ${repo.imported ? "Actualizar" : "Importar"}
+            </button>
+            <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">
+              <i class="fas fa-trash me-1"></i> Eliminar
+            </button>
+          `;
 
           tr.appendChild(nameTd);
           tr.appendChild(actionsTd);
           tableBody.appendChild(tr);
         });
 
-        // Enlazar acciones
+        // Botón eliminar individual
         document.querySelectorAll(".delete-repo-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             const repoId = btn.getAttribute("data-id");
@@ -768,18 +774,10 @@ $(() => {
                   .then((r) => r.json())
                   .then((resp) => {
                     if (resp.success) {
-                      ezAlert({
-                        title: "Eliminado",
-                        body: resp.message,
-                        button: "OK"
-                      });
+                      ezAlert({ title: "Eliminado", body: resp.message, button: "OK" });
                       loadSavedRepos();
                     } else {
-                      ezAlert({
-                        title: "Error",
-                        body: resp.message,
-                        button: "Cerrar"
-                      });
+                      ezAlert({ title: "Error", body: resp.message, button: "Cerrar" });
                     }
                   });
               }
@@ -787,208 +785,92 @@ $(() => {
           });
         });
 
+        // Botón importar individual
         document.querySelectorAll(".sync-now-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             const repoId = btn.getAttribute("data-id");
-
-            ezQuery({
-              title: "¿Importar retos?",
-              body: "¿Estás seguro de que quieres importar los retos desde este repositorio?",
-              success: () => {
-                // Encuentra los elementos relacionados
-                const row = btn.closest("tr");
-                const syncCell = row.querySelector("td:nth-child(2)");
-                const deleteBtn = row.querySelector(".delete-repo-btn");
-
-                // Guarda el contenido original de la celda de fecha
-                const originalSyncContent = syncCell.innerHTML;
-
-                // Reemplaza con spinner
-                syncCell.innerHTML = `
-                <div class="text-center">
-                  <div class="spinner-border spinner-border-sm text-warning" role="status">
-                    <span class="sr-only">Importando...</span>
-                  </div>
-                  <div class="small text-muted">Importando...</div>
-                </div>
-              `;
-
-                // Desactiva botones
-                btn.disabled = true;
-                deleteBtn.disabled = true;
-
-                CTFd.fetch(`/api/v1/github/repos/${repoId}/import`, {
-                  method: "POST",
-                  credentials: "same-origin",
-                  headers: {
-                    "CSRF-Token": CTFd.config.csrfNonce
-                  }
-                })
-                  .then((r) => r.json())
-                  .then((resp) => {
-                    if (resp.success) {
-                      let body = `<p>${resp.message}</p>`;
-
-                      if (resp.errors && resp.errors.length > 0) {
-                        body += "<hr><b>Errores durante la importación:</b><ul>";
-                        resp.errors.forEach((err) => {
-                          body += `<li><code>${err.file}</code>: ${err.error}</li>`;
-                        });
-                        body += "</ul>";
-                      }
-
-                      ezAlert({
-                        title: "Importación completada",
-                        body: body,
-                        button: "OK"
-                      });
-
-                      loadSavedRepos(); // Actualiza toda la tabla
-                    } else {
-                      syncCell.innerHTML = originalSyncContent;
-                      btn.disabled = false;
-                      deleteBtn.disabled = false;
-
-                      ezAlert({
-                        title: "Error",
-                        body: resp.message,
-                        button: "Cerrar"
-                      });
-                    }
-                  })
-                  .catch((err) => {
-                    syncCell.innerHTML = originalSyncContent;
-                    btn.disabled = false;
-                    deleteBtn.disabled = false;
-
-                    ezAlert({
-                      title: "Error inesperado",
-                      body: err.message,
-                      button: "Cerrar"
-                    });
-                  })
-                  .finally(() => {
-                    // Siempre reactivar los botones al final
-                    btn.disabled = false;
-                    deleteBtn.disabled = false;
-                    syncCell.innerHTML = originalSyncContent; // Restaurar contenido original
-                  });
-              }
-            });
+            importRepoById(repoId, btn.closest("tr"));
           });
         });
-
-
       })
       .catch((err) => {
-        ezAlert({
-          title: "Error",
-          body: err.message,
-          button: "OK"
-        });
+        ezAlert({ title: "Error", body: err.message, button: "OK" });
       });
   }
 
-  document.getElementById('email_whitelist_csv').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
+  // 🆕 Función de utilidad para importar por ID (reutilizable)
+  function importRepoById(repoId, row) {
+    const syncCell = row.querySelector("td:nth-child(2)");
+    const deleteBtn = row.querySelector(".delete-repo-btn");
+    const btn = row.querySelector(".sync-now-btn");
+    const originalSyncContent = syncCell.innerHTML;
 
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      const csvContent = event.target.result;
-      document.getElementById('email_whitelist_input').value = csvContent.trim().replace(/\s+/g, '');
-    };
-    reader.readAsText(file);
-  });
+    syncCell.innerHTML = `
+      <div class="text-center">
+        <i class="fas fa-spinner fa-spin text-warning"></i>
+        <div class="small text-muted">Importando...</div>
+      </div>
+    `;
 
-  document.getElementById('email_blacklist_csv').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
+    btn.disabled = true;
+    deleteBtn.disabled = true;
 
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      const csvContent = event.target.result;
-      document.getElementById('email_blacklist_input').value = csvContent.trim().replace(/\s+/g, '');
-    };
-    reader.readAsText(file);
-  });
+    CTFd.fetch(`/api/v1/github/repos/${repoId}/import`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "CSRF-Token": CTFd.config.csrfNonce
+      }
+    })
+      .then((r) => r.json())
+      .then((resp) => {
+        if (resp.success) {
+          let body = `<p>${resp.message}</p>`;
+          if (resp.errors?.length) {
+            body += "<hr><b>Errores durante la importación:</b><ul>";
+            resp.errors.forEach((err) => {
+              body += `<li><code>${err.file}</code>: ${err.error}</li>`;
+            });
+            body += "</ul>";
+          }
+          ezAlert({ title: "Importación completada", body, button: "OK" });
+          loadSavedRepos();
+        } else {
+          ezAlert({ title: "Error", body: resp.message, button: "Cerrar" });
+          syncCell.innerHTML = originalSyncContent;
+        }
+      })
+      .catch((err) => {
+        ezAlert({ title: "Error inesperado", body: err.message, button: "Cerrar" });
+        syncCell.innerHTML = originalSyncContent;
+      })
+      .finally(() => {
+        btn.disabled = false;
+        deleteBtn.disabled = false;
+      });
+  }
 
-  const form = document.querySelector('#accounts form');
-  if (!form) return;
+  // 🆕 Botón para importar en lote
+  document.getElementById("sync-selected-repos")?.addEventListener("click", () => {
+    const checkboxes = document.querySelectorAll(".sync-checkbox:checked");
+    if (checkboxes.length === 0) {
+      ezAlert({ title: "Sin selección", body: "Selecciona al menos un repositorio para importar.", button: "Aceptar" });
+      return;
+    }
 
-  document.getElementById('customSubmitBtn').addEventListener('click', function (e) {
-    e.preventDefault(); // Prevent default form submission
-
-    // Get input values and sanitize
-    const emailWhitelist = document.getElementById('email_whitelist_input').value.split(',').map(x => x.trim()).filter(Boolean);
-    const emailBlacklist = document.getElementById('email_blacklist_input').value.split(',').map(x => x.trim()).filter(Boolean);
-    const domainWhitelist = document.querySelector('[name="domain_whitelist"]').value.split(',').map(x => x.trim()).filter(Boolean);
-    const domainBlacklist = document.querySelector('[name="domain_blacklist"]').value.split(',').map(x => x.trim()).filter(Boolean);
-
-    // Conflicts: exact match
-    const emailConflicts = emailWhitelist.filter(email => emailBlacklist.includes(email));
-    const domainConflicts = domainWhitelist.filter(domain => domainBlacklist.includes(domain));
-
-    // Conflicts: domain/email mismatch
-    const domainEmailConflicts = [];
-
-    // Check if an email's domain is blacklisted but email is whitelisted
-    emailWhitelist.forEach(email => {
-      const domain = email.split('@')[1];
-      if (domainBlacklist.includes(domain)) {
-        domainEmailConflicts.push(`Email ${email} vs Domain blacklist: ${domain}`);
+    ezQuery({
+      title: "¿Importar múltiples repositorios?",
+      body: `Se importarán ${checkboxes.length} repositorios. ¿Continuar?`,
+      success: () => {
+        checkboxes.forEach((cb) => {
+          const repoId = cb.value;
+          const row = cb.closest("tr");
+          importRepoById(repoId, row);
+        });
       }
     });
-
-    // Check if an email's domain is whitelisted but email is blacklisted
-    emailBlacklist.forEach(email => {
-      const domain = email.split('@')[1];
-      if (domainWhitelist.includes(domain)) {
-        domainEmailConflicts.push(`Email ${email} vs Domain whitelist: ${domain}`);
-      }
-    });
-
-    // First modal: direct conflicts
-    if (emailConflicts.length > 0 || domainConflicts.length > 0) {
-      const conflictList = document.getElementById('conflictList');
-      conflictList.innerHTML = '';
-
-      emailConflicts.forEach(email => {
-        const li = document.createElement('li');
-        li.textContent = `Email: ${email}`;
-        conflictList.appendChild(li);
-      });
-
-      domainConflicts.forEach(domain => {
-        const li = document.createElement('li');
-        li.textContent = `Domain: ${domain}`;
-        conflictList.appendChild(li);
-      });
-
-      $('#conflictModal').modal('show');
-      document.getElementById('modalConfirmSubmitBtn').onclick = function () {
-        $('#conflictModal').modal('hide');
-        form.requestSubmit();
-      };
-    }
-    // Second modal: email-domain logic conflict
-    else if (domainEmailConflicts.length > 0) {
-      const list = document.getElementById('domainEmailConflictList');
-      list.innerHTML = '';
-      domainEmailConflicts.forEach(conflict => {
-        const li = document.createElement('li');
-        li.textContent = conflict;
-        list.appendChild(li);
-      });
-
-      $('#domainEmailConflictModal').modal('show');
-      document.getElementById('modalDomainConflictSubmitBtn').onclick = function () {
-        $('#domainEmailConflictModal').modal('hide');
-        form.requestSubmit();
-      };
-    }
-    else {
-      form.requestSubmit(); // No conflicts
-    }
   });
+
+
+
 });
