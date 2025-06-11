@@ -746,7 +746,7 @@ $(() => {
           nameTd.textContent = repo.full_name;
 
           const lastImportTd = document.createElement("td");
-          lastImportTd.textContent = repo.last_synced_at ? `${repo.last_synced_at} UTC` : "-";
+          lastImportTd.textContent = repo.last_synced_at ? `${repo.last_synced_at.isoformat(sep = " ", timespec = "seconds")} UTC` : "-";
 
           const actionsTd = document.createElement("td");
           actionsTd.innerHTML = `
