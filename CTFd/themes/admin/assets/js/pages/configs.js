@@ -618,27 +618,27 @@ $(() => {
     renderRepos();
   });
 
-  // Fetch repos desde la API
+  // Fetch repos from the API
   fetch("/api/v1/github/repos")
     .then(response => {
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error("Usuario no autenticado con GitHub. Por favor, instala la app o asegúrate de tener permisos.");
+          throw new Error("User not authenticated with GitHub. Please install the app or make sure you have the necessary permissions.");
         }
         return response.json().then(err => {
-          throw new Error(err.message || "Error inesperado al comunicarse con la API.");
+          throw new Error(err.message || "Unexpected error communicating with the API.");
         });
       }
       return response.json();
     })
     .then(data => {
       if (!data.success) {
-        throw new Error(data.message || "La API respondió sin éxito.");
+        throw new Error(data.message || "The API did not respond successfully.");
       }
 
       allRepos = data.repos || [];
 
-      // Asegúrate de mostrar y ocultar las secciones correctamente
+      // Ensure sections are displayed and hidden correctly
       if (githubLoginSection) githubLoginSection.style.display = "none";
       if (githubReposSection) githubReposSection.style.display = "block";
       const errorSection = document.getElementById("github-error-section");
@@ -648,7 +648,7 @@ $(() => {
       loadSavedRepos();
     })
     .catch(error => {
-      console.error("Error al obtener los repos:", error);
+      console.error("Error fetching the repos:", error);
       const errorSection = document.getElementById("github-error-section");
       const errorMessage = document.getElementById("github-error-message");
       if (errorMessage) errorMessage.textContent = error.message;
@@ -657,7 +657,7 @@ $(() => {
       if (githubReposSection) githubReposSection.style.display = "none";
     });
 
-  // Guardar selección de repos
+  // Save selected repos
   document.getElementById("save-selected-repos")?.addEventListener("click", () => {
     const checkboxes = document.querySelectorAll("#github-repos-list input[type=checkbox]:checked");
     const selected = [];
@@ -682,23 +682,23 @@ $(() => {
       .then(data => {
         if (data.success) {
           ezAlert({
-            title: "Éxito",
-            body: "Repositorios guardados correctamente.",
-            button: "Aceptar"
+            title: "Success",
+            body: "Repositories saved successfully.",
+            button: "OK"
           });
         } else {
           ezAlert({
-            title: "Error al guardar",
-            body: data.message || "Error inesperado.",
-            button: "Aceptar"
+            title: "Error saving",
+            body: data.message || "Unexpected error.",
+            button: "OK"
           });
         }
       })
       .catch(err => {
         ezAlert({
-          title: "Error inesperado",
+          title: "Unexpected Error",
           body: err.message,
-          button: "Aceptar"
+          button: "OK"
         });
       });
   });
@@ -714,7 +714,7 @@ $(() => {
       .then((response) => response.json())
       .then((data) => {
         if (!data.success) {
-          throw new Error(data.message || "No se pudieron cargar los repositorios.");
+          throw new Error(data.message || "Could not load the repositories.");
         }
 
         const repos = data.repos;
@@ -724,13 +724,13 @@ $(() => {
           const td = document.createElement("td");
           td.setAttribute("colspan", "4");
           td.classList.add("text-center", "text-muted");
-          td.textContent = "No hay repositorios guardados.";
+          td.textContent = "No saved repositories.";
           emptyRow.appendChild(td);
           tableBody.appendChild(emptyRow);
           return;
         }
 
-        // Si hay repos, los renderizamos
+        // If there are repos, render them
         repos.forEach((repo) => {
           const tr = document.createElement("tr");
 
@@ -750,13 +750,13 @@ $(() => {
 
           const actionsTd = document.createElement("td");
           actionsTd.innerHTML = `
-            <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">
-              <i class="fas fa-download me-1"></i> ${repo.selected ? "Actualizar" : "Importar"}
-            </button>
-            <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">
-              <i class="fas fa-trash me-1"></i> Eliminar
-            </button>
-          `;
+          <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">
+            <i class="fas fa-download me-1"></i> ${repo.selected ? "Update" : "Import"}
+          </button>
+          <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">
+            <i class="fas fa-trash me-1"></i> Delete
+          </button>
+        `;
 
           tr.appendChild(checkboxTd);
           tr.appendChild(nameTd);
@@ -765,13 +765,13 @@ $(() => {
           tableBody.appendChild(tr);
         });
 
-        // Enlazar acciones
+        // Link actions
         document.querySelectorAll(".delete-repo-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             const repoId = btn.getAttribute("data-id");
             ezQuery({
-              title: "¿Eliminar repositorio?",
-              body: "¿Estás seguro de que quieres eliminar este repositorio?",
+              title: "Delete Repository?",
+              body: "Are you sure you want to delete this repository?",
               success: () => {
                 CTFd.fetch(`/api/v1/github/repos/${repoId}`, {
                   method: "DELETE",
@@ -784,7 +784,7 @@ $(() => {
                   .then((resp) => {
                     if (resp.success) {
                       ezAlert({
-                        title: "Eliminado",
+                        title: "Deleted",
                         body: resp.message,
                         button: "OK"
                       });
@@ -793,7 +793,7 @@ $(() => {
                       ezAlert({
                         title: "Error",
                         body: resp.message,
-                        button: "Cerrar"
+                        button: "Close"
                       });
                     }
                   });
@@ -807,26 +807,26 @@ $(() => {
             const repoId = btn.getAttribute("data-id");
 
             ezQuery({
-              title: "¿Importar retos?",
-              body: "¿Estás seguro de que quieres importar los retos desde este repositorio?",
+              title: "Import Challenges?",
+              body: "Are you sure you want to import the challenges from this repository?",
               success: () => {
-                // Encuentra los elementos relacionados
+                // Find related elements
                 const row = btn.closest("tr");
                 const syncCell = row.querySelector("td:nth-child(3)");
                 const deleteBtn = row.querySelector(".delete-repo-btn");
 
-                // Guarda el contenido original de la celda de fecha
+                // Save the original content of the date cell
                 const originalSyncContent = syncCell.innerHTML;
 
-                // Reemplaza con spinner
+                // Replace with spinner
                 syncCell.innerHTML = `
-              <div class="text-center">
-                <i class="fas fa-spinner fa-spin text-warning"></i>
-                <div class="small text-muted">Importando...</div>
-              </div>
-            `;
+                <div class="text-center">
+                  <i class="fas fa-spinner fa-spin text-warning"></i>
+                  <div class="small text-muted">Importing...</div>
+                </div>
+              `;
 
-                // Desactiva botones
+                // Disable buttons
                 btn.disabled = true;
                 deleteBtn.disabled = true;
 
@@ -842,7 +842,7 @@ $(() => {
                     if (resp.success) {
                       let body = `<p>${resp.message}</p>`;
                       if (resp.errors && resp.errors.length > 0) {
-                        body += "<hr><b>Errores durante la importación:</b><ul>";
+                        body += "<hr><b>Errors during import:</b><ul>";
                         resp.errors.forEach((err) => {
                           body += `<li><code>${err.file}</code>: ${err.error}</li>`;
                         });
@@ -850,12 +850,12 @@ $(() => {
                       }
 
                       ezAlert({
-                        title: "Importación completada",
+                        title: "Import Complete",
                         body: body,
                         button: "OK"
                       });
 
-                      loadSavedRepos(); // Actualiza toda la tabla
+                      loadSavedRepos(); // Update the entire table
                     } else {
                       syncCell.innerHTML = originalSyncContent;
                       btn.disabled = false;
@@ -864,7 +864,7 @@ $(() => {
                       ezAlert({
                         title: "Error",
                         body: resp.message,
-                        button: "Cerrar"
+                        button: "Close"
                       });
                     }
                   })
@@ -874,16 +874,16 @@ $(() => {
                     deleteBtn.disabled = false;
 
                     ezAlert({
-                      title: "Error inesperado",
+                      title: "Unexpected Error",
                       body: err.message,
-                      button: "Cerrar"
+                      button: "Close"
                     });
                   })
                   .finally(() => {
-                    // Siempre reactivar los botones al final
+                    // Always re-enable the buttons at the end
                     btn.disabled = false;
                     deleteBtn.disabled = false;
-                    syncCell.innerHTML = originalSyncContent; // Restaurar contenido original
+                    syncCell.innerHTML = originalSyncContent; // Restore original content
                   });
               }
             });
@@ -893,13 +893,13 @@ $(() => {
         document.getElementById("import-selected-repos")?.addEventListener("click", () => {
           const checkboxes = document.querySelectorAll(".sync-checkbox:checked");
           if (checkboxes.length === 0) {
-            ezAlert({ title: "Sin selección", body: "Selecciona al menos un repositorio para importar.", button: "Aceptar" });
+            ezAlert({ title: "No Selection", body: "Select at least one repository to import.", button: "OK" });
             return;
           }
 
           ezQuery({
-            title: "¿Importar múltiples repositorios?",
-            body: `Se importarán ${checkboxes.length} repositorios. ¿Continuar?`,
+            title: "Import Multiple Repositories?",
+            body: `You will import ${checkboxes.length} repositories. Continue?`,
             success: () => {
               checkboxes.forEach((cb) => {
                 const repoId = cb.value;
@@ -928,7 +928,7 @@ $(() => {
     syncCell.innerHTML = `
     <div class="text-center">
       <i class="fas fa-spinner fa-spin text-warning"></i>
-      <div class="small text-muted">Importando...</div>
+      <div class="small text-muted">Importing...</div>
     </div>
   `;
 
@@ -947,21 +947,21 @@ $(() => {
         if (resp.success) {
           let body = `<p>${resp.message}</p>`;
           if (resp.errors?.length) {
-            body += "<hr><b>Errores durante la importación:</b><ul>";
+            body += "<hr><b>Errors during import:</b><ul>";
             resp.errors.forEach((err) => {
               body += `<li><code>${err.file}</code>: ${err.error}</li>`;
             });
             body += "</ul>";
           }
-          ezAlert({ title: "Importación completada", body, button: "OK" });
+          ezAlert({ title: "Import Complete", body, button: "OK" });
           loadSavedRepos();
         } else {
-          ezAlert({ title: "Error", body: resp.message, button: "Cerrar" });
+          ezAlert({ title: "Error", body: resp.message, button: "Close" });
           syncCell.innerHTML = originalSyncContent;
         }
       })
       .catch((err) => {
-        ezAlert({ title: "Error inesperado", body: err.message, button: "Cerrar" });
+        ezAlert({ title: "Unexpected Error", body: err.message, button: "Close" });
         syncCell.innerHTML = originalSyncContent;
       })
       .finally(() => {
