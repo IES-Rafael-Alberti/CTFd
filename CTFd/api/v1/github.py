@@ -277,6 +277,7 @@ class GithubRepoImport(Resource):
         result = import_challenges_from_repo(repo, access_token, overwrite_existing=False)
         
         repo.selected = True
+        repo.last_synced_at = datetime.now(datetime.timezone.utc)
         db.session.commit()
 
         return {
