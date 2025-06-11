@@ -11,6 +11,7 @@ from CTFd.utils.decorators import admins_only
 from CTFd.utils.user import get_current_user
 
 from datetime import datetime
+import pytz
 import base64
 import time
 import jwt
@@ -277,7 +278,7 @@ class GithubRepoImport(Resource):
         result = import_challenges_from_repo(repo, access_token, overwrite_existing=False)
         
         repo.selected = True
-        repo.last_synced_at = datetime.now(datetime.timezone.utc)
+        repo.last_synced_at = datetime.now().astimezone(pytz.utc)
         db.session.commit()
 
         return {
