@@ -155,6 +155,79 @@
 				<button id="import-selected-repos" class="btn btn-success">
 					<i class="fas fa-download me-1"></i> Import selected repositories
 				</button>
+				<button id="help-button" class="btn btn-info">
+					<i class="fas fa-question-circle me-1"></i> Help
+				</button>
+			</div>
+
+			<!-- Help Modal -->
+			<div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="help-modal-label">Repository Format Help</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p>The repositories must have a folder named <code>challenges</code> that contains JSON files with the following format:</p>
+							<pre><code class="json">
+								{
+										"challenge": {
+												"uuid": "1aaaaaa",
+												"name": "Hola soy un reto dfdfdf",
+												"description": "Nunca podrás resolver este reto",
+												"attribution": "yo",
+												"connection_info": "https://soy_un_enlace",
+												"max_attempts": 0,
+												"value": 200,
+												"category": "criptografía",
+												"type": "standard",
+												"state": "visible",
+												"flags": [
+														{
+																"uuid": "sdsdsd",
+																"type": "static",
+																"content": "flag{respuesta}",
+																"data": "case_insensitive"
+														},
+														{
+																"uuid": "fgghhj",
+																"type": "regex",
+																"content": "flag{.a*}",
+																"data": ""
+														}
+												],
+												"tags": [
+														"tag1",
+														"tag2"
+												],
+												"hints": [
+														{
+																"uuid": "sdffgfh",
+																"title": "Pista 1",
+																"type": "standard",
+																"content": "las pistas son para los cobardes",
+																"cost": 10
+														},
+														{
+																"uuid": "sdffgghtty",
+																"title": "Pista 2",
+																"type": "standard",
+																"content": "las pistas son para los cobardes",
+																"cost": 20
+														}
+												]
+										}
+								}
+							</code></pre>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>				
 	</div>
