@@ -51,7 +51,7 @@
   display: block;
   margin-top: 0.25rem;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--input-text-help-color);
 }
 
 .form__checkbox-wrapper {
@@ -67,6 +67,13 @@
 
 .form__checkbox-label {
   font-size: 1rem;
+}
+
+.form__submit {
+  width: 99%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem;
 }
 
 .boton-busqueda {
