@@ -512,18 +512,17 @@ def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
     if overwrite_existing:
         existing_dynamic = DynamicChallenge.query.filter_by(id=challenge_id).first()
         if existing_dynamic:
-            existing_dynamic.initial = dynamic["initial"]
-            existing_dynamic.minimum = dynamic["minimum"]
-            existing_dynamic.decay = dynamic["decay"]
-            existing_dynamic.function = dynamic["function"]
-            existing_dynamic.last_updated_at = datetime.utcnow()
+            existing_dynamic.initial = dynamic.get("initial", 0)
+            existing_dynamic.minimum = dynamic.get("minimum", 0)
+            existing_dynamic.decay = dynamic.get("decay", 0)
+            existing_dynamic.function = dynamic.get("function", "logarithmic")
         else:
             existing_dynamic = DynamicChallenge(
                 id=challenge_id,
-                initial=dynamic["initial"],
-                minimum=dynamic["minimum"],
-                decay=dynamic["decay"],
-                function=dynamic["function"]
+                initial=dynamic.get("initial", 0),
+                minimum=dynamic.get("minimum", 0),
+                decay=dynamic.get("decay", 0),
+                function=dynamic.get("function", "logarithmic")
             )
             db.session.add(existing_dynamic)
 
@@ -680,17 +679,20 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                     errors.append({"file": path, "error": "Dynamic challenges cannot have hints or tags."})
                     continue
 
-                try:
-                    print(challenge_info)
-                    import_dynamic(
-                        challenge_id=challenge.id,
-                        dynamic=challenge_info.get("dynamic", {}),
-                        path=path,
-                        overwrite_existing=overwrite_existing
-                    )
-                except ValueError as ve:
-                    errors.append({"file": path, "error": str(ve)})
-                    continue
+                # Import dynamic data
+                dynamic_data = challenge_info.get("dynamic", {})
+                print(dynamic_data)
+                if dynamic_data:
+                    try:
+                        import_dynamic(
+                            challenge_id=challenge.id,
+                            dynamic=dynamic_data,
+                            path=path,
+                            overwrite_existing=overwrite_existing
+                        )
+                    except ValueError as ve:
+                        errors.append({"file": path, "error": str(ve)})
+                        continue
                 
 
             if created:
