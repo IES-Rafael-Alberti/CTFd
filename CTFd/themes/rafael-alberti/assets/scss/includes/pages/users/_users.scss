@@ -49,23 +49,20 @@
 .premios {
   margin-top: 2rem;
   margin-bottom: 2rem;
-  text-align: center;
 
   &__titulo {
-    font-size: 1.75rem;
     margin-bottom: 1rem;
   }
 
   &__lista {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 1rem;
   }
 
   &__item {
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: var(--award-bg-color);
+    border: 1px solid var(--award-border-color);
     border-radius: 0.5rem;
     padding: 1rem;
     width: 250px;
@@ -74,17 +71,21 @@
 
   &__icono {
     margin-bottom: 0.5rem;
+    color: var(--award-text-color);
   }
 
   &__nombre {
     font-weight: bold;
+    font-size: 1.25rem;
+    color: var(--award-name-text-color);
   }
 
   &__categoria,
   &__descripcion,
   &__valor {
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin-top: 0.25rem;
+    color: var(--award-text-color);
   }
 }
 

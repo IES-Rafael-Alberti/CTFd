@@ -293,30 +293,30 @@
 <section class="contenido">
   {% include "components/errors.html" %}
 
-  <div class="miembros">
-    <h3 class="miembros__titulo">Miembros</h3>
-    <table class="miembros__tabla">
+  <div class="tabla">
+    <h3 class="tabla">Miembros</h3>
+    <table class="tabla__tabla">
       <thead>
         <tr>
-          <th class="miembros__th">Nombre de usuario</th>
-          <th class="miembros__th">Puntuación</th>
+          <th class="tabla__th">Nombre de usuario</th>
+          <th class="tabla__th">Puntuación</th>
         </tr>
       </thead>
       <tbody>
         {% for member in team.members %}
-          <tr class="miembros__fila">
-            <td class="miembros__celda">
-              <a href="{{ url_for('users.public', user_id=member.id) }}" class="miembros__enlace">
+          <tr class="tabla__fila">
+            <td class="tabla__celda">
+              <a href="{{ url_for('users.public', user_id=member.id) }}" class="tabla__enlace">
                 {{ member.name }}
               </a>
               {% if member.bracket_id %}
-                <span class="etiqueta etiqueta--gris">{{ member.bracket.name }}</span>
+                <span class="etiqueta etiqueta--principal etiqueta--tabla">{{ member.bracket.name }}</span>
               {% endif %}
               {% if team.captain_id == member.id %}
-                <span class="etiqueta etiqueta--azul">Capitán</span>
+                <span class="etiqueta etiqueta--secundaria etiqueta--tabla">Capitán</span>
               {% endif %}
             </td>
-            <td class="miembros__celda">{{ member.score }}</td>
+            <td class="tabla__celda">{{ member.score }}</td>
           </tr>
         {% endfor %}
       </tbody>
