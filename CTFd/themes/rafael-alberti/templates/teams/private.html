@@ -185,17 +185,17 @@
     <h1 class="jumbotron__title section-title">{{ team.name }}</h1>
 
     {% if team.oauth_id %}
-      <a href="https://majorleaguecyber.org/t/{{ team.name }}" class="etiqueta etiqueta--azul">
+      <a href="https://majorleaguecyber.org/t/{{ team.name }}" class="etiqueta etiqueta--secundaria">
         Oficial
       </a>
     {% endif %}
 
     {% if team.affiliation %}
-      <span class="etiqueta etiqueta--azul">{{ team.affiliation }}</span>
+      <span class="etiqueta etiqueta--secundaria">{{ team.affiliation }}</span>
     {% endif %}
 
     {% if team.country %}
-      <span class="etiqueta etiqueta--azul">
+      <span class="etiqueta etiqueta--secundaria">
         <i class="flag-{{ team.country.lower() }}"></i>
         {{ lookup_country_code(team.country) }}
       </span>
@@ -203,7 +203,7 @@
 
     {% if team.bracket_id %}
       <div class="jumbotron__bracket">
-        <span class="etiqueta etiqueta--gris">
+        <span class="etiqueta etiqueta--principal">
           {{ team.bracket.name }}
         </span>
       </div>
