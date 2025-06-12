@@ -524,9 +524,8 @@ def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
                 decay=dynamic.get("decay", 0),
                 function=dynamic.get("function", "logarithmic")
             )
-            db.session.add(existing_dynamic)
-
-    db.session.commit()
+    db.session.add(existing_dynamic)
+    db.session.flush()
 
 from datetime import datetime
 from CTFd.models import Challenges
