@@ -524,7 +524,9 @@ def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
                 decay=dynamic.get("decay", 0),
                 function=dynamic.get("function", "logarithmic")
             )
-    db.session.add(existing_dynamic)
+            db.session.add(existing_dynamic)
+
+    print(f"Dynamic existing: {existing_dynamic}")
     db.session.flush()
 
 from datetime import datetime
@@ -680,7 +682,6 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
 
                 # Import dynamic data
                 dynamic_data = challenge_info.get("dynamic", {})
-                print(dynamic_data)
                 if dynamic_data:
                     try:
                         import_dynamic(
