@@ -2,6 +2,7 @@ import requests
 from flask_restx import Namespace, Resource
 from flask import redirect, url_for, request
 import urllib.parse
+from CTFd.plugins.dynamic_challenges import DynamicChallenge
 from CTFd.utils import get_app_config
 from CTFd.models import db, GithubRepositories, GithubChallengeSync, Challenges, GithubFlagSync, Flags, GithubHintSync
 from CTFd.utils import user as current_user
@@ -371,6 +372,24 @@ def validate_hints_data(hints, path):
         if "cost" in hint and not isinstance(hint["cost"], int):
             raise ValueError(f"{path}: The 'cost' field of the hint (index {i}) must be an integer if present.")
 
+def validate_dynamic_data(dynamic, path):
+    required_fields = ["initial", "minimum", "decay", "function"]
+
+    for field in required_fields:
+        if field not in dynamic:
+            raise ValueError(f"{path}: Missing required field '{field}' for dynamic challenge")
+        
+    if not isinstance(dynamic["initial"], int) or dynamic["initial"] < 0:
+        raise ValueError(f"{path}: 'initial' must be a non-negative integer for dynamic challenge")
+    
+    if not isinstance(dynamic["minimum"], int) or dynamic["minimum"] < 0:
+        raise ValueError(f"{path}: 'minimum' must be a non-negative integer for dynamic challenge")
+    
+    if not isinstance(dynamic["decay"], int) or dynamic["decay"] < 0:
+        raise ValueError(f"{path}: 'decay' must be a non-negative integer for dynamic challenge")
+
+    if not function in ["linear", "logarithmic"]:
+        raise ValueError(f"{path}: 'function' must be either 'linear' or 'logarithmic' for dynamic challenge")
 
 from CTFd.models import Tags
 
@@ -486,6 +505,29 @@ def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrit
             last_updated_at=datetime.utcnow()
         ))
 
+def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
+    validate_dynamic_data(dynamic, path)
+
+    # If the challenge is being created or updated, we need to handle its dynamic properties
+    if overwrite_existing:
+        existing_dynamic = DynamicChallenge.query.filter_by(id=challenge_id).first()
+        if existing_dynamic:
+            existing_dynamic.initial = dynamic["initial"]
+            existing_dynamic.minimum = dynamic["minimum"]
+            existing_dynamic.decay = dynamic["decay"]
+            existing_dynamic.function = dynamic["function"]
+            existing_dynamic.last_updated_at = datetime.utcnow()
+        else:
+            existing_dynamic = DynamicChallenge(
+                id=challenge_id,
+                initial=dynamic["initial"],
+                minimum=dynamic["minimum"],
+                decay=dynamic["decay"],
+                function=dynamic["function"]
+            )
+            db.session.add(existing_dynamic)
+
+    db.session.commit()
 
 from datetime import datetime
 from CTFd.models import Challenges
@@ -591,42 +633,64 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                     count_skipped += 1
                 continue
 
-            # Flags
-            try:
-                import_flags(
-                    challenge_id=challenge.id,
-                    flags=challenge_info.get("flags", []),
-                    repo_id=repo.id,
-                    challenge_uuid=challenge_info["uuid"],
-                    path=path,
-                    overwrite_existing=overwrite_existing
-                )
-            except ValueError as ve:
-                errors.append({"file": path, "error": str(ve)})
-                continue
+            if challenge.type == "standard":
+                if "dynamic" in challenge_info:
+                    errors.append({"file": path, "error": "Standard challenges cannot have dynamic data."})
+                    continue
 
-            # After importing flags
-            try:
-                import_hints(
-                    challenge_id=challenge.id,
-                    hints=challenge_info.get("hints", []),
-                    repo_id=repo.id,
-                    challenge_uuid=challenge_info["uuid"],
-                    path=path,
-                    overwrite_existing=overwrite_existing
-                )
-            except ValueError as ve:
-                errors.append({"file": path, "error": str(ve)})
-                continue
-
-            # Import tags
-            tags_data = challenge_info.get("tags", [])
-            if tags_data:
+                # Flags
                 try:
-                    import_tags(challenge, tags_data, path, overwrite_existing)
+                    import_flags(
+                        challenge_id=challenge.id,
+                        flags=challenge_info.get("flags", []),
+                        repo_id=repo.id,
+                        challenge_uuid=challenge_info["uuid"],
+                        path=path,
+                        overwrite_existing=overwrite_existing
+                    )
                 except ValueError as ve:
                     errors.append({"file": path, "error": str(ve)})
                     continue
+
+                # After importing flags
+                try:
+                    import_hints(
+                        challenge_id=challenge.id,
+                        hints=challenge_info.get("hints", []),
+                        repo_id=repo.id,
+                        challenge_uuid=challenge_info["uuid"],
+                        path=path,
+                        overwrite_existing=overwrite_existing
+                    )
+                except ValueError as ve:
+                    errors.append({"file": path, "error": str(ve)})
+                    continue
+
+                # Import tags
+                tags_data = challenge_info.get("tags", [])
+                if tags_data:
+                    try:
+                        import_tags(challenge, tags_data, path, overwrite_existing)
+                    except ValueError as ve:
+                        errors.append({"file": path, "error": str(ve)})
+                        continue
+            else:
+                # For dynamic challenges, we don't import flags or hints
+                if "hints" in challenge_info or "tags" in challenge_info:
+                    errors.append({"file": path, "error": "Dynamic challenges cannot have hints or tags."})
+                    continue
+
+                try:
+                    import_dynamic(
+                        challenge_id=challenge.id,
+                        dynamic=challenge_info.get("dynamic", {}),
+                        path=path,
+                        overwrite_existing=overwrite_existing
+                    )
+                except ValueError as ve:
+                    errors.append({"file": path, "error": str(ve)})
+                    continue
+                
 
             if created:
                 count_created += 1
