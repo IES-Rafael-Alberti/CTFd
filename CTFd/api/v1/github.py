@@ -681,6 +681,7 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                     continue
 
                 try:
+                    print(challenge_info)
                     import_dynamic(
                         challenge_id=challenge.id,
                         dynamic=challenge_info.get("dynamic", {}),
