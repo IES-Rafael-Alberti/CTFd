@@ -509,22 +509,23 @@ def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
     validate_dynamic_data(dynamic, path)
 
     # If the challenge is being created or updated, we need to handle its dynamic properties
-    if overwrite_existing:
-        existing_dynamic = DynamicChallenge.query.filter_by(id=challenge_id).first()
-        if existing_dynamic:
+    existing_dynamic = DynamicChallenge.query.filter_by(id=challenge_id).first()
+    
+    if existing_dynamic:
+        if overwrite_existing:
             existing_dynamic.initial = dynamic.get("initial", 0)
             existing_dynamic.minimum = dynamic.get("minimum", 0)
             existing_dynamic.decay = dynamic.get("decay", 0)
             existing_dynamic.function = dynamic.get("function", "logarithmic")
-        else:
-            existing_dynamic = DynamicChallenge(
-                id=challenge_id,
-                initial=dynamic.get("initial", 0),
-                minimum=dynamic.get("minimum", 0),
-                decay=dynamic.get("decay", 0),
-                function=dynamic.get("function", "logarithmic")
-            )
-            db.session.add(existing_dynamic)
+    else:
+        existing_dynamic = DynamicChallenge(
+            id=challenge_id,
+            initial=dynamic.get("initial", 0),
+            minimum=dynamic.get("minimum", 0),
+            decay=dynamic.get("decay", 0),
+            function=dynamic.get("function", "logarithmic")
+        )
+        db.session.add(existing_dynamic)
 
     db.session.flush()
 
