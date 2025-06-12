@@ -388,7 +388,7 @@ def validate_dynamic_data(dynamic, path):
     if not isinstance(dynamic["decay"], int) or dynamic["decay"] < 0:
         raise ValueError(f"{path}: 'decay' must be a non-negative integer for dynamic challenge")
 
-    if not function in ["linear", "logarithmic"]:
+    if dynamic["function"] not in ["linear", "logarithmic"]:
         raise ValueError(f"{path}: 'function' must be either 'linear' or 'logarithmic' for dynamic challenge")
 
 from CTFd.models import Tags
@@ -526,7 +526,6 @@ def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
             )
             db.session.add(existing_dynamic)
 
-    print(f"Dynamic existing: {existing_dynamic}")
     db.session.flush()
 
 from datetime import datetime
