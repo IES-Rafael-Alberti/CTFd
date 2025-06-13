@@ -1,7 +1,19 @@
 .notifications__list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
   gap: 2rem;
+
+  // Base layout for small screens (1 column)
+  grid-template-columns: 1fr;
+
+  // Medium screens (≥768px): 2 columns
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+
+  // Extra large screens (≥1200px): 2–3 wide columns
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+  }
 }
 
 .notifications {
@@ -18,17 +30,21 @@
       margin: 0 auto;
       padding: 2rem 5vw;
       background-color: var(--section-bg-color);
-  }
+    }
 
-  &-title {
-    color: var(--text-empty-color);
-  }
+    &-title {
+      color: var(--text-empty-color);
+    }
   }
 }
 
 .notification {
   position: relative;
-  background: linear-gradient(135deg, var(--notification-border-color1), var(--notification-border-color2));
+  background: linear-gradient(
+    135deg,
+    var(--notification-border-color1),
+    var(--notification-border-color2)
+  );
   margin-bottom: 2rem;
   padding: 3rem;
   z-index: 0;

@@ -64,7 +64,7 @@
               <article class="form__group">
                 <label class="form__label"><b>{{ form.password.label() }}</b></label>
                 {{ form.password(class="form__input") }}
-              </art>
+              </article>
 
               <hr>
 
@@ -88,15 +88,15 @@
               {{ render_extra_fields(form.extra) }}
 
               <article id="results" class="form__results">
-                <article class="alert alert--success" x-cloak="success" x-show="success">
+                <div class="alert alert--success" x-cloak="success" x-show="success">
                   <strong>¡Éxito!</strong> Tu perfil ha sido actualizado
-                </article>
+                </div>
 
                 <template x-for="(msg, idx) in errors" :key="idx">
-                  <article class="alert alert--danger">
+                  <div class="alert alert--danger">
                     <span class="sr-only">Error:</span>
                     <span x-text="msg"></span>
-                  </article>
+                  </div>
                 </template>
               </article>
 

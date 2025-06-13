@@ -1,26 +1,16 @@
-.challenge-board {
-  max-width: 100%;
-  margin: 0 auto;
-
-  &__loader {
-    min-height: 50vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .spinner {
-      text-align: center;
-      color: #e93456;
-    }
-  }
-
-  &__categories {
-    margin-top: 2rem;
-  }
-}
-
 .category {
-  padding: 2rem 10rem;
+  // Base padding for small screens
+  padding: 2rem 3rem;
+
+  // Medium screens (≥768px)
+  @media (min-width: 768px) {
+    padding: 2rem 5rem;
+  }
+
+  // Extra large screens (≥1200px)
+  @media (min-width: 1200px) {
+    padding: 2rem 10rem;
+  }
 
   &__header {
     margin-bottom: 1rem;
@@ -33,6 +23,7 @@
     gap: 1rem;
   }
 
+  // Alternate background color for odd categories
   &:nth-child(odd) {
     background-color: var(--section-bg-color);
   }
