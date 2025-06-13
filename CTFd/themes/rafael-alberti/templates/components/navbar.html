@@ -1,5 +1,5 @@
 <nav class="navbar navbar--fixed-top navbar--dark">
-  <div class="navbar__container">
+  <section class="navbar__container">
     <a href="{{ url_for('views.static_html', route='/') }}" class="navbar__brand">
       {% if Configs.ctf_logo %}
         <img
@@ -22,7 +22,7 @@
       <span class="navbar__toggle-icon"></span>
     </button>
 
-    <div class="navbar__menu" id="base-navbars">
+    <section class="navbar__menu" id="base-navbars">
       <ul class="navbar__nav navbar__nav--left">
         {% for page in Plugins.user_menu_pages %}
           <li class="navbar__item">
@@ -151,5 +151,5 @@
         </li>
       </ul>
     </div>
-  </div>
+  </section>
 </nav>

@@ -1,6 +1,6 @@
-<div :class="getStyles()" role="document" x-data="Challenge"
+<section :class="getStyles()" role="document" x-data="Challenge"
      x-init="id = {{ challenge.id }}; max_attempts = {{ max_attempts }}; attempts = {{ attempts }}">
-  <div class="challenge-card__modals__header">
+  <section class="challenge-card__modals__header">
     <ul class="challenge-card__tabs">
       <li>
         <button
@@ -25,23 +25,23 @@
     </ul>
 
     <button class="challenge-card__modals__header__close" aria-label="Cerrar" @click="closeModal()">&times;</button>
-  </div>
+  </section>
 
-  <div class="challenge-card__modals__body challenge-card__body">
+  <section class="challenge-card__modals__body challenge-card__body">
     <!-- Desafío -->
-    <div class="challenge-card__tabs-content">
-      <div class="challenge-card__pane" :class="{ 'challenge-card__pane--active': tab === 'challenge' }">
+    <article class="challenge-card__tabs-content">
+      <article class="challenge-card__pane" :class="{ 'challenge-card__pane--active': tab === 'challenge' }">
         <h2 class="challenge-card__name">{{ challenge.name }}</h2>
         <h3 class="challenge-card__value">{{ challenge.value }}</h3>
 
         {% if tags %}
-        <div class="challenge-card__tags">
+        <section class="challenge-card__tags">
           {% block tags %}
             {% for tag in tags %}
               <span class="etiqueta etiqueta--secundaria">{{ tag }}</span>
             {% endfor %}
           {% endblock %}
-        </div>
+        </section>
         {% endif %}
 
         <small class="challenge-card__author">
@@ -51,7 +51,7 @@
         <span class="challenge-card__description">{% block description %}{{ challenge.html }}{% endblock %}</span>
 
         {% if challenge.connection_info %}
-        <div class="challenge-card__connection">
+        <section class="challenge-card__connection">
           <span class="challenge-card__connection-info">
             {% block connection_info %}
               {% set conn = challenge.connection_info %}
@@ -62,13 +62,13 @@
               {% endif %}
             {% endblock %}
           </span>
-        </div>
+        </section>
         {% endif %}
 
         {% if hints %}
-        <div class="challenge-card__hints">
+        <section class="challenge-card__hints">
           {% for hint in hints | sort(attribute="cost") %}
-          <div x-data="Hint" x-init="id = {{ hint.id }}">
+          <article x-data="Hint" x-init="id = {{ hint.id }}">
             {% if hint.content %}
               <details>
                 <summary>Ver pista{% if hint.title %}: {{ hint.title }}{% endif %}</summary>
@@ -86,13 +86,13 @@
                 <div x-html="html"></div>
               </details>
             {% endif %}
-          </div>
+          </article>
           {% endfor %}
-        </div>
+        </section>
         {% endif %}
 
         {% if files %}
-        <div class="challenge-card__files">
+        <section class="challenge-card__files">
           {% for file in files %}
           <div class="challenge-card__file">
             <button class="boton--secundario">
@@ -107,7 +107,7 @@
             </button>
           </div>
           {% endfor %}
-        </div>
+        </section>
         {% endif %}
 
         <template x-if="max_attempts > 0">
@@ -116,7 +116,7 @@
           </p>
         </template>
 
-        <div class="form__group">
+        <section class="form__group">
           {% block input %}
             <div class="form__input-wrapper">
               <input
@@ -135,11 +135,11 @@
               >
             </div>
           {% endblock %}
-        </div>
+        </section>
         
         
 
-        <div class="challenge-card__notification">
+        <section class="challenge-card__notification">
           <template x-if="response">
             <div
               class="alert"
@@ -154,14 +154,14 @@
               <strong x-text="response.data.message"></strong>
         
               <div x-show="(response.data.status == 'correct' || response.data.status == 'already_solved')">
-                <div x-show="getNextId()">
+                <article x-show="getNextId()">
                   <button @click="nextChallenge()" class="boton mt-3">
                     Siguiente desafío
                   </button>
-                </div>
+                </article>
         
                 {% if Configs.social_shares %}
-                  <div>
+                  <section>
                     <button
                       x-show="!share_url"
                       @click="getShareUrl()"
@@ -208,15 +208,15 @@
                         <i class="fa-brands fa-linkedin-in"></i>
                       </a>
                     </div>
-                  </div>
+                  </section>
                 {% endif %}
               </div>
             </div>
           </template>
-        </div>
-      </div>
+        </section>
+      </article>
 
-      <div class="challenge-card__pane" :class="{ 'challenge-card__pane--active': tab === 'solves' }">
+      <article class="challenge-card__pane" :class="{ 'challenge-card__pane--active': tab === 'solves' }">
         <table class="challenge-card__table">
           <thead>
             <tr>
@@ -233,9 +233,9 @@
             </template>
           </tbody>
         </table>
-      </div>
-    </div>
-  </div>
+      </article>
+    </article>
+  </section>
   <template x-if="tab === 'challenge'">
     {% block submit %}
     <button
@@ -246,4 +246,4 @@
     </button>
   {% endblock %}
   </template>
-</div>
+</section>

@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="jumbotron">
-    <div class="container">
+  <section class="jumbotron">
+    <article class="container">
       <h1>
         Confirmar
       </h1>
-    </div>
-  </div>
+    </article>
+  </section>
 
-  <div class="container">
-    <div class="row">
-      <div class="col-md-10 col-lg-8 col-xl-6 offset-md-1 offset-lg-2 offset-xl-3">
+  <section class="container">
+    <article class="row">
+      <section class="col-md-10 col-lg-8 col-xl-6 offset-md-1 offset-lg-2 offset-xl-3">
         {% include "components/errors.html" %}
 
         <h5 class="text-center">
@@ -34,20 +34,20 @@
 
         {% with form = Forms.auth.ConfirmForm() %}
           <form method="POST" action="{{ url_for('auth.confirm') }}">
-            <div class="row">
-              <div class="mb-3 col-md-6">
+            <article class="row">
+              <article class="mb-3 col-md-6">
                 {{ form.submit(class="btn btn-primary w-100") }}
-              </div>
-              <div class="mb-3 col-md-6">
+              </article>
+              <article class="mb-3 col-md-6">
                 <a href="{{ url_for('views.settings') }}" class="btn btn-secondary w-100">
                   Cambiar dirección de correo electrónico
                 </a>
-              </div>
+              </article>
               {{ form.nonce() }}
-            </div>
+            </article>
           </form>
         {% endwith %}
-      </div>
-    </div>
-  </div>
+      </section>
+    </article>
+  </section>
 {% endblock %}

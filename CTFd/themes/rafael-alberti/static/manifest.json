@@ -1,11 +1,11 @@
 {
-  "static/img/Decorado_header.svg": {
-    "file": "assets/Decorado_header.97c38aef.svg",
-    "src": "static/img/Decorado_header.svg"
-  },
   "static/img/Bordes.svg": {
     "file": "assets/Bordes.9c2be778.svg",
     "src": "static/img/Bordes.svg"
+  },
+  "static/img/Decorado_header.svg": {
+    "file": "assets/Decorado_header.97c38aef.svg",
+    "src": "static/img/Decorado_header.svg"
   },
   "assets/js/index.js": {
     "file": "assets/index.cf63c176.js",

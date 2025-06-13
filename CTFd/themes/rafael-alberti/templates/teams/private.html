@@ -4,50 +4,50 @@
 {% block content %}
 {% set decorado_header = decorado_header or Assets.file("static/img/Decorado_header.svg") %}
 
-<div id="team-edit-modal" class="modals" x-data="TeamEditModal" x-ref="teamEditModal" style="display: none;">
-  <div class="modals__overlay" @click="closeModal"></div>
-  <div class="modals__dialog">
-    <div class="modals__header">
+<section id="team-edit-modal" class="modals" x-data="TeamEditModal" x-ref="teamEditModal" style="display: none;">
+  <article class="modals__overlay" @click="closeModal"></article>
+  <article class="modals__dialog">
+    <article class="modals__header">
       <h4 class="modals__header__title">Editar equipo</h4>
       <span class="modals__header__close" @click="closeModal" aria-label="Cerrar">
         &times;
       </span>
-    </div>
-    <div class="modals__body">
+    </article>
+    <article class="modals__body">
       {% with form = Forms.teams.TeamSettingsForm(obj=team) %}
         <form id="team-info-form" method="POST" @submit.prevent="updateProfile()">
-          <div class="form__group">
+          <article class="form__group">
             <label class="form__label" for="team-name">{{ form.name.label }}</label>
             {{ form.name(class="form__input") }}
             <small class="form__description text-muted">{{ form.name.description }}</small>
-          </div>
-          <div class="form__group">
+          </article>
+          <article class="form__group">
             <label class="form__label" for="team-password">{{ form.password.label }}</label>
             {{ form.password(class="form__input") }}
             <small class="form__description text-muted">{{ form.password.description }}</small>
-          </div>
-          <div class="form__group">
+          </article>
+          <article class="form__group">
             <label class="form__label" for="team-confirm">{{ form.confirm.label }}</label>
             {{ form.confirm(class="form__input") }}
             <small class="form__description text-muted">{{ form.confirm.description }}</small>
-          </div>
-          <div class="form__group">
+          </article>
+          <article class="form__group">
             <label class="form__label" for="team-website">{{ form.website.label }}</label>
             {{ form.website(class="form__input") }}
             <small class="form__description text-muted">{{ form.website.description }}</small>
-          </div>
-          <div class="form__group">
+          </article>
+          <article class="form__group">
             <label class="form__label" for="team-affiliation">{{ form.affiliation.label }}</label>
             {{ form.affiliation(class="form__input") }}
             <small class="form__description text-muted">{{ form.affiliation.description }}</small>
-          </div>
-          <div class="form__group">
+          </article>
+          <article class="form__group">
             <label class="form__label" for="team-country">{{ form.country.label }}</label>
             {{ form.country(class="form__select") }}
             <small class="form__description text-muted">{{ form.country.description }}</small>
-          </div>
+          </article>
           {{ render_extra_fields(form.extra) }}
-          <div id="results">
+          <article id="results">
             <div class="alert alert-success" role="alert" x-cloak="success" x-show="success">
               <strong>¡Éxito!</strong> El perfil de tu equipo ha sido actualizado
             </div>
@@ -56,15 +56,15 @@
                 <span x-text="msg"></span>
               </div>
             </template>
-          </div>
+          </article>
             <div class="form__submit">
                 <button type="submit" class="boton">Enviar</button>
             </div>
         </form>
       {% endwith %}
-    </div>
-  </div>
-</div>
+    </article>
+  </article>
+</section>
 
 <div id="team-captain-modal" class="modals" x-data="TeamCaptainModal" x-ref="teamCaptainModal" style="display: none;">
   <div class="modals__overlay" @click="closeModal"></div>

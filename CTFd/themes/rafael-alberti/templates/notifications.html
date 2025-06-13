@@ -17,11 +17,11 @@
     </section>
   {% endif %}
 
-  <div class="notifications">
+  <section class="notifications">
     <section class="notifications__list">
       {% for notification in notifications %}
         <article class="notification" data-id="{{ notification.id }}">
-          <div class="notification__content">
+          <section class="notification__content">
             <h3 class="notification__title">
               {{ notification.title }}
             </h3>
@@ -29,11 +29,11 @@
             <small class="notification__date">
               <span data-time="{{ notification.date | isoformat }}"></span>
             </small>
-          </div>
+          </section>
         </article>
       {% endfor %}
     </section>
-  </div>
+  </section>
 {% endblock %}
 
 {% block scripts %}

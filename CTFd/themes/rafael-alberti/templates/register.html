@@ -6,8 +6,8 @@
   {% set titulo = "Registro" %}
   {% include "components/jumbotron.html" with context %}
 
-  <div class="register">
-    <div class="register__box">
+  <section class="register">
+    <article class="register__box">
       {% include "components/errors.html" %}
 
       {% if integrations.mlc() %}
@@ -22,47 +22,47 @@
 
         <form method="post" accept-charset="utf-8" class="register__form">
 
-          <div class="register__field">
+          <article class="register__field">
             <label class="register__label">
               <b>{{ form.name.label() }}</b>
             </label>
             {{ form.name(class="register__input", value=name, autocomplete="username") }}
             <small class="register__help-text">Tu nombre de usuario en el sitio</small>
-          </div>
+          </article>
 
-          <div class="register__field">
+          <article class="register__field">
             <label class="register__label">
               <b>{{ form.email.label() }}</b>
             </label>
             {{ form.email(class="register__input", value=email, autocomplete="email") }}
             <small class="register__help-text">Nunca se muestra al público</small>
-          </div>
+          </article>
 
-          <div class="register__field">
+          <article class="register__field">
             <label class="register__label">
               <b>{{ form.password.label() }}</b>
             </label>
             {{ form.password(class="register__input", value=password, autocomplete="new-password") }}
             <small class="register__help-text">Contraseña utilizada para iniciar sesión en su cuenta</small>
-          </div>
+          </article>
 
           {{ form.nonce() }}
 
           {{ render_extra_fields(form.extra) }}
 
-            <div class="register__actions">
+            <article class="register__actions">
                 <button type="submit" class="boton">Enviar</button>
-            </div>
+            </article>
 
           {% if Configs.tos_or_privacy %}
-            <div class="register__terms">
+            <article class="register__terms">
               <small class="register__help-text">
                 Al registrarte, aceptas la <a href="{{ Configs.privacy_link }}" target="_blank">política de privacidad</a> y las <a href="{{ Configs.tos_link }}" target="_blank">condiciones de servicio</a>.
               </small>
-            </div>
+            </article>
           {% endif %}
         </form>
       {% endwith %}
-    </div>
-  </div>
+    </article>
+  </section>
 {% endblock %}

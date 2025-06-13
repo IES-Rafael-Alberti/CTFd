@@ -5,11 +5,11 @@
   {% set titulo = "Configuración" %}
   {% include "components/jumbotron.html" with context %}
 
-  <div class="ajustes">
-    <div class="ajustes__layout" x-data="{ tab: 'profile' }">
+  <section class="ajustes">
+    <article class="ajustes__layout" x-data="{ tab: 'profile' }">
 
-      <div class="ajustes__sidebar">
-        <div class="tabs__nav">
+      <section class="ajustes__sidebar">
+        <article class="tabs__nav">
           <button
             class="boton--secundario"
             :class="{ 'boton--secundario-active': tab === 'profile' }"
@@ -25,11 +25,11 @@
             Tokens de acceso
           </button>
 
-        </div>
-      </div>
+        </article>
+      </section>
 
-      <div class="ajustes__content">
-        <div class="tabs__content" x-show="tab === 'profile'" x-transition>
+      <section class="ajustes__content">
+        <article class="tabs__content" x-show="tab === 'profile'" x-transition>
           {% include "components/errors.html" %}
 
           {% with form = Forms.self.SettingsForm(language=language, country=country) %}
@@ -39,90 +39,90 @@
               @submit.prevent="updateProfile()"
               class="form"
             >
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.name.label() }}</b></label>
                 {{ form.name(class="form__input", value=name) }}
-              </div>
+              </article>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.email.label() }}</b></label>
                 {{ form.email(class="form__input", value=email) }}
-              </div>
+              </article>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.language.label() }}</b></label>
                 {{ form.language(class="form__select", value=language) }}
-              </div>
+              </article>
 
               <hr>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.confirm.label() }}</b></label>
                 {{ form.confirm(class="form__input") }}
-              </div>
+              </article>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.password.label() }}</b></label>
                 {{ form.password(class="form__input") }}
-              </div>
+              </art>
 
               <hr>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.affiliation.label() }}</b></label>
                 {{ form.affiliation(class="form__input", value=affiliation or "") }}
-              </div>
+              </article>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.website.label() }}</b></label>
                 {{ form.website(class="form__input", value=website or "") }}
-              </div>
+              </article>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.country.label() }}</b></label>
                 {{ form.country(class="form__select", value=country) }}
-              </div>
+              </article>
 
               <hr>
 
               {{ render_extra_fields(form.extra) }}
 
-              <div id="results" class="form__results">
-                <div class="alert alert--success" x-cloak="success" x-show="success">
+              <article id="results" class="form__results">
+                <article class="alert alert--success" x-cloak="success" x-show="success">
                   <strong>¡Éxito!</strong> Tu perfil ha sido actualizado
-                </div>
+                </article>
 
                 <template x-for="(msg, idx) in errors" :key="idx">
-                  <div class="alert alert--danger">
+                  <article class="alert alert--danger">
                     <span class="sr-only">Error:</span>
                     <span x-text="msg"></span>
-                  </div>
+                  </article>
                 </template>
-              </div>
+              </article>
 
-              <div class="form__group--right">
+              <article class="form__group--right">
                   <button type="submit" class="boton">Enviar</button>
-              </div>
+              </article>
             </form>
           {% endwith %}
-        </div>
+        </article>
 
-        <div class="tabs__content" x-show="tab === 'tokens'" x-transition>
+        <article class="tabs__content" x-show="tab === 'tokens'" x-transition>
           {% with form = Forms.self.TokensForm() %}
             <form method="POST" x-data="TokensForm" @submit.prevent="generateToken()" class="form">
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.expiration.label() }}</b></label>
                 {{ form.expiration(class="form__input") }}
-              </div>
+              </article>
 
-              <div class="form__group">
+              <article class="form__group">
                 <label class="form__label"><b>{{ form.description.label() }}</b></label>
                 {{ form.description(class="form__input", rows="3") }}
-              </div>
+              </article>
 
-              <div class="form__group--right">
+              <article class="form__group--right">
                 <button type="submit" class="boton">Genere</button>
-              </div>
+              </article>
             </form>
           {% endwith %}
 
@@ -130,25 +130,25 @@
             <hr>
             <h4 class="text-center mt-3">Tokens activos</h4>
 
-            <div x-data="Tokens">
-              <div class="modals" x-ref="confirmModal" style="display: none;">
-                <div class="modals__overlay"></div>
-                <div class="modals__dialog">
-                  <div class="modals__header">
+            <article x-data="Tokens">
+              <section class="modals" x-ref="confirmModal" style="display: none;">
+                <article class="modals__overlay"></article>
+                <article class="modals__dialog">
+                  <section class="modals__header">
                     <h4 class="modals__header__title">Eliminar token</h4>
                     <span class="modals__header__close" @click="$refs.confirmModal.style.display = 'none'" aria-label="Cerrar">
                       &times;
                     </span>
-                  </div>
-                  <div class="modals__body">
+                  </section>
+                  <section class="modals__body">
                     <p>¿Estás seguro de que deseas eliminar este token?</p>
-                  </div>
-                  <div class="modals__footer">
+                  </section>
+                  <section class="modals__footer">
                     <button type="button" class="boton--secundario" @click="$refs.confirmModal.style.display = 'none'">No</button>
                     <button type="button" class="boton" @click="deleteSelectedToken(); $refs.confirmModal.style.display = 'none'">Sí</button>
-                  </div>
-                </div>
-              </div>
+                  </section>
+                </article>
+              </section>
               
               <table class="table">
                 <thead>
@@ -174,12 +174,12 @@
                   {% endfor %}
                 </tbody>
               </table>
-            </div>
+            </article>
           {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
+        </article>
+      </section>
+    </article>
+  </section>
 {% endblock %}
 
 {% block scripts %}

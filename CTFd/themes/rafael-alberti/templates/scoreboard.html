@@ -7,21 +7,21 @@
 
   {% include "components/errors.html" %}
 
-  <div id="score-graph"
+  <section id="score-graph"
        class="score-graph"
        :class="{'score-graph--visible': show, 'score-graph--hidden': !show}"
        x-data="ScoreboardDetail"
        x-ref="scoregraph"
        @bracket-change.window="activeBracket=$event.detail; update();">
 
-    <div class="score-graph__spinner">
+    <article class="score-graph__spinner">
       <i class="score-graph__spinner-icon fas fa-circle-notch fa-spin fa-3x fa-fw"></i>
-    </div>
-  </div>
+    </article>
+  </section>
 
-  <div class="scoreboard" x-data="ScoreboardList">
+  <section class="scoreboard" x-data="ScoreboardList">
     <template x-if="brackets.length && standings.length">
-      <div class="scoreboard__filters">
+      <section class="scoreboard__filters">
         <nav class="scoreboard__nav">
           <button class="scoreboard__tab"
                   :class="{'scoreboard__tab--active': !activeBracket}"
@@ -35,10 +35,10 @@
                     @click="activeBracket=bracket.id"></button>
           </template>
         </nav>
-      </div>
+      </section>
     </template>
 
-    <div class="scoreboard__table-wrapper" x-show="standings.length">
+    <article class="scoreboard__table-wrapper" x-show="standings.length">
       <table class="scoreboard__table">
         <thead>
           <tr class="scoreboard__row-header">
@@ -71,10 +71,10 @@
           </template>
         </tbody>
       </table>
-    </div>
-  </div>
+    </article>
+  </section>
 
-    <div x-data="ScoreboardList">
+    <section x-data="ScoreboardList">
         <div class="scoreboard__empty" x-show="! standings.length">
             <div class="container-path container-path--top"></div>
             <div class="scoreboard__empty-message">
@@ -82,7 +82,7 @@
             </div>
             <div class="container-path container-path--bottom"></div>
         </div>
-    </div>
+    </section>
 {% endblock %}
 
 {% block scripts %}

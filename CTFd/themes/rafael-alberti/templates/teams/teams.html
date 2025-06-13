@@ -4,7 +4,7 @@
   {% set titulo = "Equipos" %}
   {% include "components/jumbotron.html" with context %}
 
-  <div class="equipos">
+  <section class="equipos">
     {% if q and field %}
       <section class="equipos__filtro-equipo">
           <h5 class="filtro-equipo__mensaje">
@@ -18,26 +18,26 @@
 
     {% with form = Forms.teams.PublicTeamSearchForm(field=field, q=q) %}
       <form method="GET" class="equipos__formulario" novalidate>
-        <div class="equipos__campo equipos__campo--select">
+        <article class="equipos__campo equipos__campo--select">
           {{ form.field(class="form__select") }}
-        </div>
+        </article>
 
-        <div class="equipos__campo equipos__campo--input">
+        <article class="equipos__campo equipos__campo--input">
           <div class="form__input-wrapper">
             <span class="form__prefix">&gt;</span>
             {{ form.q(class="form__input form__input--special", placeholder="Buscar equipos coincidentes") }}
           </div>
-        </div>
+        </article>
 
-        <div class="equipos__campo equipos__campo--boton">
+        <article class="equipos__campo equipos__campo--boton">
           <button type="submit" class="boton">
             <i class="fas fa-search" aria-hidden="true"></i>
           </button>
-        </div>
+        </article>
       </form>
     {% endwith %}
 
-    <div class="tabla">
+    <section class="tabla">
       <table class="tabla__tabla">
         <thead class="tabla__encabezado">
           <tr>
@@ -100,10 +100,10 @@
           {% endfor %}
         </tbody>
       </table>
-    </div>
+    </section>
 
     {% if teams.pages > 1 %}
-      <div class="paginacion">
+      <section class="paginacion">
         <span class="paginacion__texto">Página</span>
 
         {% if teams.page != 1 %}
@@ -119,9 +119,9 @@
         {% if teams.next_num %}
           <a href="{{ next_page }}" class="paginacion__link">&raquo;</a>
         {% endif %}
-      </div>
+      </section>
     {% endif %}
-  </div>
+  </section>
 {% endblock %}
 
 {% block scripts %}

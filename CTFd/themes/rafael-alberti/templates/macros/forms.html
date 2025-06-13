@@ -1,7 +1,7 @@
 {% macro render_extra_fields(fields, show_labels=True, show_optionals=True, show_descriptions=True) -%}
   {% for field in fields %}
     {% if field.field_type == "text" %}
-      <div class="form__group">
+      <article class="form__group">
         {% if show_labels %}
           <label class="form__label"><b>{{ field.label() }}</b></label>
         {% endif %}
@@ -15,10 +15,10 @@
         {% if show_descriptions and field.description %}
           <small class="form__description">{{ field.description }}</small>
         {% endif %}
-      </div>
+      </article>
 
     {% elif field.field_type == "boolean" %}
-      <div class="form__group">
+      <article class="form__group">
         {% if show_labels %}
           <label class="form__label">{{ field.label() }}</label>
         {% endif %}
@@ -35,10 +35,10 @@
         {% if show_descriptions and field.description %}
           <small class="form__description">{{ field.description }}</small>
         {% endif %}
-      </div>
+      </article>
 
     {% elif field.field_type == "select" %}
-      <div class="form__group">
+      <article class="form__group">
         {% if show_labels %}
           <label class="form__label"><b>{{ field.label() }}</b></label>
         {% endif %}
@@ -52,7 +52,7 @@
         {% if show_descriptions and field.description %}
           <small class="form__description">{{ field.description }}</small>
         {% endif %}
-      </div>
+      </article>
     {% endif %}
   {% endfor %}
 {%- endmacro %}

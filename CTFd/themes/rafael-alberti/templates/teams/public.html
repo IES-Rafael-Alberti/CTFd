@@ -4,7 +4,7 @@
 {% set decorado_header = decorado_header or Assets.file("static/img/Decorado_header.svg") %}
 
 <section class="jumbotron jumbotron--special" style="position: relative; overflow: hidden;">
-  <div class="jumbotron__container">
+  <article class="jumbotron__container">
     <h1 class="jumbotron__title section-title">{{ team.name }}</h1>
 
     {% if team.oauth_id %}
@@ -25,26 +25,26 @@
     {% endif %}
 
     {% if team.bracket_id %}
-      <div class="jumbotron__bracket">
+      <article class="jumbotron__bracket">
         <span class="etiqueta etiqueta--principal">
           {{ team.bracket.name }}
         </span>
-      </div>
+      </article>
     {% endif %}
 
-    <div class="jumbotron__fields">
+    <article class="jumbotron__fields">
       {% for field in team.fields %}
         <div class="jumbotron__field">
           {{ field.name }}: {{ field.value }}
         </div>
       {% endfor %}
-    </div>
+    </article>
 
     {% if team.fields %}
       <hr class="jumbotron__divider">
     {% endif %}
 
-    <div class="jumbotron__stats">
+    <article class="jumbotron__stats">
       <h2 class="jumbotron__position">
         {% if place %}
           {{ place }} <small>puesto</small>
@@ -55,27 +55,27 @@
           {{ score }} <small>puntos</small>
         {% endif %}
       </h2>
-    </div>
+    </article>
 
     {% if team.website %}
-      <div class="jumbotron__website">
+      <article class="jumbotron__website">
         <a href="{{ team.website }}" target="_blank" rel="noopener" title="{{ team.website }}">
           <i class="fas fa-external-link-alt fa-2x jumbotron__website-a"></i>
         </a>
-      </div>
+      </article>
     {% endif %}
-  </div>
+  </article>
 
   <img src="{{ decorado_header }}" alt="Decoración jumbotron" 
        style="position: absolute; top: 20%; left: 0; width: 100%; height: auto; pointer-events: none; z-index: 0;">
 </section>
 
-<div class="container-path container-path--jumbotron-bottom"></div>
+<section class="container-path container-path--jumbotron-bottom"></section>
 
 <section class="contenido">
   {% include "components/errors.html" %}
 
-  <div class="tabla">
+  <section class="tabla">
     <h3 class="tabla">Miembros</h3>
     <table class="tabla__tabla">
       <thead>
@@ -103,11 +103,11 @@
         {% endfor %}
       </tbody>
     </table>
-  </div>
+  </section>
 
   {% if solves or awards %}
     {% if awards %}
-      <div class="premios">
+      <section class="premios">
         <h3 class="premios__titulo">Premios</h3>
         <div class="premios__lista">
           {% for award in awards %}
@@ -122,64 +122,64 @@
             </div>
           {% endfor %}
         </div>
-      </div>
+      </section>
     {% endif %}
 
     <section class="estadisticas" x-data="TeamGraphs">
       <div class="estadisticas__barras">
-        <div class="estadisticas__barra__container">
-          <div class="estadisticas__barra">
-            <div 
+        <article class="estadisticas__barra__container">
+          <section class="estadisticas__barra">
+            <article 
               class="estadisticas__progreso"
               role="progressbar"
               :style="{ width: `${getSolvePercentage()}%`, 'background-color': 'rgb(0, 209, 64)' }">
-            </div>
-            <div 
+            </article>
+            <article 
               class="estadisticas__progreso"
               role="progressbar"
               :style="{ width: `${getFailPercentage()}%`, 'background-color': 'rgb(207, 38, 0)' }">
-            </div>
-          </div>
-          <div class="estadisticas__leyenda">
+            </article>
+          </section>
+          <section class="estadisticas__leyenda">
             <svg height="16" width="16"><circle cx="8" cy="8" r="5" fill="rgb(0, 209, 64)" /></svg>
             <small x-text="`Aciertos (${getSolvePercentage()}%)`"></small>
     
             <svg height="16" width="16"><circle cx="8" cy="8" r="5" fill="rgb(207, 38, 0)" /></svg>
             <small x-text="`Fallos (${getFailPercentage()}%)`"></small>
-          </div>
-        </div>
+          </section>
+        </article>
   
-        <div class="estadisticas__barra__container">
-          <div class="estadisticas__barra">
+        <article class="estadisticas__barra__container">
+          <section class="estadisticas__barra">
             <template x-for="category in getCategoryBreakdown()" :key="category.name">
-              <div 
+              <article 
                 class="estadisticas__progreso"
                 role="progressbar"
                 :style="{ width: `${category.percent}%`, 'background-color': category.color }">
-              </div>
+              </article>
             </template>
-          </div>
-          <div class="estadisticas__leyenda">
+          </section>
+          <section class="estadisticas__leyenda">
             <template x-for="category in getCategoryBreakdown()" :key="category.name">
-              <div>
+              <article>
                 <svg height="16" width="16">
                   <circle cx="8" cy="8" r="5" :fill="category.color" />
                 </svg>
                 <small x-text="`${category.name} (${category.percent}%)`"></small>
-              </div>
+              </article>
             </template>
-          </div>
-        </div>
+          </section>
+        </article>
       </div>
 
       <div class="estadisticas__grafica" id="score-graph" x-ref="scoregraph">
-        <div class="estadisticas__spinner">
+        <article class="estadisticas__spinner">
           <i class="fas fa-circle-notch fa-spin fa-3x fa-fw spinner"></i>
-        </div>
+        </article>
       </div>
     </section>
 
-    <div class="tabla">
+    <section class="tabla">
       <h3 class="tabla__titulo">Resueltos</h3>
       <div class="tabla__contenedor">
         <table class="tabla__tabla">
@@ -209,11 +209,11 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   {% else %}
-    <div class="estadisticas__vacio">
+    <section class="estadisticas__vacio">
       <h3>No hay aciertos aún</h3>
-    </div>
+    </section>
   {% endif %}
 </section>
 {% endblock %}

@@ -4,7 +4,7 @@
   {% set titulo = "Usuarios" %}
   {% include "components/jumbotron.html" with context %}
 
-  <div class="usuarios">
+  <section class="usuarios">
     {% if q and field %}
       <section class="usuarios__filtro-usuarios">
           <h5 class="filtro-usuarios__mensaje">
@@ -35,7 +35,7 @@
       </form>
     {% endwith %}
 
-    <div class="tabla">
+    <section class="tabla">
       <table class="tabla__tabla">
         <thead class="tabla__encabezado">
           <tr>
@@ -98,10 +98,10 @@
           {% endfor %}
         </tbody>
       </table>
-    </div>
+    </section>
 
     {% if users.pages > 1 %}
-      <div class="paginacion">
+      <section class="paginacion">
         <span class="paginacion__texto">Página</span>
 
         {% if users.page != 1 %}
@@ -117,9 +117,9 @@
         {% if users.next_num %}
           <a href="{{ next_page }}" class="paginacion__link">&raquo;</a>
         {% endif %}
-      </div>
+      </section>
     {% endif %}
-  </div>
+  </section>
 {% endblock %}
 
 {% block scripts %}

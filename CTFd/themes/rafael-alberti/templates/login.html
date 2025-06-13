@@ -6,8 +6,8 @@
   {% set titulo = "Inicio de sesión" %}
   {% include "components/jumbotron.html" with context %}
 
-  <div class="login">
-    <div class="login__box">
+  <section class="login">
+    <article class="login__box">
       {% include "components/errors.html" %}
 
       {% if integrations.mlc() %}
@@ -19,30 +19,30 @@
 
       {% with form = Forms.auth.LoginForm() %}
         <form method="post" accept-charset="utf-8" class="login__form">
-          <div class="login__field">
+          <article class="login__field">
             <label class="login__label">
               <b>{{ form.name.label() }}</b>
             </label>
             {{ form.name(class="login__input", value=name, autocomplete="username email") }}
-          </div>
+          </article>
 
-          <div class="login__field">
+          <article class="login__field">
             <label class="login__label">
               <b>{{ form.password.label() }}</b>
             </label>
             {{ form.password(class="login__input", value=password, autocomplete="current-password") }}
-          </div>
+          </article>
 
-          <div class="login__actions">
+          <article class="login__actions">
             <a href="{{ url_for('auth.reset_password') }}" class="login__link">
               ¿Olvidaste tu contraseña?
             </a>
               <button type="submit" class="boton">Enviar</button>
-          </div>
+          </article>
 
           {{ form.nonce() }}
         </form>
       {% endwith %}
-    </div>
-  </div>
+    </article>
+  </section>
 {% endblock %}

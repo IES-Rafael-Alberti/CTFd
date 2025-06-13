@@ -8,13 +8,13 @@
   <section class="challenge-board">
     {% include "components/errors.html" %}
 
-    <div 
+    <article 
       x-data="ChallengeBoard" 
       @load-challenges.window="loadChallenges()" 
       @load-challenge.window="loadChallenge($event.detail)"
     >
       <!-- Modal -->
-      <div
+      <section
         x-ref="challengeWindow"
         id="challenge-window"
         class="challenge-card__modals"
@@ -24,20 +24,20 @@
         @keydown.escape.window="closeModal()"
         style="display: none;"
       >
-        <div class="challenge-card__modals__overlay"></div>
-        <div class="challenge-card__modals__dialog" x-html="$store.challenge.data.view"></div>
-      </div>
+        <article class="challenge-card__modals__overlay"></article>
+        <article class="challenge-card__modals__dialog" x-html="$store.challenge.data.view"></article>
+      </section>
 
 
       <!-- Spinner -->
-      <div class="challenge-board__loader" x-show="!loaded">
+      <section class="challenge-board__loader" x-show="!loaded">
         <div class="spinner">
           <i class="fas fa-circle-notch fa-spin fa-3x fa-fw"></i>
         </div>
-      </div>
+      </section>
 
       <!-- Challenge Categories -->
-      <div class="challenge-board__categories" x-show="loaded">
+      <section class="challenge-board__categories" x-show="loaded">
         <template x-for="(category, idx) in getCategories()" :key="idx">
           <div>
             <template x-if="idx % 2 === 1">
@@ -50,9 +50,9 @@
                 <h3 x-text="category"></h3>
               </header>
           
-              <div class="category__challenges">
+              <section class="category__challenges">
                 <template x-for="(c, idx) in getChallenges(category)" :key="c.id">
-                  <div class="challenge">
+                  <article class="challenge">
                     <button
                       class="challenge__button"
                       :class="[
@@ -62,39 +62,39 @@
                       :value="c.id"
                       @click="loadChallenge(c.id)"
                     >
-                      <div class="challenge__content">
+                      <section class="challenge__content">
                         <h4 class="challenge__name" x-text="c.name"></h4>
                         <h3 class="challenge__value" x-text="c.value"></h3>
-                      </div>
+                      </section>
           
-                      <div
+                      <section
                         class="challenge__solved"
                         x-show="c.solved_by_me"
                         x-transition
                       >
                         <div>RESUELTO</div>
-                      </div>
+                      </section>
           
-                      <div
+                      <section
                         class="challenge__solved"
                         x-show="!c.solved_by_me"
                         x-transition
                       >
-                      </div>
+                      </section>
                     </button>
-                  </div>
+                  </article>
                 </template>
-              </div>
+              </section>
           
             </section>
             <template x-if="idx % 2 === 1">
-              <div class="container-path container-path--bottom"></div>
+              <section class="container-path container-path--bottom"></section>
             </template>
           </div>
         </template>
         
-      </div>
-    </div>
+      </section>
+    </article>
   </section>
 
 {% endblock %}
