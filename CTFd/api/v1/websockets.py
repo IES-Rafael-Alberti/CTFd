@@ -1,35 +1,16 @@
 from collections import defaultdict
-from decimal import Decimal
 from flask_socketio import emit
 from CTFd.models import Challenges, Solves, Fails, Submissions, Teams, Users, db
 from CTFd.utils.config import is_teams_mode
 from CTFd.utils.modes import get_model
 from CTFd.utils.scores import get_standings, get_user_standings
 
-
-def convert_json_compatible(obj):
-    """
-    Recursively converts data to types that are JSON-serializable.
-    Converts Decimal to float, and handles dicts, lists, and tuples.
-    """
-    if isinstance(obj, dict):
-        return {k: convert_json_compatible(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [convert_json_compatible(v) for v in obj]
-    elif isinstance(obj, tuple):
-        return tuple(convert_json_compatible(v) for v in obj)
-    elif isinstance(obj, Decimal):
-        return float(obj)
-    return obj
-
-
 def emit_challenge_statistics():
-    """
-    Emits statistics for each challenge, including solve and fail counts.
-    """
+    # Fetch all challenges and calculate solve/fail counts for each
     challenges = Challenges.query.all()
-    Model = get_model()  # Team or User model depending on mode
+    Model = get_model()  # Get appropriate model (User/Team) based on competition mode
 
+    # Calculate solve counts for each challenge (excluding banned/hidden accounts)
     solve_counts = db.session.query(
         Solves.challenge_id,
         db.func.count(Solves.challenge_id).label('solves')
@@ -38,6 +19,7 @@ def emit_challenge_statistics():
         Model.hidden == False
     ).group_by(Solves.challenge_id).all()
 
+    # Calculate fail counts for each challenge (excluding banned/hidden accounts)
     fail_counts = db.session.query(
         Fails.challenge_id,
         db.func.count(Fails.challenge_id).label('fails')
@@ -48,8 +30,12 @@ def emit_challenge_statistics():
 
     data = []
     for challenge in challenges:
+        # Get solve count for current challenge (default to 0 if none)
         solve_count = next((s.solves for s in solve_counts if s.challenge_id == challenge.id), 0)
+        # Get fail count for current challenge (default to 0 if none)
         fail_count = next((f.fails for f in fail_counts if f.challenge_id == challenge.id), 0)
+
+        # Handle empty category field
         category = challenge.category if challenge.category else "Sin Categoría"
 
         data.append({
@@ -61,13 +47,11 @@ def emit_challenge_statistics():
             'points': challenge.value
         })
 
-    emit('challenge_stats', {'data': convert_json_compatible(data)}, namespace='/', broadcast=True)
-
+    # Broadcast challenge statistics to all connected clients
+    emit('challenge_stats', {'data': data}, namespace='/', broadcast=True)
 
 def emit_scores_distribution():
-    """
-    Emits the distribution of scores grouped by score brackets.
-    """
+    # Calculate score distribution across evenly-sized brackets
     challenge_count = Challenges.query.count() or 1
     total_points = (
         Challenges.query.with_entities(db.func.sum(Challenges.value).label("sum"))
@@ -76,6 +60,7 @@ def emit_scores_distribution():
         .sum
     ) or 0
     total_points = int(total_points)
+    # Determine bracket size (total points divided by challenge count)
     bracket_size = total_points // challenge_count if challenge_count else 1
 
     standings = get_standings(admin=True)
@@ -83,23 +68,21 @@ def emit_scores_distribution():
     bottom, top = 0, bracket_size
     count = 1
 
+    # Process standings from lowest to highest score
     for t in reversed(standings):
-        if (bottom <= t.score <= top) or t.score <= 0:
+        if ((t.score >= bottom) and (t.score <= top)) or t.score <= 0:
             brackets[top] += 1
         else:
+            # Move to next bracket when score exceeds current range
             count += 1
             bottom, top = (bracket_size * (count - 1), bracket_size * count)
             brackets[top] += 1
 
-    emit('scores_distribution', {
-        'data': convert_json_compatible({'brackets': dict(brackets)})
-    }, namespace='/', broadcast=True)
-
+    # Broadcast score distribution brackets
+    emit('scores_distribution', {'data': {'brackets': dict(brackets)}}, namespace='/', broadcast=True)
 
 def emit_submissions_statistics():
-    """
-    Emits the count of submissions by type (correct/incorrect).
-    """
+    # Calculate submission type distribution (correct/incorrect)
     data = (
         Submissions.query.with_entities(
             Submissions.type, db.func.count(Submissions.type)
@@ -107,44 +90,33 @@ def emit_submissions_statistics():
         .group_by(Submissions.type)
         .all()
     )
-    emit('submissions_stats', {
-        'data': convert_json_compatible(dict(data))
-    }, namespace='/', broadcast=True)
-
+    # Broadcast submission statistics
+    emit('submissions_stats', {'data': dict(data)}, namespace='/', broadcast=True)
 
 def emit_teams_statistics():
-    """
-    Emits the total number of registered teams.
-    """
+    # Count registered teams
     registered = Teams.query.count()
-    emit('teams_stats', {
-        'data': convert_json_compatible({'registered': registered})
-    }, namespace='/', broadcast=True)
-
+    # Broadcast team statistics
+    emit('teams_stats', {'data': {'registered': registered}}, namespace='/', broadcast=True)
 
 def emit_users_statistics():
-    """
-    Emits the number of registered and verified users.
-    """
+    # Count registered and confirmed users
     registered = Users.query.count()
     confirmed = Users.query.filter_by(verified=True).count()
-    emit('users_stats', {
-        'data': convert_json_compatible({'registered': registered, 'confirmed': confirmed})
-    }, namespace='/', broadcast=True)
-
+    # Broadcast user statistics
+    emit('users_stats', {'data': {'registered': registered, 'confirmed': confirmed}}, namespace='/', broadcast=True)
 
 def emit_solve_percentages_statistics():
-    """
-    Emits solve/fail percentages for each challenge and overall totals.
-    """
     challenges = Challenges.query.all()
 
+    # Get solve counts per challenge
     solve_counts = db.session.query(
         Solves.challenge_id,
         db.func.count(Solves.challenge_id)
     ).group_by(Solves.challenge_id).all()
     solve_dict = dict(solve_counts)
 
+    # Get fail counts per challenge
     fail_counts = db.session.query(
         Fails.challenge_id,
         db.func.count(Fails.challenge_id)
@@ -163,6 +135,7 @@ def emit_solve_percentages_statistics():
         total_solves += solves
         total_fails += fails
 
+        # Calculate solve percentages (avoid division by zero)
         if total == 0:
             solve_percentage = 0
             unsolve_percentage = 0
@@ -179,23 +152,24 @@ def emit_solve_percentages_statistics():
             'unsolve_percentage': round(unsolve_percentage, 2),
         })
 
+    # Broadcast solve percentage statistics
     emit('solve_percentages_stats', {
-        'data': convert_json_compatible({
+        'data': {
             'solved': total_solves,
             'unsolved': total_fails,
             'challenges': challenge_stats
-        })
+        }
     }, namespace='/', broadcast=True)
 
-
 def emit_scoreboard_statistics():
-    """
-    Emits scoreboard standings and user standings (if in team mode).
-    """
+    # Get current standings and user standings (if in teams mode)
     standings = get_standings(admin=True)
     user_standings = get_user_standings(admin=True) if is_teams_mode() else None
+
+    # Determine current competition mode (teams/users)
     mode = "teams" if is_teams_mode() else "users"
 
+    # Convert standings to serializable format
     serializable_standings = [
         {
             "id": x.account_id,
@@ -207,13 +181,14 @@ def emit_scoreboard_statistics():
         for x in standings
     ]
 
+    # Convert user standings to serializable format (only in teams mode)
     serializable_user_standings = None
     if user_standings:
         serializable_user_standings = [
             {
                 "user_id": user.user_id,
                 "name": user.name,
-                "score": user.score,
+                "score": int(user.score),
                 "hidden": user.hidden,
                 "oauth_id": user.oauth_id,
             }
@@ -226,6 +201,5 @@ def emit_scoreboard_statistics():
         "mode": mode,
     }
 
-    emit('scoreboard_update', {
-        'data': convert_json_compatible(data)
-    }, namespace='/', broadcast=True)
+    # Broadcast updated scoreboard data
+    emit('scoreboard_update', {'data': data}, namespace='/', broadcast=True)
