@@ -2,12 +2,14 @@
 @import "~/@fortawesome/fontawesome-free/scss/solid.scss";
 @import "~/@fortawesome/fontawesome-free/scss/brands.scss";
 
+// Base font family for body
 html,
 body {
   font-family: "Source Sans Pro", sans-serif;
   font-weight: 400;
 }
 
+// Heading font styles
 h1,
 h2,
 h3,
@@ -17,56 +19,116 @@ h5 {
   font-weight: 400;
 }
 
-input,
-textarea {
-  font-family: "Source Code Pro", monospace;
-  font-weight: 400;
-}
-
-h1 {
-  font-size: 64px;
-}
-
-h2 {
-  font-size: 56px;
-}
-
-h3 {
-  font-size: 48px;
-}
-
-h4 {
-  font-size: 40px;
-}
-
-h5 {
-  font-size: 32px;
-}
-
 h6 {
-  font-size: 24px;
   font-family: "Source Sans Pro", sans-serif;
   font-weight: 700;
 }
 
+// Input and textarea font styles
+input,
+textarea {
+  font-family: "Source Code Pro", monospace;
+  font-weight: 400;
+  font-size: 16px;
+
+  // Medium screens (tablets)
+  @media (min-width: 768px) {
+    font-size: 18px;
+  }
+}
+
+// General text elements
 p,
 button,
 .texto-general,
 li {
-  font-size: 18px;
-  font-family: "Source Sans Pro", sans-serif;
-  font-weight: 400;
+  font-size: 16px;
+
+  // Medium screens (tablets)
+  @media (min-width: 768px) {
+    font-size: 18px;
+  }
 }
 
-input,
-textarea {
-  font-family: "Source Code Pro", monospace;
-  font-size: 18px;
-  font-weight: 400;
+// Responsive headings
+
+h1 {
+  font-size: 40px;
+
+  // Medium screens
+  @media (min-width: 768px) {
+    font-size: 56px;
+  }
+
+  // Large screens
+  @media (min-width: 1200px) {
+    font-size: 64px;
+  }
 }
 
+h2 {
+  font-size: 36px;
+
+  @media (min-width: 768px) {
+    font-size: 48px;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 56px;
+  }
+}
+
+h3 {
+  font-size: 32px;
+
+  @media (min-width: 768px) {
+    font-size: 40px;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 48px;
+  }
+}
+
+h4 {
+  font-size: 28px;
+
+  @media (min-width: 768px) {
+    font-size: 36px;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 40px;
+  }
+}
+
+h5 {
+  font-size: 24px;
+
+  @media (min-width: 768px) {
+    font-size: 32px;
+  }
+}
+
+h6 {
+  font-size: 20px;
+
+  @media (min-width: 768px) {
+    font-size: 24px;
+  }
+}
+
+// Section title with large display font
 .section-title {
+  font-size: 48px;
   font-family: "Teko", sans-serif;
   font-weight: bold;
-  font-size: 96px;
+
+  @media (min-width: 768px) {
+    font-size: 72px;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 96px;
+  }
 }
