@@ -119,6 +119,7 @@
   /* ---- MODALES ---- */
   --modal-bg-color: var(--neutral-white-000);
   --modal-title-color: var(--primary-red-500);
+
   --modal-close-color: var(--neutral-grey-400);
   --modal-close-hover-color: var(--primary-red-500);
 
@@ -129,6 +130,20 @@
   --modal-boton-cancel: var(--neutral-grey-300);
   --modal-boton-cancel-hover: var(--neutral-grey-400);
   --modal-boton-cancel-text-color: var(--neutral-black-999);
+
+  --modal-challenge-bg-color: var(--neutral-white-000);
+  --modal-challenge-title-color: var(--primary-red-500);
+  --modal-challenge-value-color: var(--neutral-black-999);
+  --modal-challenge-text-color: var(--neutral-black-999);
+
+  --modal-challenge-tab-button-bg-color: var(--neutral-grey-100);
+  --modal-challenge-tab-button-text-color: var(--primary-red-500);
+  --modal-challenge-tab-active-button-bg-color: var(--neutral-white-000);
+  --modal-challenge-tab-active-button-text-color: var(--neutral-black-999);
+
+  --modal-challenge-submit-button-bg-color: var(--primary-red-500);
+  --modal-challenge-submit-button-text-color: var(--neutral-white-000);
+  --modal-challenge-submit-button-hover-bg-color: var(--primary-red-700);
 
   /* ---- NOTIFICACIONES ---- */
   --notification-border-color1: var(--primary-red-500);
@@ -223,6 +238,17 @@ body {
   --modal-boton-cancel: var(--neutral-grey-300);
   --modal-boton-cancel-hover: var(--neutral-grey-400);
   --modal-boton-cancel-text-color: var(--neutral-black-999);
+
+  --modal-challenge-bg-color: var(--neutral-grey-900);
+  --modal-challenge-title-color: var(--neutral-white-000);
+  --modal-challenge-value-color: var(--neutral-white-000);
+  --modal-challenge-text-color: var(--neutral-white-000);
+
+  --modal-challenge-tab-button-bg-color: var(--neutral-grey-400);
+  --modal-challenge-tab-button-text-color: var(--primary-red-200);
+  --modal-challenge-tab-active-button-bg-color: var(--neutral-grey-900);
+  --modal-challenge-tab-active-button-text-color: var(--neutral-white-000);
+
 
   /* ---- NOTIFICACIONES ---- */
   --notification-border-color1: var(--primary-red-500);

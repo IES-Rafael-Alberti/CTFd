@@ -38,7 +38,7 @@
         <div class="challenge-card__tags">
           {% block tags %}
             {% for tag in tags %}
-              <span class="challenge-card__tag">{{ tag }}</span>
+              <span class="etiqueta etiqueta--secundaria">{{ tag }}</span>
             {% endfor %}
           {% endblock %}
         </div>
@@ -78,9 +78,9 @@
               <details @toggle="showHint(event)">
                 <summary>
                   {% if hint.title %}
-                    {{ hint.title }} (Costo: {{ hint.cost }} punto{{ hint.cost|pluralize }})
+                    {{ hint.title }} (Precio: {{ hint.cost }} punto{{ hint.cost|pluralize }})
                   {% else %}
-                    Desbloquear pista para {{ hint.cost }} punto{{ hint.cost|pluralize }}
+                    Desbloquear pista por {{ hint.cost }} punto{{ hint.cost|pluralize }}
                   {% endif %}
                 </summary>
                 <div x-html="html"></div>
@@ -95,14 +95,16 @@
         <div class="challenge-card__files">
           {% for file in files %}
           <div class="challenge-card__file">
-            <a
-              class="challenge-card__file-button"
-              href="{{ file }}"
-              title="{{ filename }}"
-            >
-              <i class="fas fa-download"></i>
-              <small>{{ filename }}</small>
-            </a>
+            <button class="boton--secundario">
+                <a
+                  class="challenge-card__file-button"
+                  href="{{ file }}"
+                  title="{{ filename }}"
+                >
+                  <i class="fas fa-download"></i>
+                  <small>{{ filename }}</small>
+                </a>
+            </button>
           </div>
           {% endfor %}
         </div>
@@ -127,7 +129,7 @@
                 type="text"
                 name="submission"
                 class="form__input form__input--special"
-                placeholder="Bandera"
+                placeholder="flag{}"
                 x-model="submission"
                 @keyup.enter="submitChallenge()"
               >
@@ -153,7 +155,7 @@
         
               <div x-show="(response.data.status == 'correct' || response.data.status == 'already_solved')">
                 <div x-show="getNextId()">
-                  <button @click="nextChallenge()" class="challenge-card__btn--success mt-3">
+                  <button @click="nextChallenge()" class="boton mt-3">
                     Siguiente desafío
                   </button>
                 </div>
@@ -163,7 +165,7 @@
                     <button
                       x-show="!share_url"
                       @click="getShareUrl()"
-                      class="challenge-card__btn--info btn-sm mt-3"
+                      class="boton--secundario btn-sm mt-3"
                     >
                       Compartir
                     </button>
@@ -171,7 +173,7 @@
                     <div class="btn-group mt-3" role="group" x-show="share_url">
                       <button
                         type="button"
-                        class="challenge-card__btn--secondary btn-sm"
+                        class="boton--secundario btn-sm"
                         @click="copyShareUrl()"
                         data-bs-toggle="tooltip"
                         data-bs-title="Copied!"
@@ -182,7 +184,7 @@
                       <a
                         :href="'https://twitter.com/intent/tweet?url=' + encodeURIComponent(share_url)"
                         role="button"
-                        class="challenge-card__btn--secondary btn-sm"
+                        class="boton--secundario btn-sm"
                         target="_blank"
                       >
                         <i class="fa-brands fa-twitter"></i>
@@ -191,7 +193,7 @@
                       <a
                         :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(share_url)"
                         role="button"
-                        class="challenge-card__btn--secondary btn-sm"
+                        class="boton--secundario btn-sm"
                         target="_blank"
                       >
                         <i class="fa-brands fa-facebook-f"></i>
@@ -200,7 +202,7 @@
                       <a
                         :href="'http://www.linkedin.com/shareArticle?url=' + encodeURIComponent(share_url)"
                         role="button"
-                        class="challenge-card__btn--secondary btn-sm"
+                        class="boton--secundario btn-sm"
                         target="_blank"
                       >
                         <i class="fa-brands fa-linkedin-in"></i>
@@ -218,15 +220,15 @@
         <table class="challenge-card__table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Fecha</th>
+              <th class="challenge-card__table-th">Nombre</th>
+              <th class="challenge-card__table-th">Fecha</th>
             </tr>
           </thead>
           <tbody id="challenge-solves-names">
             <template x-for="solve in solves">
               <tr>
-                <td><a :href="solve.account_url" x-text="solve.name"></a></td>
-                <td x-text="solve.date"></td>
+                <td class="challenge-card__table-td"><a class="challenge-card__table-td-a" :href="solve.account_url" x-text="solve.name"></a></td>
+                <td class="challenge-card__table-td" x-text="solve.date"></td>
               </tr>
             </template>
           </tbody>

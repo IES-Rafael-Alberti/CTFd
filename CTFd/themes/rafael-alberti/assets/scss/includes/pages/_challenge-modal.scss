@@ -3,6 +3,7 @@
   position: relative;
   flex-direction: column;
   width: 100%;
+  background-color: var(--modal-challenge-bg-color);
 
   &__tabs {
     position: absolute;
@@ -18,15 +19,15 @@
     border: none;
     padding: 1rem 2rem;
     cursor: pointer;
-    color: #e93456;
+    color: var(--modal-challenge-tab-button-text-color);
     position: relative;
-    background-color: #eeeeee;
+    background: var(--modal-challenge-tab-button-bg-color);
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
     z-index: 1002;
 
     &--active {
-      background-color: #fff;
-      color: #000;
+      background-color: var(--modal-challenge-tab-active-button-bg-color);
+      color: var(--modal-challenge-tab-active-button-text-color);
 
       &::before {
         display: none;
@@ -40,6 +41,7 @@
 
   &__body {
     padding: 1.5rem;
+    background-color: var(--modal-challenge-bg-color);
   }
 
   &__pane {
@@ -51,41 +53,37 @@
   }
 
   &__name {
-    display: flex;
-    justify-content: center;
-    color: #e93456;
+    text-align: center;
+    color: var(--modal-challenge-title-color);
     font-weight: bold;
   }
 
   &__value {
-    display: flex;
-    justify-content: center;
+    text-align: center;
     margin-bottom: 1rem;
     font-weight: bold;
+    color: var(--modal-challenge-value-color);
   }
 
   &__tags {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1rem;
   }
 
-  &__tag {
-    background-color: #eee;
-    border-radius: 0.5rem;
-    padding: 0.25rem 0.75rem;
-  }
-
   &__author {
-    color: #666;
+    color: var(--modal-challenge-text-color);
     margin-bottom: 1rem;
     display: block;
+    text-align: center;
   }
 
   &__description {
     display: block;
     margin-bottom: 1.25rem;
+    color: var(--modal-challenge-text-color);
   }
 
   &__connection {
@@ -96,13 +94,19 @@
       display: inline-block;
 
       a {
-        color: #e93456;
+        color: var(--text-a-color);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
       }
     }
   }
 
   &__hints details {
     margin-bottom: 0.75rem;
+    color: var(--text-color);
   }
 
   &__files {
@@ -113,18 +117,15 @@
   }
 
   &__file-button {
-    background: #ffe5ea;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     text-decoration: none;
-    color: #e93456;
+    color: var(--button-secondary-text-color);
   }
 
   &__attempts {
-    color: #555;
+    color: var(--text-color);
     margin: 1rem 0;
   }
 
@@ -223,17 +224,30 @@
       text-align: left;
     }
 
-    td a {
-      color: #e93456;
+    &-th {
+      color: var(--text-color);
+    }
+
+    &-td {
+      color: var(--text-color);
+    }
+
+    &-td-a {
+      color: var(--text-a-color);
       text-decoration: none;
+      font-weight: bold;
+    }
+
+    &-td-a:hover {
+      text-decoration: underline;
     }
 
     tr:nth-child(odd) {
-      background-color: #ffffff;
+      background-color: var(--table-bg-odd);
     }
 
     tr:nth-child(even) {
-      background-color: #efefef;
+      background-color: var(--table-bg-even);
     }
   }
 
@@ -254,7 +268,7 @@
 
     &__dialog {
       position: relative;
-      background: #fff;
+      background: var(--modal-challenge-bg-color);
       padding: 1.5rem;
       width: 90%;
       max-width: 600px;
@@ -284,7 +298,7 @@
 
       &__title {
         margin: 0;
-        color: #e93456;
+        color: var(--modal-title-color);
       }
 
       &__close {
@@ -295,17 +309,16 @@
         border: none;
         font-size: 3rem;
         cursor: pointer;
-        color: #888;
+        color: var(--modal-close-color);
 
         &:hover {
-          color: #e93456;
+          color: var(--modal-close-hover-color);
         }
       }
     }
 
     &__body {
       margin-bottom: 1rem;
-      color: #333;
       overflow-y: auto;
       max-height: calc(90vh - 200px);
     }
@@ -316,43 +329,15 @@
       gap: 1rem;
     }
   }
-
-  &__btn--success {
-    background-color: #e93456;
-    color: #fff;
-    font-weight: bold;
-    border: none;
-    padding: 8px 24px;
-    font-size: 1rem;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #ab132f;
-    }
-  }
-
-  &__btn--cancel {
-    background-color: #ccc;
-    color: #000;
-    border: none;
-    padding: 8px 24px;
-    font-size: 1rem;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #aaa;
-    }
-  }
 }
 
 .boton-busqueda {
   position: absolute;
   bottom: -4.2rem;
   right: 2rem;
-  background-color: #e93456;
-  color: #fff;
+  background-color: var(--modal-challenge-submit-button-bg-color);
+  color: var(--modal-challenge-submit-button-text-color);
   font-weight: bold;
-  border: none;
   padding: 1rem 7rem;
   cursor: pointer;
   margin-left: 0.5rem;
@@ -360,6 +345,6 @@
   clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 
   &--buscar:hover {
-    background-color: #ab132f;
+    background-color: var(--modal-challenge-submit-button-hover-bg-color);
   }
 }
