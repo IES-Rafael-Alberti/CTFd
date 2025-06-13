@@ -355,7 +355,7 @@ def create_app(config="CTFd.config.Config"):
         # Background thread function that periodically emits statistics updates
         def background_thread(app):
             with app.app_context():
-                try:
+                while True:
                     # Sleep for 2 seconds between updates
                     socketio.sleep(2)
                     
@@ -379,10 +379,6 @@ def create_app(config="CTFd.config.Config"):
                     
                     # Emit updated scoreboard data
                     emit_scoreboard_statistics()
-                except Exception as e:
-                    print(f"Error emitting statistics: {e}")
-                    # Wait for 5 seconds before retrying
-                    socketio.sleep(5)
 
         # Connect event handler
         @socketio.on('connect')
