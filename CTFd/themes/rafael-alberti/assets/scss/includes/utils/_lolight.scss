@@ -48,6 +48,10 @@
 
   --section-bg-color: var(--neutral-grey-100);
 
+  --custom-title-red: var(--primary-red-500);
+  --custom-title-blue: var(--secondary-blue-500);
+  --custom-text-color: var(--neutral-black-999);
+
   /* ---- NAVBAR ---- */
   --navbar-bg-color: var(--neutral-black-999);
   --navbar-text-color: var(--neutral-white-000);
@@ -177,6 +181,10 @@ body {
   --pagination-color: var(--primary-red-200);
 
   --section-bg-color: var(--neutral-black-999);
+
+  --custom-title-red: var(--primary-red-200);
+  --custom-title-blue: var(--secondary-blue-200);
+  --custom-text-color: var(--neutral-white-000);
 
   /* ---- NAVBAR ---- */
   --navbar-bg-color: var(--neutral-black-999);
