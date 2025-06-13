@@ -1,0 +1,58 @@
+{% macro render_extra_fields(fields, show_labels=True, show_optionals=True, show_descriptions=True) -%}
+  {% for field in fields %}
+    {% if field.field_type == "text" %}
+      <article class="form__group">
+        {% if show_labels %}
+          <label class="form__label"><b>{{ field.label() }}</b></label>
+        {% endif %}
+
+        {% if show_optionals and field.flags.required is false %}
+          <small class="form__optional">Opcional</small>
+        {% endif %}
+
+        {{ field(class="form__input") }}
+
+        {% if show_descriptions and field.description %}
+          <small class="form__description">{{ field.description }}</small>
+        {% endif %}
+      </article>
+
+    {% elif field.field_type == "boolean" %}
+      <article class="form__group">
+        {% if show_labels %}
+          <label class="form__label">{{ field.label() }}</label>
+        {% endif %}
+
+        {% if show_optionals and field.flags.required is false %}
+          <small class="form__optional">Opcional</small>
+        {% endif %}
+
+        <div class="form__checkbox-wrapper">
+          {{ field(class="form__checkbox") }}
+          <label class="form__checkbox-label">{{ field.label.text }}</label>
+        </div>
+
+        {% if show_descriptions and field.description %}
+          <small class="form__description">{{ field.description }}</small>
+        {% endif %}
+      </article>
+
+    {% elif field.field_type == "select" %}
+      <article class="form__group">
+        {% if show_labels %}
+          <label class="form__label"><b>{{ field.label() }}</b></label>
+        {% endif %}
+
+        {% if show_optionals and field.flags.required is false %}
+          <small class="form__optional">Opcional</small>
+        {% endif %}
+
+        {{ field(class="form__select") }}
+
+        {% if show_descriptions and field.description %}
+          <small class="form__description">{{ field.description }}</small>
+        {% endif %}
+      </article>
+    {% endif %}
+  {% endfor %}
+{%- endmacro %}

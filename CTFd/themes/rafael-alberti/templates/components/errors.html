@@ -1,0 +1,19 @@
+<section>
+  {% for info in infos %}
+    <div class="alert-info" role="alert">
+      <span>{{ info }}</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+  {% endfor %}
+
+  {% for error in errors %}
+    <div class="alert-danger" role="alert">
+      <span>{{ error }}</span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+  {% endfor %}
+</section>

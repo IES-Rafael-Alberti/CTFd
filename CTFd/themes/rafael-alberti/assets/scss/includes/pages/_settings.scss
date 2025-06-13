@@ -1,0 +1,99 @@
+.ajustes {
+  width: 80%;
+  margin: 3rem auto;
+
+  &__layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  &__sidebar {
+    width: 250px;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 300px;
+  }
+}
+
+.tabs {
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__content {
+    display: block;
+
+    &--hidden {
+      display: none;
+    }
+  }
+}
+
+.form {
+  &__group {
+    margin-bottom: 1.5rem;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--input-label-color);
+  }
+
+  &__input,
+  &__select {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--input-border-color);
+    font-size: 1rem;
+    background-color: var(--input-bg-color);
+
+    &:focus {
+      outline: none;
+      border-color: var(--input-focus-border-color);
+    }
+  }
+
+  &__group--right {
+    text-align: right;
+  }
+
+  &__results {
+    margin-top: 1rem;
+  }
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+
+  &--success {
+    background-color: #e6ffed;
+    color: #1a7f37;
+  }
+
+  &--danger {
+    background-color: #ffe6e6;
+    color: #c0392b;
+  }
+}
+
+.submit {
+  background-color: #e93456;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  padding: 8px 32px;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+    background-color: #ab132f;
+  }
+}

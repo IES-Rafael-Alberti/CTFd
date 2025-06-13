@@ -1,0 +1,32 @@
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+
+  &__container {
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  &__message {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  &__divider {
+    width: 50%;
+    margin: 1rem auto;
+    border: none;
+    border-top: 2px solid #ccc;
+  }
+
+  &__code {
+    font-size: 1.5rem;
+    color: #aa0000;
+  }
+}

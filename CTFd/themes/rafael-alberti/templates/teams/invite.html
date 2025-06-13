@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% set titulo = "Unirse al equipo" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="team-join">
+    {% include "components/errors.html" %}
+
+    <div class="team-join__body">
+      <h2 class="team-join__title">
+        ¡Bienvenid@ a <strong>{{ team.name }}</strong>!
+      </h2>
+
+      <p class="team-join__text">
+        ¡Haz clic en el botón de abajo para unirte al equipo!
+        <br>
+        <small class="team-join__small">
+          O <a href="{{ url_for('teams.new') }}">haga clic aquí</a> si prefiere crear su propio equipo.
+        </small>
+      </p>
+
+      {% with form = Forms.teams.TeamInviteJoinForm() %}
+        <form method="POST" class="team-join__form">
+            <button type="submit" class="boton form-team-join__button">Unirse</button>
+          {{ form.nonce() }}
+        </form>
+      {% endwith %}
+    </div>
+  </section>
+
+{% endblock %}

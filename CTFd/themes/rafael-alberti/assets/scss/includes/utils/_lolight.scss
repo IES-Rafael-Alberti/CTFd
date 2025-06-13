@@ -1,0 +1,276 @@
+:root {
+  --primary-red-100: #fbd6dd;
+  --primary-red-200: #f6aebb;
+  --primary-red-300: #f2859a;
+  --primary-red-400: #ed5d78;
+  --primary-red-500: #e93456;
+  --primary-red-600: #d6173b;
+  --primary-red-700: #ab132f;
+  --primary-red-800: #810e23;
+  --primary-red-900: #560918;
+
+  --primary-red-500-50percent: #e9345584;
+
+  --secondary-blue-100: #bcd4ff;
+  --secondary-blue-200: #7aa8ff;
+  --secondary-blue-300: #377dff;
+  --secondary-blue-400: #0055f4;
+  --secondary-blue-500: #003eb1;
+  --secondary-blue-600: #00369b;
+  --secondary-blue-700: #002e85;
+  --secondary-blue-800: #00276f;
+  --secondary-blue-900: #001f59;
+
+  --secondary-blue-400-50percent: #0055f480;
+
+  --neutral-white-000: #ffffff;
+  --neutral-grey-100: #efefef;
+  --neutral-grey-300: #b5b5b5;
+  --neutral-grey-400: #56585e;
+  --neutral-grey-900: #2b2b2b;
+  --neutral-black-999: #222222;
+
+  --neutral-grey-900-50percent: rgba(43, 43, 43, 0.5);
+
+
+  // Modo claro
+
+  /* ---- GENERAL ---- */
+  --text-color: var(--neutral-black-999);
+  --text-message-color: var(--neutral-grey-400);
+  --text-a-color: var(--primary-red-500);
+  --text-h-color: var(--primary-red-500);
+  --text-empty-color: var(--neutral-grey-400);
+
+  --icon-a-color: var(--primary-white-000);
+
+  --pagination-color: var(--primary-red-500);
+
+  --section-bg-color: var(--neutral-grey-100);
+
+  /* ---- NAVBAR ---- */
+  --navbar-bg-color: var(--neutral-black-999);
+  --navbar-text-color: var(--neutral-white-000);
+  --navbar-text-hover-color: var(--neutral-grey-100);
+
+  /* ---- ENCABEZADO ---- */
+  --header-text-color: var(--neutral-white-000);
+  --header-text-shadow1: var(--secondary-blue-400-50percent);
+  --header-text-shadow2: var(--primary-red-500-50percent);
+  --header-bg-color: var(--neutral-black-999);
+
+  --header-divider-color: var(--neutral-grey-300);
+
+  --header-badge-bg: var(--primary-red-500);
+  --header-badge-text-color: var(--neutral-white-000);
+
+  /* ---- ETIQUETAS ---- */
+  --etiqueta-text-color: var(--neutral-white-000);
+  --etiqueta-principal-bg-color: var(--primary-red-500);
+  --etiqueta-secundaria-bg-color: var(--secondary-blue-500);
+
+  /* ---- FORMULARIOS ---- */
+  --input-label-color: var(--primary-red-500);
+
+  --input-border-color: var(--neutral-grey-300);
+  --input-bg-color: var(--neutral-grey-100);
+  --input-text-color: var(--neutral-black-999);
+  --input-focus-border-color: var(--primary-red-500);
+  --input-text-help-color: var(--neutral-black-999);
+
+    /* ---- BOTONES ---- */
+  --button-primary-bg-color: var(--primary-red-500);
+  --button-primary-text-color: var(--neutral-white-000);
+
+  --button-secondary-bg-color: var(--neutral-grey-100);
+  --button-secondary-text-color: var(--primary-red-500);
+
+  --button-border-color1: var(--primary-red-500);
+  --button-border-color2: var(--secondary-blue-500);
+
+  /* ---- TABLAS ---- */
+  --table-bg-odd: var(--neutral-grey-100);
+  --table-bg-even: var(--neutral-white-000);
+
+  /* ---- CARD DESAFIOS ---- */
+  --card-name: var(--primary-red-500);
+  --card-value: var(--primary-red-500);
+
+  --card-bg-color1: var(--neutral-white-000);
+  --card-bg-color2: var(--neutral-white-000);
+
+  --card-bg2-color: var(--neutral-grey-100);
+
+  --card-border-color1: var(--primary-red-500);
+  --card-border-color2: var(--secondary-blue-400);
+
+  --card-solved-name: var(--primary-red-300);
+  --card-solved-value: var(--primary-red-300);
+
+  --card-solved-text-color: var(--neutral-grey-400);
+
+  --card-solved-bg-color1: var(--neutral-white-000);
+  --card-solved-bg-color2: var(--neutral-white-000);
+  --card-solved-bg2-color: var(--neutral-grey-100);
+
+  --card-solved-border-color1: var(--neutral-grey-300);
+  --card-solved-border-color2: var(--neutral-grey-300);
+
+  /* ---- MODALES ---- */
+  --modal-bg-color: var(--neutral-white-000);
+  --modal-title-color: var(--primary-red-500);
+
+  --modal-close-color: var(--neutral-grey-400);
+  --modal-close-hover-color: var(--primary-red-500);
+
+  --modal-boton-sucess: var(--primary-red-500);
+  --modal-boton-sucess-hover: var(--primary-red-700);
+  --modal-boton-sucess-text-color: var(--neutral-white-000);
+
+  --modal-boton-cancel: var(--neutral-grey-300);
+  --modal-boton-cancel-hover: var(--neutral-grey-400);
+  --modal-boton-cancel-text-color: var(--neutral-black-999);
+
+  --modal-challenge-bg-color: var(--neutral-white-000);
+  --modal-challenge-title-color: var(--primary-red-500);
+  --modal-challenge-value-color: var(--neutral-black-999);
+  --modal-challenge-text-color: var(--neutral-black-999);
+
+  --modal-challenge-tab-button-bg-color: var(--neutral-grey-100);
+  --modal-challenge-tab-button-text-color: var(--primary-red-500);
+  --modal-challenge-tab-active-button-bg-color: var(--neutral-white-000);
+  --modal-challenge-tab-active-button-text-color: var(--neutral-black-999);
+
+  --modal-challenge-submit-button-bg-color: var(--primary-red-500);
+  --modal-challenge-submit-button-text-color: var(--neutral-white-000);
+  --modal-challenge-submit-button-hover-bg-color: var(--primary-red-700);
+
+  /* ---- NOTIFICACIONES ---- */
+  --notification-border-color1: var(--primary-red-500);
+  --notification-border-color2: var(--secondary-blue-400);
+  --notification-bg-color: var(--neutral-grey-100);
+
+  --notification-title-color: var(--primary-red-500);
+  --notification-text-color: var(--neutral-black-999);
+  --notificacion-text-empty: var(--neutral-grey-400);
+
+  /* ---- PREMIOS ---- */
+  --award-bg-color: var(--neutral-grey-100);
+  --award-name-text-color: var(--primary-red-500);
+  --award-text-color: var(--neutral-black-999);
+  --award-border-color: var(--neutral-grey-300);
+}
+
+body {
+  background-color: var(--neutral-white-000);
+}
+
+[data-bs-theme="dark"] {
+
+  /* ---- GENERAL ---- */
+  --text-color: var(--neutral-white-000);
+  --text-message-color: var(--neutral-grey-300);
+  --text-a-color: var(--primary-red-200);
+  --text-h-color: var(--primary-red-200);
+  --text-empty-color: var(--neutral-grey-100);
+
+  --pagination-color: var(--primary-red-200);
+
+  --section-bg-color: var(--neutral-black-999);
+
+  /* ---- NAVBAR ---- */
+  --navbar-bg-color: var(--neutral-black-999);
+  --navbar-text-color: var(--neutral-white-000);
+  --navbar-text-hover-color: var(--neutral-grey-100);
+
+  /* ---- ENCABEZADO ---- */
+  --header-text-color: var(--neutral-white-000);
+  --header-text-shadow1: var(--secondary-blue-400-50percent);
+  --header-text-shadow2: var(--primary-red-500-50percent);
+
+  --header-badge-bg: var(--primary-red-500);
+  --header-badge-text-color: var(--neutral-white-000);
+
+  /* ---- ETIQUETAS ---- */
+  --etiqueta-text-color: var(--neutral-black-999);
+  --etiqueta-principal-bg-color: var(--neutral-white-000);
+  --etiqueta-secundaria-bg-color: var(--neutral-grey-100);
+
+  /* ---- FORMULARIOS ---- */
+  --input-label-color: var(--primary-red-200);
+
+  --input-border-color: var(--neutral-grey-300);
+  --input-bg-color: var(--neutral-grey-400);
+  --input-text-color: var(--neutral-white-000);
+  --input-focus-border-color: var(--primary-red-200);
+  --input-text-help-color: var(--neutral-white-000);
+
+  /* ---- TABLAS ---- */
+  --table-bg-odd: var(--neutral-black-999);
+  --table-bg-even: var(--neutral-grey-900);
+
+  /* ---- CARD DESAFIOS ---- */
+  --card-name: var(--neutral-white-000);
+  --card-value: var(--neutral-white-000);
+
+  --card-border-color1: var(--primary-red-600);
+  --card-border-color2: var(--secondary-blue-400);
+
+  --card-bg-color1: var(--primary-red-900);
+  --card-bg-color2: var(--secondary-blue-900);
+
+  --card-solved-name: var(--neutral-white-000);
+  --card-solved-value: var(--neutral-white-000);
+  --card-solved-text-color: var(--neutral-white-000);
+
+  --card-solved-bg-color1: var(--primary-red-900);
+  --card-solved-bg-color2: var(--secondary-blue-900);
+  --card-solved-bg2-color: var(--neutral-grey-900-50percent);
+
+  --card-solved-border-color1: #1b1b1b;
+  --card-solved-border-color2: #1b1b1b;
+
+  /* ---- MODALES ---- */
+  --modal-bg-color: var(--neutral-grey-900);
+  --modal-title-color: var(--neutral-white-000);
+  --modal-close-color: var(--neutral-grey-400);
+  --modal-close-hover-color: var(--primary-red-200);
+
+  --modal-boton-sucess: var(--primary-red-500);
+  --modal-boton-sucess-hover: var(--primary-red-700);
+  --modal-boton-sucess-text-color: var(--neutral-white-000);
+
+  --modal-boton-cancel: var(--neutral-grey-300);
+  --modal-boton-cancel-hover: var(--neutral-grey-400);
+  --modal-boton-cancel-text-color: var(--neutral-black-999);
+
+  --modal-challenge-bg-color: var(--neutral-grey-900);
+  --modal-challenge-title-color: var(--neutral-white-000);
+  --modal-challenge-value-color: var(--neutral-white-000);
+  --modal-challenge-text-color: var(--neutral-white-000);
+
+  --modal-challenge-tab-button-bg-color: var(--neutral-grey-400);
+  --modal-challenge-tab-button-text-color: var(--primary-red-200);
+  --modal-challenge-tab-active-button-bg-color: var(--neutral-grey-900);
+  --modal-challenge-tab-active-button-text-color: var(--neutral-white-000);
+
+
+  /* ---- NOTIFICACIONES ---- */
+  --notification-border-color1: var(--primary-red-500);
+  --notification-border-color2: var(--secondary-blue-400);
+  --notification-bg-color: var(--neutral-black-999);
+
+  --notification-title-color: var(--neutral-white-000);
+  --notification-text-color: var(--neutral-white-000);
+
+  /* ---- PREMIOS ---- */
+  --award-bg-color: var(--neutral-black-999);
+  --award-name-text-color: var(--primary-red-200);
+  --award-text-color: var(--neutral-white-000);
+  --award-border-color: var(--neutral-grey-300);
+
+
+  body {
+    background-color: var(--neutral-grey-900);
+  }
+}

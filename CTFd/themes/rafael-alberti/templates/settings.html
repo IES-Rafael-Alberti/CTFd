@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% from "macros/forms.html" import render_extra_fields %}
+
+{% block content %}
+  {% set titulo = "Configuración" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="ajustes">
+    <article class="ajustes__layout" x-data="{ tab: 'profile' }">
+
+      <section class="ajustes__sidebar">
+        <article class="tabs__nav">
+          <button
+            class="boton--secundario"
+            :class="{ 'boton--secundario-active': tab === 'profile' }"
+            @click="tab = 'profile'"
+          >
+            Perfil
+          </button>
+          <button
+            class="boton--secundario"
+            :class="{ 'boton--secundario-active': tab === 'tokens' }"
+            @click="tab = 'tokens'"
+          >
+            Tokens de acceso
+          </button>
+
+        </article>
+      </section>
+
+      <section class="ajustes__content">
+        <article class="tabs__content" x-show="tab === 'profile'" x-transition>
+          {% include "components/errors.html" %}
+
+          {% with form = Forms.self.SettingsForm(language=language, country=country) %}
+            <form
+              method="post" autocomplete="off"
+              x-data="SettingsForm"
+              @submit.prevent="updateProfile()"
+              class="form"
+            >
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.name.label() }}</b></label>
+                {{ form.name(class="form__input", value=name) }}
+              </article>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.email.label() }}</b></label>
+                {{ form.email(class="form__input", value=email) }}
+              </article>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.language.label() }}</b></label>
+                {{ form.language(class="form__select", value=language) }}
+              </article>
+
+              <hr>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.confirm.label() }}</b></label>
+                {{ form.confirm(class="form__input") }}
+              </article>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.password.label() }}</b></label>
+                {{ form.password(class="form__input") }}
+              </art>
+
+              <hr>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.affiliation.label() }}</b></label>
+                {{ form.affiliation(class="form__input", value=affiliation or "") }}
+              </article>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.website.label() }}</b></label>
+                {{ form.website(class="form__input", value=website or "") }}
+              </article>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.country.label() }}</b></label>
+                {{ form.country(class="form__select", value=country) }}
+              </article>
+
+              <hr>
+
+              {{ render_extra_fields(form.extra) }}
+
+              <article id="results" class="form__results">
+                <article class="alert alert--success" x-cloak="success" x-show="success">
+                  <strong>¡Éxito!</strong> Tu perfil ha sido actualizado
+                </article>
+
+                <template x-for="(msg, idx) in errors" :key="idx">
+                  <article class="alert alert--danger">
+                    <span class="sr-only">Error:</span>
+                    <span x-text="msg"></span>
+                  </article>
+                </template>
+              </article>
+
+              <article class="form__group--right">
+                  <button type="submit" class="boton">Enviar</button>
+              </article>
+            </form>
+          {% endwith %}
+        </article>
+
+        <article class="tabs__content" x-show="tab === 'tokens'" x-transition>
+          {% with form = Forms.self.TokensForm() %}
+            <form method="POST" x-data="TokensForm" @submit.prevent="generateToken()" class="form">
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.expiration.label() }}</b></label>
+                {{ form.expiration(class="form__input") }}
+              </article>
+
+              <article class="form__group">
+                <label class="form__label"><b>{{ form.description.label() }}</b></label>
+                {{ form.description(class="form__input", rows="3") }}
+              </article>
+
+              <article class="form__group--right">
+                <button type="submit" class="boton">Genere</button>
+              </article>
+            </form>
+          {% endwith %}
+
+          {% if tokens %}
+            <hr>
+            <h4 class="text-center mt-3">Tokens activos</h4>
+
+            <article x-data="Tokens">
+              <section class="modals" x-ref="confirmModal" style="display: none;">
+                <article class="modals__overlay"></article>
+                <article class="modals__dialog">
+                  <section class="modals__header">
+                    <h4 class="modals__header__title">Eliminar token</h4>
+                    <span class="modals__header__close" @click="$refs.confirmModal.style.display = 'none'" aria-label="Cerrar">
+                      &times;
+                    </span>
+                  </section>
+                  <section class="modals__body">
+                    <p>¿Estás seguro de que deseas eliminar este token?</p>
+                  </section>
+                  <section class="modals__footer">
+                    <button type="button" class="boton--secundario" @click="$refs.confirmModal.style.display = 'none'">No</button>
+                    <button type="button" class="boton" @click="deleteSelectedToken(); $refs.confirmModal.style.display = 'none'">Sí</button>
+                  </section>
+                </article>
+              </section>
+              
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Creado</th>
+                    <th>Caducidad</th>
+                    <th>Descripción</th>
+                    <th>Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for token in tokens %}
+                    <tr x-ref="token-{{ token.id }}">
+                      <td><span data-time="{{ token.created | isoformat }}"></span></td>
+                      <td><span data-time="{{ token.expiration | isoformat }}"></span></td>
+                      <td><span>{{ token.description | default('', true) }}</span></td>
+                      <td>
+                        <span role="button" class="icon icon--delete" @click="deleteTokenModal({{ token.id }})">
+                          <i class="fas fa-times"></i>
+                        </span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </article>
+          {% endif %}
+        </article>
+      </section>
+    </article>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  {{ Assets.js("assets/js/settings.js") }}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% set titulo = "Notificaciones" %}
+  {% include "components/jumbotron.html" with context %}
+
+  {% if not notifications %}
+    <section class="notifications__empty">
+      <div class="container-path container-path--top"></div>
+      <div class="notifications__empty-message">
+        <h3 class="notifications__empty-title">
+          No hay notificaciones todavía
+        </h3>
+      </div>
+      <div class="container-path container-path--bottom"></div>
+    </section>
+  {% endif %}
+
+  <section class="notifications">
+    <section class="notifications__list">
+      {% for notification in notifications %}
+        <article class="notification" data-id="{{ notification.id }}">
+          <section class="notification__content">
+            <h3 class="notification__title">
+              {{ notification.title }}
+            </h3>
+            <p class="notification__text">{{ notification.html }}</p>
+            <small class="notification__date">
+              <span data-time="{{ notification.date | isoformat }}"></span>
+            </small>
+          </section>
+        </article>
+      {% endfor %}
+    </section>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  {{ Assets.js("assets/js/notifications.js") }}
+{% endblock %}

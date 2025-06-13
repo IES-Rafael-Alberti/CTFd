@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% set titulo = "Unirse al equipo" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="team-join">
+    <div class="team-join__body">
+      {% include "components/errors.html" %}
+
+      {% with form = Forms.teams.TeamJoinForm() %}
+        <form method="POST" class="team-join__form">
+          <div class="form__group">
+            {{ form.name.label(class="form__label") }}
+            {{ form.name(class="form__input") }}
+          </div>
+
+          <div class="form__group">
+            {{ form.password.label(class="form__label") }}
+            {{ form.password(class="form__input") }}
+          </div>
+
+          <div class="team-join__actions">
+            <button type="submit" class="boton">Unirse</button>
+          </div>
+
+          {{ form.nonce() }}
+        </form>
+      {% endwith %}
+    </div>
+  </section>
+{% endblock %}

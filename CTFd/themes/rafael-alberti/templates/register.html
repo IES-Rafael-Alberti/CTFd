@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% set bordes_svg = Assets.file("static/img/Bordes.svg") %}
+
+  {% set titulo = "Registro" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="register">
+    <article class="register__box">
+      {% include "components/errors.html" %}
+
+      {% if integrations.mlc() %}
+        <a class="register__oauth-button" href="{{ url_for('auth.oauth_login') }}">
+          Iniciar sesión con Major League Cyber
+        </a>
+        <hr class="register__divider">
+      {% endif %}
+
+      {% with form = Forms.auth.RegistrationForm() %}
+        {% from "macros/forms.html" import render_extra_fields %}
+
+        <form method="post" accept-charset="utf-8" class="register__form">
+
+          <article class="register__field">
+            <label class="register__label">
+              <b>{{ form.name.label() }}</b>
+            </label>
+            {{ form.name(class="register__input", value=name, autocomplete="username") }}
+            <small class="register__help-text">Tu nombre de usuario en el sitio</small>
+          </article>
+
+          <article class="register__field">
+            <label class="register__label">
+              <b>{{ form.email.label() }}</b>
+            </label>
+            {{ form.email(class="register__input", value=email, autocomplete="email") }}
+            <small class="register__help-text">Nunca se muestra al público</small>
+          </article>
+
+          <article class="register__field">
+            <label class="register__label">
+              <b>{{ form.password.label() }}</b>
+            </label>
+            {{ form.password(class="register__input", value=password, autocomplete="new-password") }}
+            <small class="register__help-text">Contraseña utilizada para iniciar sesión en su cuenta</small>
+          </article>
+
+          {{ form.nonce() }}
+
+          {{ render_extra_fields(form.extra) }}
+
+            <article class="register__actions">
+                <button type="submit" class="boton">Enviar</button>
+            </article>
+
+          {% if Configs.tos_or_privacy %}
+            <article class="register__terms">
+              <small class="register__help-text">
+                Al registrarte, aceptas la <a href="{{ Configs.privacy_link }}" target="_blank">política de privacidad</a> y las <a href="{{ Configs.tos_link }}" target="_blank">condiciones de servicio</a>.
+              </small>
+            </article>
+          {% endif %}
+        </form>
+      {% endwith %}
+    </article>
+  </section>
+{% endblock %}

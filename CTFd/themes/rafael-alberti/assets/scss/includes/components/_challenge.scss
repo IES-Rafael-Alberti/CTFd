@@ -1,0 +1,168 @@
+.challenge {
+  &__button {
+    border: none;
+    position: relative;
+    width: 100%;
+    min-width: 275px;
+    max-width: 325px;
+    //height: 100%;
+    height: 215px;
+    background: linear-gradient(135deg, var(--card-border-color1), var(--card-border-color2));
+    padding: 3rem 2rem;
+    cursor: pointer;
+    transition:
+      background-color 0.3s,
+      box-shadow 0.3s;
+    clip-path: polygon(
+      0 29%,
+      5% 21%,
+      5% 15%,
+      10% 8%,
+      16% 8%,
+      20% 0,
+      43% 0%,
+      47% 8%,
+      92% 8%,
+      100% 18%,
+      96% 28%,
+      96% 53%,
+      100% 63%,
+      100% 91%,
+      95% 100%,
+      50% 100%,
+      43% 92%,
+      18% 92%,
+      13% 100%,
+      9% 100%,
+      4% 92%,
+      4% 61%,
+      0 53%
+    );
+    z-index: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      background: linear-gradient(135deg, var(--card-bg-color1), var(--card-bg-color2));
+      clip-path: inherit;
+      z-index: -1;
+    }
+
+    &--solved {
+      //background: none;
+      //box-shadow: none;
+      background: linear-gradient(to bottom, var(--card-solved-border-color1), var(--card-solved-border-color2));
+      opacity: 0.75;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        right: 3px;
+        bottom: 3px;
+        background: linear-gradient(135deg, var(--card-solved-bg-color1), var(--card-solved-bg-color2));
+        clip-path: inherit;
+        z-index: -1;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        right: 3px;
+        bottom: 3px;
+
+        // ✅ Degradado vertical: gris claro arriba, blanco abajo
+
+        clip-path: inherit;
+        z-index: 0;
+
+        // Opcional: una pequeña sombra interior para profundidad
+        //box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .challenge__content,
+      .challenge__name,
+      .challenge__value {
+        position: relative;
+        z-index: 1;
+      }
+    }
+
+
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
+    flex-grow: 1; // Para que crezca dentro del botón si hace falta
+    //gap: 0.5rem;
+  }
+
+  &__name {
+    color: var(--card-name);
+    line-height: 0.8;
+    //text-transform: uppercase;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2; // máximo 2 líneas
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__value {
+    color: var(--card-value);;
+    margin-top: auto;
+  }
+
+  &__solved {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    width: 55%;
+    height: 40%;
+    background-color: var(--card-solved-bg2-color);
+    color: var(--card-solved-text-color);
+    font-weight: bold;
+    //box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0.5rem;
+    clip-path: polygon(
+      100% 82%,
+      90% 100%,
+      13% 100%,
+      0 80%,
+      0 67%,
+      10% 59%,
+      10% 22%,
+      18% 12%,
+      64% 12%,
+      73% 0,
+      95% 0,
+      100% 17%
+    );
+
+    div {
+      display: inline;
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% set titulo = "Desafíos" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="challenge-board">
+    {% include "components/errors.html" %}
+
+    <article 
+      x-data="ChallengeBoard" 
+      @load-challenges.window="loadChallenges()" 
+      @load-challenge.window="loadChallenge($event.detail)"
+    >
+      <!-- Modal -->
+      <section
+        x-ref="challengeWindow"
+        id="challenge-window"
+        class="challenge-card__modals"
+        tabindex="-1"
+        role="dialog"
+        x-show="showModal"
+        @keydown.escape.window="closeModal()"
+        style="display: none;"
+      >
+        <article class="challenge-card__modals__overlay"></article>
+        <article class="challenge-card__modals__dialog" x-html="$store.challenge.data.view"></article>
+      </section>
+
+
+      <!-- Spinner -->
+      <section class="challenge-board__loader" x-show="!loaded">
+        <div class="spinner">
+          <i class="fas fa-circle-notch fa-spin fa-3x fa-fw"></i>
+        </div>
+      </section>
+
+      <!-- Challenge Categories -->
+      <section class="challenge-board__categories" x-show="loaded">
+        <template x-for="(category, idx) in getCategories()" :key="idx">
+          <div>
+            <template x-if="idx % 2 === 1">
+              <div class="container-path container-path--top"></div>
+            </template>
+            <section class="category">
+              
+          
+              <header class="category__header">
+                <h3 x-text="category"></h3>
+              </header>
+          
+              <section class="category__challenges">
+                <template x-for="(c, idx) in getChallenges(category)" :key="c.id">
+                  <article class="challenge">
+                    <button
+                      class="challenge__button"
+                      :class="[
+                        c.solved_by_me ? 'challenge__button--solved' : '',
+                        ...c.tags.map((tag) => `tag--${tag.value.replace(/ /g, '-')}`),
+                      ]"
+                      :value="c.id"
+                      @click="loadChallenge(c.id)"
+                    >
+                      <section class="challenge__content">
+                        <h4 class="challenge__name" x-text="c.name"></h4>
+                        <h3 class="challenge__value" x-text="c.value"></h3>
+                      </section>
+          
+                      <section
+                        class="challenge__solved"
+                        x-show="c.solved_by_me"
+                        x-transition
+                      >
+                        <div>RESUELTO</div>
+                      </section>
+          
+                      <section
+                        class="challenge__solved"
+                        x-show="!c.solved_by_me"
+                        x-transition
+                      >
+                      </section>
+                    </button>
+                  </article>
+                </template>
+              </section>
+          
+            </section>
+            <template x-if="idx % 2 === 1">
+              <section class="container-path container-path--bottom"></section>
+            </template>
+          </div>
+        </template>
+        
+      </section>
+    </article>
+  </section>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ Assets.js("assets/js/challenges.js") }}
+{% endblock %}

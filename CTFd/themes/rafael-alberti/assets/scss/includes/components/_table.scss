@@ -1,0 +1,77 @@
+/* Table styles
+-------------------------------------------------- */
+
+// Center text in table cells, except the first cell
+.table tr > :not(:first-child) {
+  text-align: center;
+}
+
+// Add some default spacing to table cells
+.table > tbody > tr > td {
+  padding: 0.8rem 1rem;
+}
+
+// Add some padding from the edge of table
+.table > thead > tr > :first-child {
+  padding-left: 1rem;
+}
+
+// Do not wrap text in table headers
+.table > thead > th {
+  white-space: nowrap;
+}
+
+.tabla {
+  overflow-x: auto;
+  width: 100%;
+
+  &__tabla {
+    //width: 70vw;
+    margin: 0 auto;
+    border-collapse: collapse;
+  }
+
+  &__th,
+  &__celda {
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  &__th--ocultar,
+  &__celda--ocultar {
+    display: none;
+  }
+
+  &__celda--centro {
+    text-align: center;
+  }
+
+  &__enlace {
+    color: var(--text-a-color);
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  &__enlace:hover {
+    text-decoration: underline;
+  }
+
+  &__fila:nth-child(odd) {
+    background-color: var(--table-bg-odd);
+  }
+
+  &__fila:nth-child(even) {
+    background-color: var(--table-bg-even);
+  }
+}
+
+@media (min-width: 768px) {
+  .tabla__th--ocultar,
+  .tabla__celda--ocultar {
+    display: table-cell;
+  }
+
+  .tabla__tabla {
+    width: 70vw;
+  }
+}

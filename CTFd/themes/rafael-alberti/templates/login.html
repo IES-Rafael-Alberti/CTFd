@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% set bordes_svg = Assets.file("static/img/Bordes.svg") %}
+
+  {% set titulo = "Inicio de sesión" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="login">
+    <article class="login__box">
+      {% include "components/errors.html" %}
+
+      {% if integrations.mlc() %}
+        <a class="login__oauth-button" href="{{ url_for('auth.oauth_login') }}">
+          Iniciar sesión con Major League Cyber
+        </a>
+        <hr class="login__divider">
+      {% endif %}
+
+      {% with form = Forms.auth.LoginForm() %}
+        <form method="post" accept-charset="utf-8" class="login__form">
+          <article class="login__field">
+            <label class="login__label">
+              <b>{{ form.name.label() }}</b>
+            </label>
+            {{ form.name(class="login__input", value=name, autocomplete="username email") }}
+          </article>
+
+          <article class="login__field">
+            <label class="login__label">
+              <b>{{ form.password.label() }}</b>
+            </label>
+            {{ form.password(class="login__input", value=password, autocomplete="current-password") }}
+          </article>
+
+          <article class="login__actions">
+            <a href="{{ url_for('auth.reset_password') }}" class="login__link">
+              ¿Olvidaste tu contraseña?
+            </a>
+              <button type="submit" class="boton">Enviar</button>
+          </article>
+
+          {{ form.nonce() }}
+        </form>
+      {% endwith %}
+    </article>
+  </section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% set titulo = "Equipo" %}
+  {% include "components/jumbotron.html" with context %}
+
+  <section class="team-options">
+    <article class="team-options__intro">
+      <h2 class="team-options__title">¡Bienvenid@ a {{ Configs.ctf_name }}!</h2>
+      <p class="team-options__text">
+        Para participar debes unirte o crear un equipo.
+      </p>
+    </article>
+
+    {% if integrations.mlc() %}
+      <article class="team-options__group">
+        <a class="boton" href="{{ url_for('auth.oauth_login') }}">
+          Juega con el equipo oficial
+        </a>
+      </article>
+
+      <article class="team-options__row">
+        <a class="boton" href="{{ url_for('teams.join') }}">
+          Únete al equipo no oficial
+        </a>
+        <a class="boton" href="{{ url_for('teams.new') }}">
+          Crear equipo no oficial
+        </a>
+      </article>
+    {% else %}
+      <article class="team-options__row">
+        <a class="boton" href="{{ url_for('teams.join') }}">
+          Unirse a un equipo
+        </a>
+        <a class="boton" href="{{ url_for('teams.new') }}">
+          Crear equipo
+        </a>
+      </article>
+    {% endif %}
+  </section>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+.team-join {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+
+  &__body {
+    padding: 2rem;
+  }
+
+  &__title {
+    margin-bottom: 1rem;
+    color: var(--text-h-color);
+    text-align: center;
+    font-size: 56px;
+  }
+
+  &__text {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--text-color);
+  }
+
+  &__small {
+    font-size: 1rem;
+    color: var(--text-color);
+    text-align: center;
+
+
+    a {
+      color: var(--text-a-color);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--text-a-color);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+}
+
+.form-team-join__button {
+        width: 100%;
+      }

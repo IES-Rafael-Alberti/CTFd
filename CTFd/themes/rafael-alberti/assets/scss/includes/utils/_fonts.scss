@@ -1,0 +1,72 @@
+@import "~/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~/@fortawesome/fontawesome-free/scss/solid.scss";
+@import "~/@fortawesome/fontawesome-free/scss/brands.scss";
+
+html,
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Teko", sans-serif;
+  font-weight: 400;
+}
+
+input,
+textarea {
+  font-family: "Source Code Pro", monospace;
+  font-weight: 400;
+}
+
+h1 {
+  font-size: 64px;
+}
+
+h2 {
+  font-size: 56px;
+}
+
+h3 {
+  font-size: 48px;
+}
+
+h4 {
+  font-size: 40px;
+}
+
+h5 {
+  font-size: 32px;
+}
+
+h6 {
+  font-size: 24px;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 700;
+}
+
+p,
+button,
+.texto-general,
+li {
+  font-size: 18px;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 400;
+}
+
+input,
+textarea {
+  font-family: "Source Code Pro", monospace;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.section-title {
+  font-family: "Teko", sans-serif;
+  font-weight: bold;
+  font-size: 96px;
+}

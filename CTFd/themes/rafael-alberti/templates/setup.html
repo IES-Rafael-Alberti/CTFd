@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+{{ super() }}
+<style>
+.card-radio:checked + .card {
+	background-color: transparent !important;
+	border-color: #a3d39c;
+	box-shadow: 0 0 0 0.1rem #a3d39c;
+	transition: background-color 0.3s, border-color 0.3s;
+}
+.card-radio:checked + .card .card-radio-clone{
+	visibility: visible !important;
+}
+.card:hover {
+	cursor: pointer;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Configuración</h1>
+		</div>
+	</div>
+	<div class="container">
+		<div class="col-md-8 offset-md-2">
+			{% include "components/errors.html" %}
+
+			{% with form = Forms.setup.SetupForm() %}
+			<form 
+				x-data="SetupForm"
+				@submit="submitSetup"
+				method="post" 
+				accept-charset="utf-8" 
+				autocomplete="off" 
+				role="form" class="form-horizontal" 
+				id="setup-form" 
+				enctype="multipart/form-data"
+			>
+				<ul class="nav nav-pills nav-fill mb-4">
+					<li class="nav-item">
+						<a class="nav-link active" data-bs-toggle="pill" data-bs-target="#general" role="button">General</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="pill" data-bs-target="#mode" role="button">Modo</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="pill" data-bs-target="#settings" role="button">Ajustes</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="pill" data-bs-target="#administration" role="button">Administración</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="pill" data-bs-target="#style" role="button">Estilo</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="pill" data-bs-target="#datetime" role="button">Fecha &amp; Tiempo</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-bs-toggle="pill" data-bs-target="#integrations" role="button">Integraciones</a>
+					</li>
+				</ul>
+
+				<div class="tab-content">
+					<div class="tab-pane fade show active" id="general" role="tabpanel">
+						<div class="mb-3">
+							<b>{{ form.ctf_name.label }}</b>
+							{{ form.ctf_name(class="form-control") }}
+							<small class="form-text text-muted">
+								{{ form.ctf_name.description }}
+							</small>
+						</div>
+
+						<div class="mb-3">
+							<b>{{ form.ctf_description.label }}</b>
+							{{ form.ctf_description(class="form-control", rows="5") }}
+							<small class="form-text text-muted">
+								{{ form.ctf_description.description }}
+							</small>
+						</div>
+
+						<div class="text-right float-end">
+							<button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#mode" @click="switchTab">
+								Siguiente
+							</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="mode" role="tabpanel">
+						<div class="mb-3">
+							<b>{{ form.user_mode.label }}</b>
+							<br>
+							<small class="form-text text-muted">
+								{{ form.user_mode.description }}
+							</small>
+
+							<div class="row pt-3">
+							{% for radio in form.user_mode %}
+								<label class="w-50 p-1">
+									{{ radio(class="card-radio d-none") }}
+									<div class="card rounded-0 h-100">
+										<div class="card-body p-3">
+											<span class="card-title">
+												<div class="form-check">
+													<input class="form-check-input card-radio-clone" type="radio" style="visibility: hidden;" checked>
+													<span class="form-check-label text-center">
+														<h5>{{ radio.label }}</h5>
+													</span>
+													{% if radio.data == "teams" %}
+													<ul class="p-0 small">
+														<li>Los participantes registran cuentas y forman equipos</li>
+														<li>Si un miembro del equipo resuelve un desafío, todo el equipo recibe crédito</li>
+														<br>
+														<li>Es más fácil ver qué miembro del equipo resolvió un desafío</li>
+														<li>Puede ser un poco más difícil de administrar</li>
+													</ul>
+													{% elif radio.data == "users" %}
+													<ul class="p-0 small">
+														<li>Los participantes solo registran una cuenta individual</li>
+														<li>Los jugadores pueden compartir cuentas para formar pseudoequipos</li>
+														<br>
+														<li>Más fácil de organizar</li>
+														<li>Es difícil atribuir soluciones a miembros individuales del equipo</li>
+													</ul>
+													{% endif %}
+												</div>
+											</span>
+										</div>
+									</div>
+								</label>
+							{% endfor %}
+							</div>
+						</div>
+
+						<div class="text-right float-end">
+							<button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#settings" @click="switchTab">
+								Siguiente
+							</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="settings" role="tabpanel">
+						<b>Configuración de visibilidad</b>
+						<br>
+						<small class="form-text text-muted">
+							Controlar la visibilidad de diferentes secciones de CTFd
+						</small>
+						<div class="row pt-3">
+							<div class="col-md-3 mb-3">
+								<b>
+									{{ form.challenge_visibility.label }}
+									<i class="far fa-question float-end text-muted" data-bs-toggle="tooltip" data-bs-title="{{ form.challenge_visibility.description }}"></i>
+								</b>
+								{{ form.challenge_visibility(class="form-control custom-select") }}
+							</div>
+
+							<div class="col-md-3 mb-3">
+								<b>
+									{{ form.account_visibility.label }}
+									<i class="far fa-question float-end text-muted" data-bs-toggle="tooltip" data-bs-title="{{ form.account_visibility.description }}"></i>
+								</b>
+								{{ form.account_visibility(class="form-control custom-select") }}
+							</div>
+
+							<div class="col-md-3 mb-3">
+								<b>
+									{{ form.score_visibility.label }}
+									<i class="far fa-question float-end text-muted" data-bs-toggle="tooltip" data-bs-title="{{ form.score_visibility.description }}"></i>
+								</b>
+								{{ form.score_visibility(class="form-control custom-select") }}
+							</div>
+
+							<div class="col-md-3 mb-3">
+								<b>
+									{{ form.registration_visibility.label }}
+									<i class="far fa-question float-end text-muted" data-bs-toggle="tooltip" data-bs-title="{{ form.registration_visibility.description }}"></i>
+								</b>
+								{{ form.registration_visibility(class="form-control custom-select") }}
+							</div>
+						</div>
+
+						<hr>
+
+						<div class="mb-3">
+							<b>{{ form.verify_emails.label }}</b>
+							{{ form.verify_emails(class="form-control custom-select") }}
+							<small class="form-text text-muted">
+								{{ form.verify_emails.description }}
+							</small>
+						</div>
+
+						<div class="mb-3">
+							<b>{{ form.team_size.label }}</b>
+							{{ form.team_size(class="form-control custom-select") }}
+							<small class="form-text text-muted">
+								{{ form.team_size.description }}
+							</small>
+						</div>
+
+						<div class="text-right float-end">
+							<button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#administration" @click="switchTab">
+								Siguiente
+							</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="administration" role="tabpanel">
+						<div class="mb-3">
+							<b>{{ form.name.label }}</b>
+							{{ form.name(class="form-control") }}
+							<small class="form-text text-muted">
+								{{ form.name.description }}
+							</small>
+						</div>
+						<div class="mb-3">
+							<b>{{ form.email.label }}</b>
+							{{ form.email(class="form-control") }}
+							<small class="form-text text-muted">
+								{{ form.email.description }}
+							</small>
+						</div>
+						<div class="mb-3">
+							<b>{{ form.password.label }}</b>
+							{{ form.password(class="form-control") }}
+							<small class="form-text text-muted">
+								{{ form.password.description }}
+							</small>
+						</div>
+
+						<div class="mb-3 form-check">
+							<label class="form-check-label">
+								<input class="form-check-input" type="checkbox" value="" id="newsletter-checkbox" checked>
+								Suscríbase a la dirección de correo electrónico del boletín de CTFd LLC para recibir noticias y actualizaciones
+							</label>
+						</div>
+
+						<div class="text-right float-end">
+							<button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#style" @click="switchTab">
+								Siguiente
+							</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="style" role="tabpanel">
+						<div class="mb-3">
+							<b>{{ form.ctf_logo.label }}</b>
+							<div class="row">
+								{{ form.ctf_logo(class="form-control-file", accept="image/*", **{'@change': 'validateFileSize($event, 128000)'}) }}
+								<small class="form-text text-muted">
+									{{ form.ctf_logo.description }}
+								</small>
+							</div>
+						</div>
+						<div class="mb-3">
+							<b>{{ form.ctf_banner.label }}</b>
+							<div class="row">
+								{{ form.ctf_banner(class="form-control-file", accept="image/*", **{'@change': 'validateFileSize($event, 512000)'}) }}
+								<small class="form-text text-muted">
+									{{ form.ctf_banner.description }}
+								</small>
+							</div>
+						</div>
+						<div class="mb-3">
+							<b>{{ form.ctf_small_icon.label }}</b>
+							<div class="row">
+								{{ form.ctf_small_icon(class="form-control-file", accept=".png", **{'@change': 'validateFileSize($event, 32000)'}) }}
+								<small class="form-text text-muted">
+									{{ form.ctf_small_icon.description }}
+								</small>
+							</div>
+						</div>
+						<div class="mb-3">
+							<b>{{ form.ctf_theme.label }}</b>
+							{{ form.ctf_theme(class="form-control custom-select") }}
+							<small class="form-text text-muted">
+								{{ form.ctf_theme.description }}
+							</small>
+						</div>
+						<div class="mb-3">
+							<b>{{ form.theme_color.label }}</b>
+							<div class="row">
+								<div class="d-inline-block">
+									{{ form.theme_color(id="config-color-input") }}
+									<div class="btn-group">
+										<input type="color" id="config-color-picker" class="pr-1" style="width: 100px; height: 30px;" value="" @input="setThemeColor">
+									</div>
+									<div class="btn-group">
+										<button type="button" id="config-color-reset" @click="resetThemeColor">Restablecer</button>
+									</div>
+								</div>
+								<small class="form-text text-muted">
+									{{ form.theme_color.description }}
+								</small>
+							</div>
+						</div>
+						<div class="text-right float-end">
+							<button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#datetime" @click="switchTab">
+								Siguiente
+							</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="datetime" role="tabpanel">
+						<div class="mb-3">
+							<b>{{ form.start.label }}</b>
+							<div class="row">
+								<div class="col-md-4">
+									<label>Fecha</label>
+									<input class="form-control" id="start-date" type="date" placeholder="yyyy-mm-dd" data-preview="#start" @click="processDateTime('start')"/>
+								</div>
+								<div class="col-md-4">
+									<label>Fecha</label>
+									<input class="form-control" id="start-time" type="time" placeholder="hh:mm" data-preview="#start" @click="processDateTime('start')"/>
+								</div>
+								<div class="col-md-4">
+									<label>UTC Preview</label>
+									{{ form.start(class="form-control", id="start-preview", readonly=True) }}
+								</div>
+							</div>
+							<small class="form-text text-muted">
+								{{ form.start.description }}
+							</small>
+						</div>
+
+						<div class="mb-3">
+							<b>{{ form.end.label }}</b>
+							<div class="row">
+								<div class="col-md-4">
+									<label>Fecha</label>
+									<input class="form-control" id="end-date" type="date" placeholder="yyyy-mm-dd" data-preview="#end" @click="processDateTime('end')"/>
+								</div>
+								<div class="col-md-4">
+									<label>Fecha</label>
+									<input class="form-control" id="end-time" type="time" placeholder="hh:mm" data-preview="#end" @click="processDateTime('end')"/>
+								</div>
+								<div class="col-md-4">
+									<label>Vista previa UTC</label>
+									{{ form.end(class="form-control", id="end-preview", readonly=True) }}
+								</div>
+							</div>
+							<small class="form-text text-muted">
+								{{ form.end.description }}
+							</small>
+						</div>
+
+						<div class="text-right float-end">
+							<button type="button" class="btn btn-primary btn-outlined tab-next" data-href="#integrations" @click="switchTab">
+								Siguiente
+							</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="integrations" role="tabpanel">
+						<div class="mb-3">
+							<h4>Integración de MajorLeagueCyber</h4>
+							<p>
+							MajorLeagueCyber (MLC) es un rastreador de eventos de ciberseguridad desarrollado y mantenido por los desarrolladores de CTFd.
+							Configure la integración de MLC para:
+							<ul>
+								<li>mostrar tu evento en el sitio web y la lista de correo de MLC</li>
+								<li>compartir y realizar un seguimiento de las estadísticas de los participantes</li>
+								<li>proporcionar actualizaciones en vivo en grupos de Slack o Discord del equipo.</li>
+								<li>Desafíos de archivo, participación en equipo &amp; más</li>
+							</ul>
+							</p>
+							<button type="button" id="integration-mlc" class="btn btn-primary btn-block" @click="mlcSetup()">
+								Configuración
+							</button>
+						</div>
+
+						<br>
+						<hr>
+						<br>
+
+						<div class="submit-row text-right float-end">
+							{{ form.submit(class="btn btn-md btn-primary btn-outlined") }}
+						</div>
+					</div>
+				</div>
+
+				{{ form.nonce() }}
+			</form>
+			{% endwith %}
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+	var STATE = {{ state | tojson }};
+</script>
+{{ Assets.js("assets/js/setup.js") }}
+{% endblock %}

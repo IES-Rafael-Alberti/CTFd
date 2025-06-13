@@ -1,0 +1,83 @@
+@use "bootstrap/scss/bootstrap" as * with (
+  $info: #5c728f
+);
+
+@use "includes/components/table";
+@use "includes/components/jumbotron";
+@use "includes/components/challenge";
+@use "includes/components/sticky-footer";
+@use "includes/components/graphs";
+@use "includes/components/errors";
+@use "includes/components/navbar";
+@use "includes/components/containers";
+@use "includes/components/scoreboard";
+@use "includes/components/pagination";
+@use "includes/components/modal";
+@use "includes/components/buttons";
+@use "includes/components/etiquetas";
+
+@use "includes/utils/fonts";
+@use "includes/utils/opacity";
+@use "includes/utils/min-height";
+@use "includes/utils/cursors";
+@use "includes/utils/lolight";
+
+@use "includes/errors/error";
+
+@use "includes/icons/award-icons";
+@use "includes/icons/flag-icons";
+
+@use "includes/macros/forms";
+
+@use "includes/pages/notifications";
+@use "includes/pages/scoreboard-page";
+@use "includes/pages/login";
+@use "includes/pages/register";
+@use "includes/pages/reset-password";
+@use "includes/pages/settings";
+@use "includes/pages/challenges";
+@use "includes/pages/challenge-modal";
+@use "includes/pages/custom-pages";
+@use "includes/pages/users/users";
+@use "includes/pages/teams/teams";
+@use "includes/pages/teams/join-team";
+@use "includes/pages/teams/new-team";
+@use "includes/pages/teams/invite";
+@use "includes/pages/teams/team_enrollment";
+
+h1,
+h2 {
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+a {
+  text-decoration: none;
+}
+
+blockquote {
+  border-left: 4px solid $secondary;
+  padding-left: 15px;
+}
+
+input,
+select {
+  padding: 0.6rem;
+  height: auto;
+}
+
+.fa-spin.spinner {
+  text-align: center;
+  opacity: 0.5;
+}
+
+.badge-notification {
+  vertical-align: top;
+  margin-left: -1.5em;
+  font-size: 50%;
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
+  background-size: 8px 10px;
+}

@@ -1,0 +1,21 @@
+.etiqueta {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  font-family: "Source Code Pro", monospace;
+
+  &--tabla {
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+  }
+
+  &--principal {
+    background-color: var(--etiqueta-principal-bg-color);
+    color: var(--etiqueta-text-color);
+  }
+
+  &--secundaria {
+    background-color: var(--etiqueta-secundaria-bg-color);
+    color: var(--etiqueta-text-color);
+    font-size: 1.5rem;
+  }
+}

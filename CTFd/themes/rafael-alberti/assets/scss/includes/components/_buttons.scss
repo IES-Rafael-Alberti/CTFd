@@ -1,0 +1,72 @@
+.boton {
+  position: relative;
+  background-color: var(--button-primary-bg-color);
+  color: var(--button-primary-text-color);
+  font-weight: bold;
+  padding: 0.5rem 2rem;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.boton--secundario {
+  position: relative;
+  background-color: var(--button-secondary-bg-color);
+  color: var(--button-secondary-text-color);
+  font-weight: bold;
+  padding: 0.5rem 2rem;
+  border: none;
+  cursor: pointer;
+  z-index: 1;
+  transition: transform 0.3s ease;
+
+  &-active {
+    color: var(--button-secondary-text-color);
+}
+}
+
+.boton::before,
+.boton::after,
+.boton--secundario::before,
+.boton--secundario::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  background: linear-gradient(45deg, var(--button-border-color1), var(--button-border-color2));
+  z-index: -1;
+  pointer-events: none;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  padding: 2px;
+}
+
+.boton::before,
+.boton--secundario::before {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease-in-out;
+  z-index: -1;
+}
+
+.boton:hover::before,
+.boton--secundario:hover::before {
+  transform: scaleX(1);
+}
+
+.boton::after,
+.boton--secundario::after {
+  opacity: 0;
+  z-index: -2;
+}
+
+.boton:hover::after,
+.boton--secundario:hover::after {
+  opacity: 1;
+}
