@@ -358,6 +358,9 @@ def create_app(config="CTFd.config.Config"):
                 while True:
                     # Sleep for 2 seconds between updates
                     socketio.sleep(2)
+
+                    # Clear SQLAlchemy session before each emit
+                    db.session.remove()
                     
                     # Emit challenge statistics (solves, fails, categories)
                     emit_challenge_statistics()
