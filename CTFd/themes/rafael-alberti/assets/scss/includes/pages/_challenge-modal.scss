@@ -333,7 +333,7 @@
 
 .boton-busqueda {
   position: absolute;
-  bottom: -4.2rem;
+  bottom: -4.3rem;
   right: 2rem;
   background-color: var(--modal-challenge-submit-button-bg-color);
   color: var(--modal-challenge-submit-button-text-color);
@@ -346,5 +346,22 @@
 
   &--buscar:hover {
     background-color: var(--modal-challenge-submit-button-hover-bg-color);
+  }
+
+  &--modal {
+    bottom: -1.9rem;
+  }
+
+  &--cancel {
+    right: 0;
+    left: 2rem;
+    max-width: 33%;
+    background-color: var(--button-secondary-bg-color);
+    color: var(--button-secondary-text-color);
+
+    &:hover {
+      background-color: var(--button-secondary-text-color);
+      color: var(--button-secondary-bg-color);
+    }
   }
 }

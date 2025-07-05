@@ -28,8 +28,8 @@ main {
 
   &__title {
     text-shadow:
-      -10px -5px 1px var(--header-text-shadow1),
-      10px 5px 1px var(--header-text-shadow2);
+      -5px -3px 1px var(--header-text-shadow1),
+      5px 3px 1px var(--header-text-shadow2);
     color: var(--header-text-color);
     text-transform: uppercase;
   }

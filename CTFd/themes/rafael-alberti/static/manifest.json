@@ -56,7 +56,7 @@
     ]
   },
   "assets/js/notifications.js": {
-    "file": "assets/notifications.44369d5f.js",
+    "file": "assets/notifications.4d4a62d5.js",
     "src": "assets/js/notifications.js",
     "isEntry": true,
     "imports": [
@@ -152,7 +152,7 @@
     ]
   },
   "assets/scss/main.scss": {
-    "file": "assets/main.19f2f338.css",
+    "file": "assets/main.9f15717b.css",
     "src": "assets/scss/main.scss",
     "isEntry": true
   }
