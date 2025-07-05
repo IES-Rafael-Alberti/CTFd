@@ -57,9 +57,7 @@
               </div>
             </template>
           </article>
-            <div class="form__submit">
-                <button type="submit" class="boton">Enviar</button>
-            </div>
+          <button type="submit" class="boton-busqueda boton-busqueda--buscar boton-busqueda--modal">Enviar</button>
         </form>
       {% endwith %}
     </article>
@@ -107,9 +105,7 @@
               </div>
             </template>
           </div>
-          <div class="form__submit">
-              <button type="submit" class="boton">Guardar</button>
-          </div>
+          <button type="submit" class="boton-busqueda boton-busqueda--buscar boton-busqueda--modal">Guardar</button>
         </form>
       {% endwith %}
     </div>
@@ -154,7 +150,7 @@
 
 <div id="team-disband-modal" class="modals" x-data="TeamDisbandModal" x-ref="teamDisbandModal" style="display: none;">
   <div class="modals__overlay" @click="closeModal"></div>
-  <div class="modals__dialog">
+  <div class="modals__dialog modals__dialog--accept">
     <div class="modals__header">
       <h4 class="modals__header__title">Disolver el equipo</h4>
       <span class="modals__header__close" @click="closeModal" aria-label="Cerrar">
@@ -174,8 +170,8 @@
       </div>
     </div>
     <div class="modals__footer">
-      <button type="button" class="boton--secundario" @click="closeModal">No</button>
-      <button type="button" class="boton" @click="disbandTeam()" :disabled="errors.length > 0">Sí</button>
+      <button type="button" class="boton-busqueda boton-busqueda--buscar boton-busqueda--modal boton-busqueda--cancel" @click="closeModal">No</button>
+      <button type="button" class="boton-busqueda boton-busqueda--buscar boton-busqueda--modal" @click="disbandTeam()" :disabled="errors.length > 0">Sí</button>
     </div>
   </div>
 </div>

@@ -24,7 +24,7 @@ CTFd.fetch(`/api/v1/notifications?since_id=${lastId}`)
 
         // Create a "NEW" badge element with the required classes
         const badge = document.createElement("span");
-        badge.classList.add("etiqueta", "etiqueta--secundaria");
+        badge.classList.add("etiqueta", "etiqueta--secundaria", "etiqueta--notificacion");
         badge.textContent = "NUEVA";
 
         // Append the badge to the title element
