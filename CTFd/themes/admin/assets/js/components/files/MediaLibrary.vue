@@ -241,7 +241,7 @@ export default {
     uploadChosenFiles: function () {
       // TODO: We should reduce the need to interact with the DOM directly.
       // This looks jank and we should be able to remove it.
-      let form = document.querySelector("#media-ctfd_myplugin-upload");
+      let form = document.querySelector("#media-github_backup-upload");
       helpers.files.upload(form, {}, (_data) => {
         this.getPageFiles();
       });

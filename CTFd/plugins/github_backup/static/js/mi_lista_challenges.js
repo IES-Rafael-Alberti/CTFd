@@ -1,4 +1,4 @@
-// plugins/ctfd_myplugin/static/js/mi_lista_challenges.js
+// plugins/github_backup/static/js/mi_lista_challenges.js
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("JS cargado");

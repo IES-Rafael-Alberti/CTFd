@@ -1,0 +1,174 @@
+{# plugins/github_backup/templates/admin/github_backup.html #}
+{% extends "admin/base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <h1>Github backup</h1>
+  <p>Import and export challenges from Github</p>
+
+    <!-- Login section -->
+    <div class="form-group" id="github-login-section">
+        <p>
+            <i class="fab fa-github me-1"></i> Connect your GitHub account to import challenges from your public or private repositories.
+        </p>
+        <a href="https://github.com/apps/ctfd-library/installations/new" id="github-login1-button" class="btn btn-warning">
+            <i class="fas fa-plug me-1"></i> 1. Install GitHub App
+        </a>
+        <a href="{{ url_for('github_backup.link_installation') }}" id="github-login-button" class="btn btn-warning">
+            <i class="fas fa-link me-1"></i> 2. Link installation
+        </a>
+    </div>
+
+    <!-- Error section -->
+    <div class="form-group" id="github-error-section" style="display:none;">
+        <div class="alert alert-danger" role="alert" id="github-error-message">
+            <i class="fas fa-exclamation-triangle me-1"></i> <!-- Error message will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Repositories section -->
+    <div class="form-group" id="github-repos-section" style="display:none;">
+        <label for="github-repo-search">
+            <i class="fas fa-search me-1"></i> Filter by name:
+        </label>
+        <input type="text" id="github-repo-search" class="form-control" placeholder="Search repository...">
+
+        <div id="github-repos-list" class="mt-3">
+            <!-- Repositories will be dynamically inserted here -->
+        </div>
+
+        <nav aria-label="Repos pagination" class="mt-3">
+            <ul class="pagination justify-content-center" id="github-repo-pagination"></ul>
+        </nav>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex gap-2 mt-2">
+        <button id="save-selected-repos" class="btn btn-warning">
+            <i class="fas fa-save me-1"></i> Save selected repositories
+        </button>
+    </div>
+
+    <hr>
+    <h5><i class="fas fa-database me-1"></i> Saved Repositories</h5>
+    <table class="table table-bordered" id="github-saved-repos-table">
+        <thead>
+            <tr>
+                <th><i class="fas fa-check-square me-1"></i></th>
+                <th><i class="fas fa-folder-open me-1"></i> Name</th>
+                <th><i class="fas fa-clock me-1"></i> Last import time</th>
+                <th><i class="fas fa-cogs me-1"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="d-flex gap-2 mt-2">
+        <button id="import-selected-repos" class="btn btn-success">
+            <i class="fas fa-download me-1"></i> Import selected repositories
+        </button>
+        <button id="help-button" class="btn btn-info">
+            <i class="fas fa-question-circle me-1"></i> Help
+        </button>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="help-modal-label">Repository Format Help</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>The repositories must have a folder named <code>challenges</code> that contains JSON files with the following format:</p>
+                    <pre><code class="json">
+                        {
+                                "challenge": {
+                                        "uuid": "1aaaaaa",
+                                        "name": "Hola soy un reto dfdfdf",
+                                        "description": "Nunca podrás resolver este reto",
+                                        "attribution": "yo",
+                                        "connection_info": "https://soy_un_enlace",
+                                        "max_attempts": 0,
+                                        "value": 200,
+                                        "category": "criptografía",
+                                        "type": "standard",
+                                        "state": "visible",
+                                        "flags": [
+                                                {
+                                                        "uuid": "sdsdsd",
+                                                        "type": "static",
+                                                        "content": "flag{respuesta}",
+                                                        "data": "case_insensitive"
+                                                },
+                                                {
+                                                        "uuid": "fgghhj",
+                                                        "type": "regex",
+                                                        "content": "flag{.a*}",
+                                                        "data": ""
+                                                }
+                                        ],
+                                        "tags": [
+                                                "tag1",
+                                                "tag2"
+                                        ],
+                                        "hints": [
+                                                {
+                                                        "uuid": "sdffgfh",
+                                                        "title": "Pista 1",
+                                                        "type": "standard",
+                                                        "content": "las pistas son para los cobardes",
+                                                        "cost": 10
+                                                },
+                                                {
+                                                        "uuid": "sdffgghtty",
+                                                        "title": "Pista 2",
+                                                        "type": "standard",
+                                                        "content": "las pistas son para los cobardes",
+                                                        "cost": 20
+                                                }
+                                        ]
+                                }
+                        }
+                    </code></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  {# Ejemplo de sección: #}
+  <div class="card">
+    <div class="card-header">
+      <strong>Estadísticas de uso</strong>
+    </div>
+    <div class="card-body">
+      <p>Total de challenges en base de datos: {{ total_challenges }}</p>
+      {# Podrías pasar variables desde tu función en blueprints.py #}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{#{% block scripts %}#}
+{#  {{ super() }}#}
+{#  <script type="module" src="{{ url_for('github_backup.static', filename='js/script.js') }}"></script>#}
+{#{% endblock %}#}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const script = document.createElement("script");
+      script.type = "module";
+      script.src = "{{ url_for('github_backup.static', filename='js/script.js') }}";
+      document.body.appendChild(script);
+    });
+  </script>
+{% endblock %}
+
