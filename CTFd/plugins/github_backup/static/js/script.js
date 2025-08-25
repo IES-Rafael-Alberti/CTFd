@@ -1,8 +1,3 @@
-import {ezAlert, ezQuery} from "../../../../themes/admin/assets/js/compat/ezq.js";
-import CTFd from "./lib/CTFd";
-
-// const { ezAlert, ezQuery } = window;
-// const CTFd = window.CTFd;
 
 const ITEMS_PER_PAGE = 10;
 let allRepos = [];
@@ -66,7 +61,7 @@ function loadSavedRepos() {
     const tableBody = document.querySelector("#github-saved-repos-table tbody");
     tableBody.innerHTML = "";
 
-    CTFd.fetch("/api/v1/github/repos/saved", {
+    fetch("/api/v1/github/repos/saved", {
       method: "GET",
       credentials: "same-origin"
     })
@@ -124,158 +119,124 @@ function loadSavedRepos() {
           tableBody.appendChild(tr);
         });
 
+
         // Link actions
         document.querySelectorAll(".delete-repo-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             const repoId = btn.getAttribute("data-id");
-            ezQuery({
-              title: "Delete Repository?",
-              body: "Are you sure you want to delete this repository?",
-              success: () => {
-                CTFd.fetch(`/api/v1/github/repos/${repoId}`, {
-                  method: "DELETE",
-                  credentials: "same-origin",
-                  headers: {
-                    "CSRF-Token": CTFd.config.csrfNonce
+
+            if (confirm("Are you sure you want to delete this repository?")) {
+              fetch(`/api/v1/github/repos/${repoId}`, {
+                method: "DELETE",
+                credentials: "same-origin",
+                headers: {
+                  "CSRF-Token": CTFd.config.csrfNonce
+                }
+              })
+                .then((r) => r.json())
+                .then((resp) => {
+                  if (resp.success) {
+                    alert("Deleted: " + resp.message);
+                    loadSavedRepos();
+                  } else {
+                    alert("Error: " + resp.message);
                   }
-                })
-                  .then((r) => r.json())
-                  .then((resp) => {
-                    if (resp.success) {
-                      ezAlert({
-                        title: "Deleted",
-                        body: resp.message,
-                        button: "OK"
-                      });
-                      loadSavedRepos();
-                    } else {
-                      ezAlert({
-                        title: "Error",
-                        body: resp.message,
-                        button: "Close"
-                      });
-                    }
-                  });
-              }
-            });
+                });
+            }
           });
         });
+
 
         document.querySelectorAll(".sync-now-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             const repoId = btn.getAttribute("data-id");
 
-            ezQuery({
-              title: "Import Challenges?",
-              body: "Are you sure you want to import the challenges from this repository?",
-              success: () => {
-                // Find related elements
-                const row = btn.closest("tr");
-                const syncCell = row.querySelector("td:nth-child(3)");
-                const deleteBtn = row.querySelector(".delete-repo-btn");
+            if (confirm("Are you sure you want to import the challenges from this repository?")) {
+              // Find related elements
+              const row = btn.closest("tr");
+              const syncCell = row.querySelector("td:nth-child(3)");
+              const deleteBtn = row.querySelector(".delete-repo-btn");
 
-                // Save the original content of the date cell
-                const originalSyncContent = syncCell.innerHTML;
+              // Save the original content of the date cell
+              const originalSyncContent = syncCell.innerHTML;
 
-                // Replace with spinner
-                syncCell.innerHTML = `
+              // Replace with spinner
+              syncCell.innerHTML = `
                 <div class="text-center">
                   <i class="fas fa-spinner fa-spin text-warning"></i>
                   <div class="small text-muted">Importing...</div>
                 </div>
               `;
 
-                // Disable buttons
-                btn.disabled = true;
-                deleteBtn.disabled = true;
+              // Disable buttons
+              btn.disabled = true;
+              deleteBtn.disabled = true;
 
-                CTFd.fetch(`/api/v1/github/repos/${repoId}/import`, {
-                  method: "POST",
-                  credentials: "same-origin",
-                  headers: {
-                    "CSRF-Token": CTFd.config.csrfNonce
-                  }
-                })
-                  .then((r) => r.json())
-                  .then((resp) => {
-                    if (resp.success) {
-                      let body = `<p>${resp.message}</p>`;
-                      if (resp.errors && resp.errors.length > 0) {
-                        body += "<hr><b>Errors during import:</b><ul>";
-                        resp.errors.forEach((err) => {
-                          body += `<li><code>${err.file}</code>: ${err.error}</li>`;
-                        });
-                        body += "</ul>";
-                      }
-
-                      ezAlert({
-                        title: "Import Complete",
-                        body: body,
-                        button: "OK"
-                      });
-
-                      loadSavedRepos(); // Update the entire table
-                    } else {
-                      syncCell.innerHTML = originalSyncContent;
-                      btn.disabled = false;
-                      deleteBtn.disabled = false;
-
-                      ezAlert({
-                        title: "Error",
-                        body: resp.message,
-                        button: "Close"
+              fetch(`/api/v1/github/repos/${repoId}/import`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                  "CSRF-Token": CTFd.config.csrfNonce
+                }
+              })
+                .then((r) => r.json())
+                .then((resp) => {
+                  if (resp.success) {
+                    let message = resp.message;
+                    if (resp.errors && resp.errors.length > 0) {
+                      message += "\n\nErrors during import:\n";
+                      resp.errors.forEach((err) => {
+                        message += `- ${err.file}: ${err.error}\n`;
                       });
                     }
-                  })
-                  .catch((err) => {
+
+                    alert("Import complete: " + message);
+
+                    loadSavedRepos(); // Update the entire table
+                  } else {
                     syncCell.innerHTML = originalSyncContent;
                     btn.disabled = false;
                     deleteBtn.disabled = false;
 
-                    ezAlert({
-                      title: "Unexpected Error",
-                      body: err.message,
-                      button: "Close"
-                    });
-                  })
-                  .finally(() => {
-                    // Always re-enable the buttons at the end
-                    btn.disabled = false;
-                    deleteBtn.disabled = false;
-                    syncCell.innerHTML = originalSyncContent; // Restore original content
-                  });
-              }
-            });
+                    alert("Error: " + resp.message);
+                  }
+                })
+                .catch((err) => {
+                  syncCell.innerHTML = originalSyncContent;
+                  btn.disabled = false;
+                  deleteBtn.disabled = false;
+
+                  alert("Unexpected Error: " + err.message);
+                })
+                .finally(() => {
+                  // Always re-enable the buttons at the end
+                  btn.disabled = false;
+                  deleteBtn.disabled = false;
+                  syncCell.innerHTML = originalSyncContent; // Restore original content
+                });
+            }
           });
         });
 
         document.getElementById("import-selected-repos")?.addEventListener("click", () => {
           const checkboxes = document.querySelectorAll(".sync-checkbox:checked");
           if (checkboxes.length === 0) {
-            ezAlert({ title: "No Selection", body: "Select at least one repository to import.", button: "OK" });
+            alert("No repositories selected.\nSelect at least one repository to import.");
             return;
           }
 
-          ezQuery({
-            title: "Import Multiple Repositories?",
-            body: `You will import ${checkboxes.length} repositories. Continue?`,
-            success: () => {
-              checkboxes.forEach((cb) => {
-                const repoId = cb.value;
-                const row = cb.closest("tr");
-                importRepoById(repoId, row);
-              });
-            }
+          if (confirm(`You will import ${checkboxes.length} repositories. Continue?`)) {
+            checkboxes.forEach((cb) => {
+              const repoId = cb.value;
+              const row = cb.closest("tr");
+              importRepoById(repoId, row);
+            });
+          }
+        })
+          })
+          .catch((err) => {
+            alert("Error: " + err.message);
           });
-        });
-      })
-      .catch((err) => {
-        ezAlert({
-          title: "Error",
-          body: err.message,
-          button: "OK"
-        });
-      });
 }
 
 // Fetch blueprint
@@ -330,7 +291,7 @@ function loadSavedRepos() {
       }
     });
 
-    CTFd.fetch("/api/v1/github/repos/selection", {
+    fetch("/api/v1/github/repos/selection", {
       method: "POST",
       credentials: "same-origin",
       headers: {
@@ -342,25 +303,13 @@ function loadSavedRepos() {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          ezAlert({
-            title: "Success",
-            body: "Repositories saved successfully.",
-            button: "OK"
-          });
+          alert("Repositories saved successfully.");
         } else {
-          ezAlert({
-            title: "Error saving",
-            body: data.message || "Unexpected error.",
-            button: "OK"
-          });
+          alert("Error saving: " + data.message || "Unexpected error.");
         }
       })
         .catch(err => {
-        ezAlert({
-          title: "Unexpected Error",
-          body: err.message,
-          button: "OK"
-        });
+            alert("Unexpected Error: " + err.message);
       });
   });
 
@@ -381,7 +330,7 @@ function loadSavedRepos() {
     deleteBtn.disabled = true;
 
 
-    CTFd.fetch(`/api/v1/github/repos/${repoId}/import`, {
+    fetch(`/api/v1/github/repos/${repoId}/import`, {
       method: "POST",
       credentials: "same-origin",
       headers: {
@@ -399,15 +348,15 @@ function loadSavedRepos() {
             });
             body += "</ul>";
           }
-          ezAlert({ title: "Import Complete", body, button: "OK" });
+          alert("Import complete.\n" + body);
           loadSavedRepos();
         } else {
-          ezAlert({ title: "Error", body: resp.message, button: "Close" });
+          alert("Error: " + resp.message);
           syncCell.innerHTML = originalSyncContent;
         }
       })
       .catch((err) => {
-        ezAlert({ title: "Unexpected Error", body: err.message, button: "Close" });
+        alert("Unexpected Error: " + err.message);
         syncCell.innerHTML = originalSyncContent;
       })
       .finally(() => {
