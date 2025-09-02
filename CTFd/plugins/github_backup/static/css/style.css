@@ -1,0 +1,28 @@
+.container {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-areas:
+            "header header"
+            "aside main";
+    gap: 10px;
+}
+
+.header {
+    grid-area: header;
+    text-align: center;
+    padding: 60px 10px;
+}
+
+aside {
+    grid-area: aside;
+}
+
+main {
+    grid-area: main;
+    /*padding-left: 10px;*/
+    /*border-left: 1px solid black;*/
+}
+
+/*aside, main {*/
+/*    border: 1px solid black;*/
+/*}*/

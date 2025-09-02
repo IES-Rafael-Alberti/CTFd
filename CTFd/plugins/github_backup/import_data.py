@@ -1,0 +1,327 @@
+import requests
+
+from CTFd.models import Tags, Flags, Hints, Challenges
+from CTFd.plugins.dynamic_challenges import DynamicChallenge
+from CTFd.plugins.github_backup.validate_data import validate_tags_data, validate_flag_data, validate_hints_data, \
+    validate_dynamic_data, validate_challenge_data
+from CTFd.plugins.github_backup.models import db, GithubChallengeSync, GithubFlagSync, GithubHintSync, UserGitHubToken
+from datetime import datetime
+import json
+
+def import_tags(challenge, tags_data, path, overwrite_existing):
+    validate_tags_data(tags_data, path)
+
+    if overwrite_existing:
+        Tags.query.filter_by(challenge_id=challenge.id).delete()
+
+    for tag in tags_data:
+        tag_entry = Tags(challenge_id=challenge.id, value=tag)
+        db.session.add(tag_entry)
+
+
+def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_existing):
+    json_flag_uuids = set()
+    now = datetime.utcnow()
+
+    for flag in flags:
+        try:
+            validate_flag_data(flag, path)
+        except ValueError as ve:
+            raise ValueError(str(ve))
+
+        flag_uuid = flag["uuid"]
+        json_flag_uuids.add(flag_uuid)
+
+        existing_flag_sync = GithubFlagSync.query.filter_by(flag_uuid=flag_uuid).first()
+
+        if existing_flag_sync:
+            if overwrite_existing:
+                existing_flag = Flags.query.get(existing_flag_sync.flag_id)
+                if existing_flag:
+                    existing_flag.type = flag["type"]
+                    existing_flag.content = flag["content"]
+                    existing_flag.data = flag.get("data", "")
+                    existing_flag_sync.last_updated_at = now
+        else:
+            new_flag = Flags(
+                challenge_id=challenge_id,
+                type=flag["type"],
+                content=flag["content"],
+                data=flag.get("data", "")
+            )
+            db.session.add(new_flag)
+            db.session.flush()
+
+            db.session.add(GithubFlagSync(
+                flag_id=new_flag.id,
+                github_repo_id=repo_id,
+                challenge_uuid=challenge_uuid,
+                flag_uuid=flag_uuid,
+                last_updated_at=now
+            ))
+
+    # Delete flags that no longer exist in the JSON
+    synced_flags = GithubFlagSync.query.filter_by(
+        github_repo_id=repo_id,
+        challenge_uuid=challenge_uuid
+    ).all()
+
+    for synced in synced_flags:
+        if synced.flag_uuid not in json_flag_uuids:
+            flag = Flags.query.get(synced.flag_id)
+            if flag:
+                db.session.delete(flag)
+            db.session.delete(synced)
+
+
+def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrite_existing=False):
+
+    validate_hints_data(hints, path)
+
+    for hint_data in hints:
+        uuid = hint_data.get("uuid")
+        if not uuid:
+            raise ValueError("One of the hints is missing the 'uuid' field.")
+
+        existing_sync = GithubHintSync.query.filter_by(hint_uuid=uuid).first()
+
+        if existing_sync:
+            if overwrite_existing:
+                hint = Hints.query.get(existing_sync.hint_id)
+                if hint:
+                    hint.title = hint_data.get("title", "")
+                    hint.content = hint_data.get("content", "")
+                    hint.cost = hint_data.get("cost", 0)
+                    hint.type = hint_data.get("type", "standard")
+                    existing_sync.last_updated_at = datetime.utcnow()
+                continue
+            else:
+                continue
+
+        hint = Hints(
+            challenge_id=challenge_id,
+            title=hint_data.get("title", ""),
+            content=hint_data.get("content", ""),
+            cost=hint_data.get("cost", 0),
+            type=hint_data.get("type", "standard")
+        )
+        db.session.add(hint)
+        db.session.flush()
+
+        db.session.add(GithubHintSync(
+            hint_id=hint.id,
+            github_repo_id=repo_id,
+            hint_uuid=uuid,
+            challenge_uuid=challenge_uuid,
+            hint_path=path,
+            last_updated_at=datetime.utcnow()
+        ))
+
+
+def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
+    validate_dynamic_data(dynamic, path)
+
+    # If the challenge is being created or updated, we need to handle its dynamic properties
+    existing_dynamic = DynamicChallenge.query.filter_by(id=challenge_id).first()
+
+    if existing_dynamic:
+        if overwrite_existing:
+            existing_dynamic.initial = dynamic.get("initial", 0)
+            existing_dynamic.minimum = dynamic.get("minimum", 0)
+            existing_dynamic.decay = dynamic.get("decay", 0)
+            existing_dynamic.function = dynamic.get("function", "logarithmic")
+    else:
+        existing_dynamic = DynamicChallenge(
+            id=challenge_id,
+            initial=dynamic.get("initial", 0),
+            minimum=dynamic.get("minimum", 0),
+            decay=dynamic.get("decay", 0),
+            function=dynamic.get("function", "logarithmic")
+        )
+        db.session.add(existing_dynamic)
+
+    db.session.flush()
+
+
+def import_or_update_challenge(challenge_info, repo, path, overwrite_existing):
+    uuid = challenge_info.get("uuid")
+    if not uuid:
+        return None, False, "Missing 'uuid' field"
+
+    try:
+        validated_data = validate_challenge_data(challenge_info, path)
+    except ValueError as ve:
+        return None, False, str(ve)
+
+    existing_sync = GithubChallengeSync.query.filter_by(challenge_uuid=uuid).first()
+
+    if existing_sync:
+        if overwrite_existing:
+            challenge = Challenges.query.get(existing_sync.challenge_id)
+            if challenge:
+                challenge.name = validated_data["name"]
+                challenge.description = validated_data["description"]
+                challenge.category = validated_data["category"]
+                challenge.value = validated_data["value"]
+                challenge.state = validated_data["state"]
+                challenge.type = validated_data["type"]
+                challenge.connection_info = validated_data.get("conection_info")
+                challenge.max_attempts = validated_data.get("max_attemps", 0)
+                challenge.attribution = validated_data.get("attribution")
+                existing_sync.last_updated_at = datetime.utcnow()
+                return challenge, False, None
+            else:
+                return None, False, "Synchronized challenge not found in the database"
+        else:
+            return None, False, "Challenge already synchronized (no overwrite)"
+    else:
+        challenge = Challenges(
+            name=validated_data["name"],
+            description=validated_data["description"],
+            category=validated_data["category"],
+            value=validated_data["value"],
+            state=validated_data["state"],
+            type=validated_data["type"],
+            connection_info=validated_data.get("conection_info"),
+            max_attempts=validated_data.get("max_attemps", 0),
+            attribution=validated_data.get("attribution")
+        )
+        db.session.add(challenge)
+        db.session.flush()
+
+        db.session.add(GithubChallengeSync(
+            challenge_id=challenge.id,
+            github_repo_id=repo.id,
+            challenge_uuid=uuid,
+            challenge_path=path,
+            last_updated_at=datetime.utcnow()
+        ))
+
+        return challenge, True, None
+
+
+# Import challenges
+def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_existing=False):
+    headers = {
+        "Authorization": f"token {access_token}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    base_url = f"https://api.github.com/repos/{repo.full_name}/contents/challenges"
+    file_list_resp = requests.get(base_url, headers=headers)
+
+    if file_list_resp.status_code != 200:
+        return {"success": False, "message": "Could not access /challenges in the repository."}
+
+    file_list = file_list_resp.json()
+    count_created = 0
+    count_updated = 0
+    count_skipped = 0
+    errors = []
+
+    for file in file_list:
+        if not file["name"].endswith(".json"):
+            continue
+
+        path = file["path"]
+        if only_paths and path not in only_paths:
+            continue
+
+        file_resp = requests.get(file["download_url"], headers=headers)
+        if file_resp.status_code != 200:
+            errors.append({"file": path, "error": f"HTTP {file_resp.status_code}"})
+            continue
+
+        try:
+            challenge_data = json.loads(file_resp.text)
+            challenge_info = challenge_data.get("challenge", {})
+
+            challenge, created, error_msg = import_or_update_challenge(challenge_info, repo, path, overwrite_existing)
+
+            if error_msg:
+                if error_msg != "Challenge already synchronized (no overwrite)":
+                    errors.append({"file": path, "error": error_msg})
+                else:
+                    count_skipped += 1
+                continue
+
+            if challenge.type == "standard":
+                if "dynamic" in challenge_info:
+                    errors.append({"file": path, "error": "Standard challenges cannot have dynamic data."})
+                    continue
+
+                # Flags
+                try:
+                    import_flags(
+                        challenge_id=challenge.id,
+                        flags=challenge_info.get("flags", []),
+                        repo_id=repo.id,
+                        challenge_uuid=challenge_info["uuid"],
+                        path=path,
+                        overwrite_existing=overwrite_existing
+                    )
+                except ValueError as ve:
+                    errors.append({"file": path, "error": str(ve)})
+                    continue
+
+                # After importing flags
+                try:
+                    import_hints(
+                        challenge_id=challenge.id,
+                        hints=challenge_info.get("hints", []),
+                        repo_id=repo.id,
+                        challenge_uuid=challenge_info["uuid"],
+                        path=path,
+                        overwrite_existing=overwrite_existing
+                    )
+                except ValueError as ve:
+                    errors.append({"file": path, "error": str(ve)})
+                    continue
+
+                # Import tags
+                tags_data = challenge_info.get("tags", [])
+                if tags_data:
+                    try:
+                        import_tags(challenge, tags_data, path, overwrite_existing)
+                    except ValueError as ve:
+                        errors.append({"file": path, "error": str(ve)})
+                        continue
+            else:
+                # For dynamic challenges, we don't import flags or hints
+                if "hints" in challenge_info or "tags" in challenge_info:
+                    errors.append({"file": path, "error": "Dynamic challenges cannot have hints or tags."})
+                    continue
+
+                # Import dynamic data
+                dynamic_data = challenge_info.get("dynamic", {})
+                if dynamic_data:
+                    try:
+                        import_dynamic(
+                            challenge_id=challenge.id,
+                            dynamic=dynamic_data,
+                            path=path,
+                            overwrite_existing=overwrite_existing
+                        )
+                    except ValueError as ve:
+                        errors.append({"file": path, "error": str(ve)})
+                        continue
+
+            if created:
+                count_created += 1
+            else:
+                count_updated += 1
+
+        except Exception as e:
+            errors.append({"file": path, "error": str(e)})
+            continue
+
+    repo.last_synced_at = datetime.utcnow()
+    db.session.commit()
+
+    return {
+        "success": True,
+        "created": count_created,
+        "updated": count_updated,
+        "skipped": count_skipped,
+        "errors": errors
+    }

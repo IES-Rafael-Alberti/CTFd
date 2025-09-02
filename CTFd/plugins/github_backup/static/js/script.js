@@ -16,6 +16,13 @@ githubRepoSearch?.addEventListener("input", () => {
 });
 
 // Functions
+/**
+ * Renders a list of repositories based on the current search term, pagination state,
+ * and the selected repositories. Filters the repositories by the search term, paginates
+ * the results, and populates the repository list into the DOM.
+ *
+ * @return {void} This method does not return a value.
+ */
 function renderRepos() {
     const searchTerm = githubRepoSearch.value.toLowerCase();
     const filteredRepos = allRepos.filter(repo =>
@@ -41,6 +48,12 @@ function renderRepos() {
     renderPagination(totalPages);
 }
 
+/**
+ * Renders the pagination control for navigating through pages.
+ *
+ * @param {number} totalPages - The total number of pages to be rendered.
+ * @return {void} Does not return a value.
+ */
 function renderPagination(totalPages) {
     githubRepoPagination.innerHTML = "";
 
@@ -49,19 +62,116 @@ function renderPagination(totalPages) {
         li.className = `page-item ${i === currentPage ? "active" : ""}`;
         li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
         li.addEventListener("click", (e) => {
-        e.preventDefault();
-        currentPage = i;
-        renderRepos();
+            e.preventDefault();
+            currentPage = i;
+            renderRepos();
         });
         githubRepoPagination.appendChild(li);
     }
 }
 
+
+document.getElementById("github-login-button")?.addEventListener("click", () => {
+  fetch("/plugins/github_backup/installations", {
+    method: "GET",
+    credentials: "same-origin",
+    headers: {
+      "CSRF-Token": CTFd.config.csrfNonce
+    }
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Linked successfully. " + data.message);
+      } else {
+        alert("Error: " + (data.message || "Unexpected error"));
+      }
+    })
+    .catch((err) => {
+      alert("Unexpected Error: " + err.message);
+    });
+});
+
+
+
+/** TODO Fetch repos from the server and render them */
+fetch("/plugins/github_backup/repos")
+    .then(response => {
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error("User not authenticated with GitHub. Please install the app or make sure you have the necessary permissions.");
+            }
+            return response.json().then(err => {
+                throw new Error(err.message || "Unexpected error communicating with the API.");
+          });
+        }
+        return response.json();
+        })
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.message || "The API did not respond successfully.");
+        }
+
+        allRepos = data.repos || [];
+
+        if (githubLoginSection) githubLoginSection.style.display = "none";
+        if (githubReposSection) githubReposSection.style.display = "block";
+        const errorSection = document.getElementById("github-error-section");
+        if (errorSection) errorSection.style.display = "none";
+
+        renderRepos();
+        loadSavedRepos();
+    })
+    .catch(error => {
+        console.error("Error fetching the repos: ", error);
+        const errorSection = document.getElementById("github-error-section");
+        const errorMessage = document.getElementById("github-error-message");
+        if (errorMessage) errorMessage.textContent = error.message;
+        if (errorSection) errorSection.style.display = "block";
+        if (githubLoginSection) githubLoginSection.style.display = "block";
+        if (githubReposSection) githubReposSection.style.display = "none";
+    });
+
+
+/** TODO Save selected repos  */
+document.getElementById("save-selected-repos")?.addEventListener("click", () => {
+    const checkboxes = document.querySelectorAll("#github-repos-list input[type=checkbox]:checked");
+    const selected = [];
+
+    checkboxes.forEach(checkbox => {
+      const repo = allRepos.find(r => r.full_name === checkbox.value);
+      if (repo) {
+        selected.push(repo);
+      }
+    });
+
+    fetch("/plugins/github_backup/repos/selection", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+            "CSRF-Token": CTFd.config.csrfNonce
+        },
+        body: JSON.stringify({ repos: selected })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Repositories saved successfully.");
+        } else {
+            alert("Error saving: " + data.message || "Unexpected error.");
+        }
+    })
+    .catch(err => {
+        alert("Unexpected Error: " + err.message);
+    });
+});
+
 function loadSavedRepos() {
     const tableBody = document.querySelector("#github-saved-repos-table tbody");
     tableBody.innerHTML = "";
 
-    fetch("/api/v1/github/repos/saved", {
+    fetch("/plugins/github_backup/repos/saved", {
       method: "GET",
       credentials: "same-origin"
     })
@@ -126,11 +236,12 @@ function loadSavedRepos() {
             const repoId = btn.getAttribute("data-id");
 
             if (confirm("Are you sure you want to delete this repository?")) {
-              fetch(`/api/v1/github/repos/${repoId}`, {
+              fetch(`/plugins/github_backup/repos/${repoId}`, {
                 method: "DELETE",
                 credentials: "same-origin",
                 headers: {
-                  "CSRF-Token": CTFd.config.csrfNonce
+                    "Content-Type": "application/json",
+                    "CSRF-Token": CTFd.config.csrfNonce
                 }
               })
                 .then((r) => r.json())
@@ -172,12 +283,14 @@ function loadSavedRepos() {
               btn.disabled = true;
               deleteBtn.disabled = true;
 
-              fetch(`/api/v1/github/repos/${repoId}/import`, {
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                  "CSRF-Token": CTFd.config.csrfNonce
-                }
+              fetch(`/plugins/github_backup/repos/${repoId}/import`, {
+                  method: "POST",
+                  credentials: "same-origin",
+                  headers: {
+                        "Content-Type": "application/json",
+                        "CSRF-Token": CTFd.config.csrfNonce
+                  },
+                  body: JSON.stringify({})
               })
                 .then((r) => r.json())
                 .then((resp) => {
@@ -239,79 +352,6 @@ function loadSavedRepos() {
           });
 }
 
-// Fetch blueprint
-// Fetch repos desde la API
-  fetch("/repos")
-  .then(response => {
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("Usuario no autenticado con GitHub. Por favor, instala la app o asegúrate de tener permisos.");
-      }
-      return response.json().then(err => {
-        throw new Error(err.message || "Error inesperado al comunicarse con la API.");
-      });
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (!data.success) {
-      throw new Error(data.message + "hola" || "La API respondió sin éxito.");
-    }
-
-    allRepos = data.repos || [];
-
-    // Asegúrate de mostrar y ocultar las secciones correctamente
-    if (githubLoginSection) githubLoginSection.style.display = "none";
-    if (githubReposSection) githubReposSection.style.display = "block";
-    const errorSection = document.getElementById("github-error-section");
-    if (errorSection) errorSection.style.display = "none";
-
-    renderRepos();
-    loadSavedRepos();
-  })
-  .catch(error => {
-    console.error("Error al obtener los repos:", error);
-    const errorSection = document.getElementById("github-error-section");
-    const errorMessage = document.getElementById("github-error-message");
-    if (errorMessage) errorMessage.textContent = error.message;
-    if (errorSection) errorSection.style.display = "block";
-    if (githubLoginSection) githubLoginSection.style.display = "block";
-    if (githubReposSection) githubReposSection.style.display = "none";
-  });
-
-// Save selected repos
-  document.getElementById("save-selected-repos")?.addEventListener("click", () => {
-    const checkboxes = document.querySelectorAll("#github-repos-list input[type=checkbox]:checked");
-    const selected = [];
-
-    checkboxes.forEach(checkbox => {
-      const repo = allRepos.find(r => r.full_name === checkbox.value);
-      if (repo) {
-        selected.push(repo);
-      }
-    });
-
-    fetch("/api/v1/github/repos/selection", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-        "CSRF-Token": CTFd.config.csrfNonce
-      },
-      body: JSON.stringify({ repos: selected })
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert("Repositories saved successfully.");
-        } else {
-          alert("Error saving: " + data.message || "Unexpected error.");
-        }
-      })
-        .catch(err => {
-            alert("Unexpected Error: " + err.message);
-      });
-  });
 
   function importRepoById(repoId, row) {
     const syncCell = row.querySelector("td:nth-child(3)");
@@ -330,12 +370,14 @@ function loadSavedRepos() {
     deleteBtn.disabled = true;
 
 
-    fetch(`/api/v1/github/repos/${repoId}/import`, {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "CSRF-Token": CTFd.config.csrfNonce
-      }
+    fetch(`/plugins/github_backup/repos/${repoId}/import`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "CSRF-Token": CTFd.config.csrfNonce
+        },
+        body: JSON.stringify({})
     })
       .then((r) => r.json())
       .then((resp) => {
