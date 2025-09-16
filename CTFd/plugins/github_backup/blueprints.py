@@ -1,8 +1,9 @@
 # plugins/github_backup/blueprints.py
 import pytz
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, Response
 
 from CTFd.plugins import bypass_csrf_protection
+from CTFd.plugins.github_backup.expot_data import is_imported_from_github, prepare_json
 from CTFd.plugins.github_backup.import_data import import_challenges_from_repo
 
 # Definimos un Blueprint propio.
@@ -55,10 +56,10 @@ def endpoint_challenges_json():
     ])
 
 import requests
-from flask import redirect, request
 from CTFd.plugins.github_backup.models import db, GithubRepositories, GithubChallengeSync, GithubFlagSync, GithubHintSync, UserGitHubToken
-from CTFd.models import Challenges
-from CTFd.models import db
+from CTFd.models import db, Challenges, Flags, Hints, Tags
+import json
+from flask import request, Response, send_file, redirect
 
 from CTFd.utils.decorators import admins_only
 from CTFd.utils.user import get_current_user, is_admin
@@ -66,6 +67,9 @@ from CTFd.utils.user import get_current_user, is_admin
 from datetime import datetime
 import time
 import jwt
+
+import io
+import zipfile
 
 # github_namespace = Namespace(
 #     'github', description='Endpoint to manage challenge sync from github'
@@ -340,5 +344,96 @@ def import_from_repo(repo_id):
             "message": f"{result['created']} challenges imported, {result['skipped']} already existing.",
             "errors": result["errors"]
         }
+    except Exception as e:
+        return {"success": False, "message": f"Unexpected error: {str(e)}"}, 500
+
+
+@my_bp.route("/plugins/github_backup/challenge/<int:challenge_id>/download", methods=["GET"])
+@admins_only
+def download_challenge(challenge_id: int) -> tuple[dict[str, bool | str], int] | Response:
+    """
+    Handles the downloading of a specific challenge data in JSON format. The endpoint generates
+    a JSON file for the provided challenge ID and sends it as a downloadable attachment. The
+    JSON content is obtained from a helper function and formatted with UTF-8 encoding.
+
+    Args:
+        challenge_id (int): The unique ID of the challenge to be downloaded.
+
+    Returns:
+        tuple[dict[str, bool | str], int] | Response: A JSON response with success status and
+        message in case of errors, or a Response object with the generated JSON file for
+        successful requests.
+
+    Raises:
+        ValueError: Raised if the provided challenge ID is invalid or the challenge cannot
+        be processed.
+        Exception: Raised for unexpected internal errors during the process.
+    """
+
+    try:
+        data, name = prepare_json(challenge_id)
+
+        json_bytes = json.dumps(data, indent=4, ensure_ascii=False).encode("utf-8-sig")
+
+        return Response(
+            json_bytes,
+            mimetype="application/json",
+            headers={
+                "Content-Disposition": f'attachment; filename="challenge_{name}.json"'
+            },
+        )
+    except ValueError as e:
+        return {"success": False, "message": str(e)}, 400
+    except Exception as e:
+        return {"success": False, "message": f"Unexpected error: {str(e)}"}, 500
+
+@my_bp.route("/plugins/github_backup/challenges", methods=["GET"])
+@admins_only
+def get_challenges():
+    challenges = Challenges.query.all()
+
+    data = []
+    for challenge in challenges:
+        is_imported = is_imported_from_github(challenge.id)
+        data.append({
+            "id": challenge.id,
+            "name": challenge.name,
+            "imported": is_imported,
+        })
+
+    return {"success": True, "challenges": data}
+
+@my_bp.route("/plugins/github_backup/challenges/download", methods=["POST"])
+@admins_only
+def download_multiple_challenges():
+    """
+    Recibe una lista de challenge IDs, genera un ZIP con los JSON de cada uno
+    y lo devuelve como descarga.
+    """
+    try:
+        challenge_ids = request.json.get("challenge_ids", [])
+        if not challenge_ids:
+            return {"success": False, "message": "No challenge IDs provided"}, 400
+
+        # Creamos un buffer en memoria
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for cid in challenge_ids:
+                try:
+                    data, name = prepare_json(int(cid))
+                    json_bytes = json.dumps(data, indent=4, ensure_ascii=False).encode("utf-8-sig")
+                    zip_file.writestr(f"challenge_{name}.json", json_bytes)
+                except Exception as e:
+                    zip_file.writestr(f"challenge_{cid}_error.txt", str(e))
+
+        zip_buffer.seek(0)
+
+        return send_file(
+            zip_buffer,
+            mimetype="application/zip",
+            as_attachment=True,
+            download_name="challenges_export.zip",
+        )
+
     except Exception as e:
         return {"success": False, "message": f"Unexpected error: {str(e)}"}, 500
