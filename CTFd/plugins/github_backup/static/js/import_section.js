@@ -11,23 +11,16 @@ const githubReposSection = document.querySelector("#github-repos-section");
 const githubLoginSection = document.querySelector("#github-login-section");
 const buttonSaveSelectedRepos = document.querySelector("#save-selected-repos");
 
-
-// Listeners
 githubRepoSearch?.addEventListener("input", () => {
     currentPage = 1;
     renderRepos();
 });
 
-// Functions
-
-// Lista de repositorios accesibles
 
 /**
  * Renders a list of repositories based on the current search term, pagination state,
  * and the selected repositories. Filters the repositories by the search term, paginates
  * the results, and populates the repository list into the DOM.
- *
- * @return {void} This method does not return a value.
  */
 function renderRepos() {
     const searchTerm = githubRepoSearch.value.toLowerCase();
@@ -68,11 +61,9 @@ function renderRepos() {
     renderPagination(totalPages);
 }
 
+
 /**
  * Renders the pagination control for navigating through pages.
- *
- * @param {number} totalPages - The total number of pages to be rendered.
- * @return {void} Does not return a value.
  */
 function renderPagination(totalPages) {
     githubRepoPagination.innerHTML = "";
@@ -111,7 +102,7 @@ function renderPagination(totalPages) {
 }
 
 
-/** TODO Fetch repos from the server and render them */
+/* Fetch repos from the server and render them */
 fetch("/plugins/github_backup/repos")
     .then(response => {
         if (!response.ok) {
@@ -152,7 +143,8 @@ fetch("/plugins/github_backup/repos")
         if (githubReposSection) githubReposSection.style.display = "none";
     });
 
-/** TODO Save selected repos  */
+
+/* Save selected repos  */
 buttonSaveSelectedRepos?.addEventListener("click", () => {
     const selected = Array.from(selectedRepos).map(name => {
         return allRepos.find(r => r.full_name === name);
@@ -187,8 +179,9 @@ buttonSaveSelectedRepos?.addEventListener("click", () => {
 });
 
 
-// Tabla de repositorios guardados
-
+/**
+ * Loads the saved repositories and updates the UI with the list of repositories retrieved.
+ */
 function loadSavedRepos() {
     const tableBody = document.querySelector("#github-saved-repos-table tbody");
     tableBody.innerHTML = `
@@ -248,8 +241,12 @@ function loadSavedRepos() {
     .catch(err => alert("Error: " + err.message));
 }
 
+
+/**
+ * Attaches event listeners to various elements associated with repository management, 
+ * such as buttons for deleting repositories, syncing repositories, and importing multiple repositories.
+ */
 function attachRepoEventListeners() {
-    // Borrar repo
     document.querySelectorAll(".delete-repo-btn").forEach(btn => {
         btn.onclick = () => {
             const repoId = btn.dataset.id;
@@ -273,7 +270,6 @@ function attachRepoEventListeners() {
         };
     });
 
-    // Importar repo individual
     document.querySelectorAll(".sync-now-btn").forEach(btn => {
         btn.onclick = async () => {
             if (isImportingRepos) return;
@@ -328,7 +324,7 @@ function attachRepoEventListeners() {
         };
     });
 
-    // Importar repos seleccionados
+
     const importSelectedBtn = document.querySelector("#import-selected-repos");
     if (importSelectedBtn) {
         importSelectedBtn.onclick = async () => {

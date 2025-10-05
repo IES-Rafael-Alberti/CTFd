@@ -38,6 +38,9 @@ buttonDownloadExample.addEventListener("click", () => {
 
 })
 
+/**
+ * Loads all challenges from the server and updates the challenge table in the DOM.
+ */
 function loadAllChallenges() {
     const tableBody = document.querySelector("#challenge-table tbody");
     tableBody.innerHTML = "";
@@ -73,6 +76,10 @@ function loadAllChallenges() {
         });
 }
 
+
+/**
+ * Renders a table of challenges with pagination and interactive controls for exporting challenges.
+ */
 function renderChallenges() {
     const tableBody = document.querySelector("#challenge-table tbody");
     tableBody.innerHTML = "";
@@ -84,7 +91,6 @@ function renderChallenges() {
     pageChallenges.forEach((challenge) => {
         const tr = document.createElement("tr");
 
-        // Checkbox column
         const checkboxTd = document.createElement("td");
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -92,12 +98,10 @@ function renderChallenges() {
         checkbox.setAttribute('data-id', challenge.id);
         checkbox.value = challenge.id;
 
-        // ✅ restaurar estado si ya estaba seleccionado
         if (selectedChallenges.has(challenge.id)) {
             checkbox.checked = true;
         }
 
-        // ✅ actualizar el set cuando cambie el checkbox
         checkbox.addEventListener("change", () => {
             if (checkbox.checked) {
                 selectedChallenges.add(challenge.id);
@@ -128,7 +132,7 @@ function renderChallenges() {
         tableBody.appendChild(tr);
     });
 
-    // Vuelves a enganchar los eventos de export
+
     document.querySelectorAll(".export-challenge-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
             const challengeId = btn.getAttribute("data-id");
@@ -175,13 +179,15 @@ function renderChallenges() {
     });
 }
 
+/**
+ * Updates and renders the pagination controls for the challenge list.
+ */
 function renderChallengePagination() {
     const challengePagination = document.querySelector("#challenge-pagination");
     challengePagination.innerHTML = "";
 
     const totalPages = Math.ceil(challenges.length / challengesPerPage);
 
-    // Botón Anterior
     const prevLi = document.createElement("li");
     prevLi.className = `page-item ${currentChallengePage === 1 ? "disabled" : ""}`;
     prevLi.innerHTML = `<a class="page-link" href="#">Previous</a>`;
@@ -195,13 +201,11 @@ function renderChallengePagination() {
     });
     challengePagination.appendChild(prevLi);
 
-    // Texto de página actual
     const pageInfo = document.createElement("li");
     pageInfo.className = "page-item disabled";
     pageInfo.innerHTML = `<span class="page-link">${currentChallengePage} / ${totalPages}</span>`;
     challengePagination.appendChild(pageInfo);
 
-    // Botón Siguiente
     const nextLi = document.createElement("li");
     nextLi.className = `page-item ${currentChallengePage === totalPages ? "disabled" : ""}`;
     nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
@@ -218,6 +222,7 @@ function renderChallengePagination() {
 
 loadAllChallenges();
 
+// Export selected challenges
 document.getElementById("export-selected-challenges").addEventListener("click", async () => {
     if (selected.length === 0) {
         alert("No challenges selected");
