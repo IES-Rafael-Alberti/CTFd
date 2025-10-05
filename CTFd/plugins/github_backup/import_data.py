@@ -1,14 +1,14 @@
-import requests
-
 from CTFd.models import Tags, Flags, Hints, Challenges
-from CTFd.plugins.dynamic_challenges import DynamicChallenge
-from CTFd.plugins.github_backup.validate_data import validate_tags_data, validate_flag_data, validate_hints_data, \
-    validate_dynamic_data, validate_challenge_data
-from CTFd.plugins.github_backup.models import db, GithubChallengeSync, GithubFlagSync, GithubHintSync, UserGitHubToken
+from CTFd.plugins.github_backup.validate_data import validate_tags_data, validate_flag_data, validate_hints_data, validate_challenge_data
+from CTFd.plugins.github_backup.models import db, GithubChallengeSync, GithubFlagSync, GithubHintSync
 from datetime import datetime
 import json
+import requests
 
 def import_tags(challenge, tags_data, path, overwrite_existing):
+    """
+    Imports tags into the database for a given challenge.
+    """
     validate_tags_data(tags_data, path)
 
     if overwrite_existing:
@@ -20,6 +20,10 @@ def import_tags(challenge, tags_data, path, overwrite_existing):
 
 
 def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_existing):
+    """
+    Imports flags for a specific challenge and synchronizes them with a GitHub repository. This process allows adding,
+    updating, and deleting flags based on their presence within the provided input data.
+    """
     json_flag_uuids = set()
     now = datetime.utcnow()
 
@@ -75,7 +79,11 @@ def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_e
 
 
 def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrite_existing=True):
-
+    """
+    Imports hints into the system, either creating new hints or updating existing ones. This function manages
+    the synchronization of hints by using their unique identifiers (UUIDs). If a hint with the same UUID
+    already exists, it may be updated depending on the overwrite_existing parameter.
+    """
     validate_hints_data(hints, path)
 
     for hint_data in hints:
@@ -118,32 +126,13 @@ def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrit
         ))
 
 
-def import_dynamic(challenge_id, dynamic, path, overwrite_existing=False):
-    validate_dynamic_data(dynamic, path)
-
-    # If the challenge is being created or updated, we need to handle its dynamic properties
-    existing_dynamic = DynamicChallenge.query.filter_by(id=challenge_id).first()
-
-    if existing_dynamic:
-        if overwrite_existing:
-            existing_dynamic.initial = dynamic.get("initial", 0)
-            existing_dynamic.minimum = dynamic.get("minimum", 0)
-            existing_dynamic.decay = dynamic.get("decay", 0)
-            existing_dynamic.function = dynamic.get("function", "logarithmic")
-    else:
-        existing_dynamic = DynamicChallenge(
-            id=challenge_id,
-            initial=dynamic.get("initial", 0),
-            minimum=dynamic.get("minimum", 0),
-            decay=dynamic.get("decay", 0),
-            function=dynamic.get("function", "logarithmic")
-        )
-        db.session.add(existing_dynamic)
-
-    db.session.flush()
-
-
 def import_or_update_challenge(challenge_info, repo, path, overwrite_existing):
+    """
+    Handles the import or update of a challenge within a system by validating
+    provided data, checking for existing synchronization records, and either
+    updating or creating new database entries based on the operations performed.
+    Performs optional overwriting of existing data when specified.
+    """
     uuid = challenge_info.get("uuid")
     if not uuid:
         return None, False, "Missing 'uuid' field"
@@ -202,9 +191,15 @@ def import_or_update_challenge(challenge_info, repo, path, overwrite_existing):
     
 def remove_orphaned_challenges(repo, processed_paths, delete_mode="sync_only"):
     """
-    Elimina retos sincronizados que ya no existen en el repositorio.
-    - delete_mode="sync_only": borra solo la fila en github_challenge_sync
-    - delete_mode="full": borra también el reto en la tabla challenges
+    Removes orphaned challenges associated with a given repository.
+
+    This function identifies and removes database entries of challenges that are no
+    longer present in the processed paths set provided. Orphaned challenges are
+    identified as paths existing in the database but not in the `processed_paths` set.
+    The function provides two modes of deletion: `sync_only`, which removes only the
+    sync information, and `full`, which removes both the sync information and the
+    associated challenge. Any encountered errors during the process are logged and
+    returned.
     """
     errors = []
     count_removed = 0
@@ -233,8 +228,10 @@ def remove_orphaned_challenges(repo, processed_paths, delete_mode="sync_only"):
 
 
 
-# Import challenges
 def import_challenges_from_repo(repo, access_token, overwrite_existing=True, delete_mode="full"):
+    """
+    Imports challenge data from a specified GitHub repository into the system.
+    """
     headers = {
         "Authorization": f"token {access_token}",
         "Accept": "application/vnd.github+json"
@@ -326,25 +323,8 @@ def import_challenges_from_repo(repo, access_token, overwrite_existing=True, del
                         errors.append({"file": path, "error": str(ve)})
                         continue
 
-            else: # FIXME
-                # For dynamic challenges, we don't import flags or hints
-                if "hints" in challenge_info or "tags" in challenge_info:
-                    errors.append({"file": path, "error": "Dynamic challenges cannot have hints or tags."})
-                    continue
-
-                # Import dynamic data
-                dynamic_data = challenge_info.get("dynamic", {})
-                if dynamic_data:
-                    try:
-                        import_dynamic(
-                            challenge_id=challenge.id,
-                            dynamic=dynamic_data,
-                            path=path,
-                            overwrite_existing=overwrite_existing
-                        )
-                    except ValueError as ve:
-                        errors.append({"file": path, "error": str(ve)})
-                        continue
+            else:
+                continue
 
             if created:
                 count_created += 1
