@@ -2,206 +2,182 @@
 {% extends "admin/base.html" %}
 {% block content %}
 <div class="container">
-    <div class="header">
+    <header class="header">
         <h1>Github backup</h1>
-        <p>Import and export challenges from Github</p>
-    </div>
+        <p>Import challenges from Github and export to JSON</p>
+    </header>
 
-    <div>
-        <h2>Import challenges form Github</h2>
-    </div>
+    {#  Import section  #}
+    <section class="import">
+        <header class="import__header">
+            <h2 class="header__text">Import challenges from Github</h2>
+        </header>
 
-    <section class="grid-import">
-        {#  aside  #}
-        <aside>
-            <!-- Login section -->
-            <div class="form-group" id="github-login-section">
-                <p>
-                    <i class="fab fa-github me-1"></i> Connect your GitHub account to import challenges from your public or private repositories.
-                </p>
-                <a href="https://github.com/apps/ctfd-library/installations/new" id="github-login1-button" class="btn btn-warning">
-                    <i class="fas fa-plug me-1"></i> 1. Install GitHub App
-                </a>
-                <a id="github-login-button" class="btn btn-warning">
-                    <i class="fas fa-link me-1"></i> 2. Link installation
-                </a>
-            </div>
+        <section class="import__body">
+            <div class="body-import__aside">
+                {#  Auth section  #}
+                <div id="github-login-section" class="aside-import__auth">
+                    <h5 class="subsection-title">
+                        <i class="fab fa-github me-1"></i> Connect your GitHub account to import challenges from your public or private repositories.
+                    </h5>
 
-            <!-- Error section -->
-            <div class="form-group" id="github-error-section" style="display:none;">
-                <div class="alert alert-danger" role="alert" id="github-error-message">
-                    <i class="fas fa-exclamation-triangle me-1"></i> <!-- Error message will be inserted here -->
-                    <p>{{ message_result }}</p>
-                </div>
-            </div>
+                    <p>Configure a GitHub App by following the steps in the plugin's <code>readme.md</code> file. Then follow the buttons below to install the GitHub App on your GitHub account and link the installation.</p>
 
-            <!-- Repositories section -->
-            <div class="form-group" id="github-repos-section" style="display:none;">
-                <label for="github-repo-search">
-                    <i class="fas fa-search me-1"></i> Filter by name:
-                </label>
-                <input type="text" id="github-repo-search" class="form-control" placeholder="Search repository...">
+                    <a href="{{ installation_url }}" id="github-login-button" class="btn btn-warning a-button">
+                        <i class="fas fa-plug me-1"></i> 1. Install GitHub App
+                    </a>
 
-                <div id="github-repos-list" class="mt-3">
-                    <!-- Repositories will be dynamically inserted here -->
+                    <a id="button-link-instalation" class="btn btn-warning a-button">
+                        <i class="fas fa-link me-1"></i> 2. Link installation
+                    </a>
                 </div>
 
-                <nav aria-label="Repos pagination" class="mt-3">
-                    <ul class="pagination justify-content-center" id="github-repo-pagination"></ul>
-                </nav>
-            </div>
-
-            <!-- Buttons -->
-            <div class="d-flex gap-2 mt-2">
-                <button id="save-selected-repos" class="btn btn-warning">
-                    <i class="fas fa-save me-1"></i> Save selected repositories
-                </button>
-            </div>
-        </aside>
-
-        {#  main  #}
-        <main>
-            <h5><i class="fas fa-database me-1"></i> Saved Repositories</h5>
-            <table class="table table-bordered" id="github-saved-repos-table">
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-check-square me-1"></i></th>
-                        <th><i class="fas fa-folder-open me-1"></i> Name</th>
-                        <th><i class="fas fa-clock me-1"></i> Last import time</th>
-                        <th><i class="fas fa-cogs me-1"></i> Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-
-            <div class="d-flex gap-2 mt-2">
-                <button id="import-selected-repos" class="btn btn-success">
-                    <i class="fas fa-download me-1"></i> Import selected repositories
-                </button>
-                <button id="help-button" class="btn btn-info">
-                    <i class="fas fa-question-circle me-1"></i> Help
-                </button>
-            </div>
-
-            <!-- Help Modal -->
-            <div class="modal fade" id="help-modal" tabindex="-1" role="dialog" aria-labelledby="help-modal-label" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="help-modal-label">Repository Format Help</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>The repositories must have a folder named <code>challenges</code> that contains JSON files with the following format:</p>
-                            <pre><code class="json">
-                                {
-                                        "challenge": {
-                                                "uuid": "1aaaaaa",
-                                                "name": "Hola soy un reto dfdfdf",
-                                                "description": "Nunca podrás resolver este reto",
-                                                "attribution": "yo",
-                                                "connection_info": "https://soy_un_enlace",
-                                                "max_attempts": 0,
-                                                "value": 200,
-                                                "category": "criptografía",
-                                                "type": "standard",
-                                                "state": "visible",
-                                                "flags": [
-                                                        {
-                                                                "uuid": "sdsdsd",
-                                                                "type": "static",
-                                                                "content": "flag{respuesta}",
-                                                                "data": "case_insensitive"
-                                                        },
-                                                        {
-                                                                "uuid": "fgghhj",
-                                                                "type": "regex",
-                                                                "content": "flag{.a*}",
-                                                                "data": ""
-                                                        }
-                                                ],
-                                                "tags": [
-                                                        "tag1",
-                                                        "tag2"
-                                                ],
-                                                "hints": [
-                                                        {
-                                                                "uuid": "sdffgfh",
-                                                                "title": "Pista 1",
-                                                                "type": "standard",
-                                                                "content": "las pistas son para los cobardes",
-                                                                "cost": 10
-                                                        },
-                                                        {
-                                                                "uuid": "sdffgghtty",
-                                                                "title": "Pista 2",
-                                                                "type": "standard",
-                                                                "content": "las pistas son para los cobardes",
-                                                                "cost": 20
-                                                        }
-                                                ]
-                                        }
-                                }
-                            </code></pre>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
+                {#  Error section  #}
+                <div class="form-group aside-import__error" id="github-error-section">
+                    <div class="alert alert-danger" role="alert" id="github-error-message">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        <p>{{ message_result }}</p>
                     </div>
                 </div>
+
+                <!-- Repositories section -->
+                <div class="aside-import__repositories" id="github-repos-section">
+                    <h5 class="subsection-title">
+                        <i class="fab fa-github me-1"></i> Github repositories
+                    </h5>
+
+                    <input aria-label="Github repositories" type="text" id="github-repo-search" class="form-control" placeholder="Search repository...">
+
+                    <div id="github-repos-list" class="mt-3">
+                        <!-- Repositories will be dynamically inserted here -->
+                    </div>
+
+                    <nav aria-label="Repos pagination" class="mt-3">
+                        <ul class="pagination" id="github-repo-pagination"></ul>
+                    </nav>
+
+                    <button id="save-selected-repos" class="btn btn-warning repositories__button">
+                        <i class="fas fa-save me-1"></i> Save selected repositories
+                    </button>
+                </div>
+
+                <div class="aside-import__info">
+                    <h5 class="subsection-title info__title">
+                        <i class="fab fa-exclamation me-1"></i> <i class="fab fa-exclamation me-1"></i> Important
+                    </h5>
+
+                    <p>The repositories must have a folder named <code>challenges</code> that contains JSON files with the following format:</p>
+
+                    <button id="example-button" class="btn btn-info info__button">
+                         <i class="fas fa-file-download me-1"></i> Download an example
+                    </button>
+                </div>
             </div>
 
-          {# Ejemplo de sección: #}
-          <div class="card">
-            <div class="card-header">
-              <strong>Estadísticas de uso</strong>
+            {#  main  #}
+            <div class="body-import__main">
+                <div class="main-import__settings">
+                    <h5 class="subsection-title"><i class="fas fa-cog me-1"></i> Import/update settings</h5>
+                    <form action="">
+                        <fieldset>
+                            <label>What do you want to do with imported challenges that no longer exist in the repositories?</label>
+                            <br>
+                            <input type="radio" id="option-sync_only" name="delete-mode" value="sync_only" checked>
+                            <label for="option-sync_only">Keep it, it will no longer be marked as imported from GitHub</label>
+                            <br>
+                            <input type="radio" id="option-full" name="delete-mode" value="full">
+                            <label for="option-full">Delete it</label>
+                        </fieldset>
+                    </form>
+                </div>
+
+                <div class="main-import__repositories">
+                    <div class="subsection-title">
+                        <h5 class="subsection-title"><i class="fas fa-database me-1"></i> Saved Repositories</h5>
+                    </div>
+
+                    <p>You can import challenges for each repository individually or select multiple repositories from the table and import them together by clicking the “Import selected repositories” button.</p>
+
+                    <div class="multiple-import">
+                        <button id="import-selected-repos" class="btn btn-success">
+                            <i class="fas fa-download me-1"></i> Import selected repositories
+                        </button>
+                    </div>
+
+                    <table class="table table-bordered" id="github-saved-repos-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-check-square me-1"></i></th>
+                                <th><i class="fas fa-folder-open me-1"></i> Name</th>
+                                <th><i class="fas fa-clock me-1"></i> Last import time</th>
+                                <th><i class="fas fa-cogs me-1"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                  <i class="fas fa-spinner fa-spin text-warning"></i>
+                                  <div class="small text-muted">Loading saved repositories...</div>
+                                </td>
+                              </tr>
+                        </tbody>
+                    </table>
+
+                    <nav>
+                        <ul id="github-saved-repos-pagination" class="pagination justify-content-center mt-3"></ul>
+                    </nav>
+
+                </div>
             </div>
-            <div class="card-body">
-              <p>Total de challenges en base de datos: {{ total_challenges }}</p>
-              {# Podrías pasar variables desde tu función en blueprints.py #}
-            </div>
-          </div>
-        </main>
+        </section>
+
     </section>
 
-    <hr>
+    {#  Export section  #}
+    <section class="export">
+        <header class="export__header">
+            <h2 class="header__text">Export challenges to JSON files</h2>
+        </header>
 
-    <div>
-        <h2>Export challenges to json files</h2>
-        <p>You can export challenges individually or select several challenges from the table and download a zip file containing a JSON file for each challenge.</p>
-    </div>
+        <section class="export__body">
+            <div>
+                <h5 class="subsection-title">
+                    <i class="fas fa-database me-1"></i> Challenges
+                </h5>
 
-    <section class="grid-export">
-        <aside>
-            <button id="select-all-challenges" class="btn btn-primary">
-                <i class="fas fa-check me-1"></i> Select All
-            </button>
-            <button id="deselect-all-challenges" class="btn btn-secondary">
-                <i class="fas fa-times me-1"></i> Deselect All
-            </button>
-            <button id="export-selected-challenges" class="btn btn-success">
-                <i class="fas fa-upload me-1"></i> Export selected challenges
-            </button>
-            <button id="help-button-export" class="btn btn-info">
-                <i class="fas fa-question-circle me-1"></i> Help
-            </button>
-        </aside>
-        <main>
-            <table class="table table-bordered" id="challenge-table">
-                <thead>
-                    <tr>
-                        <th><i class="fas fa-check-square me-1"></i></th>
-                        <th><i class="fas fa-folder-open me-1"></i> Name</th>
-                        <th><i class="fab fa-github me-1"></i> Imported from Github</th>
-                        <th><i class="fas fa-cogs me-1"></i> Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </main>
+                <p>You can export challenges individually or select several challenges from the table and download a zip file containing a JSON file for each challenge. For challenges that have not been imported from the Github App, a UUID will be generated in the necessary fields.</p>
+
+                <div class="multiple-export">
+                    <button id="select-all-challenges" class="btn btn-primary">
+                        <i class="fas fa-check me-1"></i> Select All
+                    </button>
+                    <button id="deselect-all-challenges" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Deselect All
+                    </button>
+                    <button id="export-selected-challenges" class="btn btn-success">
+                        <i class="fas fa-upload me-1"></i> Export selected challenges
+                    </button>
+                </div>
+                <table class="table table-bordered" id="challenge-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-check-square me-1"></i></th>
+                            <th><i class="fas fa-folder-open me-1"></i> Name</th>
+                            <th><i class="fab fa-github me-1"></i> Imported from Github</th>
+                            <th><i class="fas fa-cogs me-1"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <nav>
+                    <ul id="challenge-pagination" class="pagination"></ul>
+                </nav>
+            </div>
+        </section>
     </section>
+
+
 
 </div>
 {% endblock %}
@@ -210,6 +186,9 @@
 {% block scripts %}
     {{ super() }}
     <script src="{{ url_for('github_backup.static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('github_backup.static', filename='js/export_section.js') }}"></script>
+    <script src="{{ url_for('github_backup.static', filename='js/import_section.js') }}"></script>
+    <script src="{{ url_for('github_backup.static', filename='js/auth_section.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('github_backup.static', filename='css/style.css') }}">
 {% endblock %}
 
