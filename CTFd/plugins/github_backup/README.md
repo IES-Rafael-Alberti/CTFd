@@ -142,5 +142,3 @@ The last section of the page shows a table with all the challenges on the platfo
 Challenges can be exported individually or in groups. Individually exported challenges are downloaded as JSON files. Group exports download a zip file with one JSON file for each challenge.
 
 For challenges that have not been imported from the Github App, a UUID will be generated in the necessary fields.
-
-
