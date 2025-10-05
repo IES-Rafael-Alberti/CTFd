@@ -74,7 +74,7 @@ def import_flags(challenge_id, flags, repo_id, challenge_uuid, path, overwrite_e
             db.session.delete(synced)
 
 
-def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrite_existing=False):
+def import_hints(*, challenge_id, hints, repo_id, challenge_uuid, path, overwrite_existing=True):
 
     validate_hints_data(hints, path)
 
@@ -198,10 +198,43 @@ def import_or_update_challenge(challenge_info, repo, path, overwrite_existing):
         ))
 
         return challenge, True, None
+    
+    
+def remove_orphaned_challenges(repo, processed_paths, delete_mode="sync_only"):
+    """
+    Elimina retos sincronizados que ya no existen en el repositorio.
+    - delete_mode="sync_only": borra solo la fila en github_challenge_sync
+    - delete_mode="full": borra también el reto en la tabla challenges
+    """
+    errors = []
+    count_removed = 0
+
+    synced_challenges = GithubChallengeSync.query.filter_by(github_repo_id=repo.id).all()
+    db_paths = {sc.challenge_path for sc in synced_challenges}
+    missing_paths = db_paths - processed_paths
+
+    for sc in synced_challenges:
+        if sc.challenge_path in missing_paths:
+            try:
+                if delete_mode == "sync_only":
+                    db.session.delete(sc)
+                    count_removed += 1
+                elif delete_mode == "full":
+                    challenge = Challenges.query.get(sc.challenge_id)
+                    if challenge:
+                        db.session.delete(challenge)
+                    db.session.delete(sc)
+                    count_removed += 1
+            except Exception as e:
+                errors.append({"file": sc.challenge_path, "error": f"Error deleting: {str(e)}"})
+                continue
+
+    return count_removed, errors
+
 
 
 # Import challenges
-def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_existing=False):
+def import_challenges_from_repo(repo, access_token, overwrite_existing=True, delete_mode="full"):
     headers = {
         "Authorization": f"token {access_token}",
         "Accept": "application/vnd.github+json"
@@ -209,6 +242,8 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
 
     base_url = f"https://api.github.com/repos/{repo.full_name}/contents/challenges"
     file_list_resp = requests.get(base_url, headers=headers)
+
+    print(file_list_resp)
 
     if file_list_resp.status_code != 200:
         return {"success": False, "message": "Could not access /challenges in the repository."}
@@ -219,13 +254,13 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
     count_skipped = 0
     errors = []
 
+    processed_paths = set()
+
     for file in file_list:
         if not file["name"].endswith(".json"):
             continue
 
         path = file["path"]
-        if only_paths and path not in only_paths:
-            continue
 
         file_resp = requests.get(file["download_url"], headers=headers)
         if file_resp.status_code != 200:
@@ -239,11 +274,15 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
             challenge, created, error_msg = import_or_update_challenge(challenge_info, repo, path, overwrite_existing)
 
             if error_msg:
+                processed_paths.add(path)
+
                 if error_msg != "Challenge already synchronized (no overwrite)":
                     errors.append({"file": path, "error": error_msg})
                 else:
                     count_skipped += 1
                 continue
+
+            processed_paths.add(path)
 
             if challenge.type == "standard":
                 if "dynamic" in challenge_info:
@@ -264,7 +303,7 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                     errors.append({"file": path, "error": str(ve)})
                     continue
 
-                # After importing flags
+                #
                 try:
                     import_hints(
                         challenge_id=challenge.id,
@@ -286,7 +325,8 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
                     except ValueError as ve:
                         errors.append({"file": path, "error": str(ve)})
                         continue
-            else:
+
+            else: # FIXME
                 # For dynamic challenges, we don't import flags or hints
                 if "hints" in challenge_info or "tags" in challenge_info:
                     errors.append({"file": path, "error": "Dynamic challenges cannot have hints or tags."})
@@ -315,6 +355,9 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
             errors.append({"file": path, "error": str(e)})
             continue
 
+    count_removed, orphan_errors = remove_orphaned_challenges(repo, processed_paths, delete_mode)
+    errors.extend(orphan_errors)
+
     repo.last_synced_at = datetime.utcnow()
     db.session.commit()
 
@@ -323,5 +366,6 @@ def import_challenges_from_repo(repo, access_token, only_paths=None, overwrite_e
         "created": count_created,
         "updated": count_updated,
         "skipped": count_skipped,
+        "removed": count_removed,
         "errors": errors
     }
