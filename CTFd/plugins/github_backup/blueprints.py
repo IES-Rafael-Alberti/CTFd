@@ -1,83 +1,40 @@
-# plugins/github_backup/blueprints.py
-import pytz
-from flask import Blueprint, render_template, jsonify, Response
+from CTFd.models import Challenges
+from CTFd.utils.decorators import admins_only
+from CTFd.utils.user import get_current_user
 
-from CTFd.plugins import bypass_csrf_protection
+from CTFd.plugins.github_backup.models import db, GithubRepositories, GithubChallengeSync, GithubFlagSync, GithubHintSync, UserGitHubToken
 from CTFd.plugins.github_backup.expot_data import is_imported_from_github, prepare_json
 from CTFd.plugins.github_backup.import_data import import_challenges_from_repo
-from CTFd.utils import get_app_config
-from CTFd.utils.decorators import admins_only
+from CTFd.plugins.github_backup.config import config
 
-# Definimos un Blueprint propio.
-# Elegimos un nombre (interno) y un prefijo de URL.
-# En este caso, agregaremos endpoints:
-#   - /admin/plugins/github_backup       ← página HTML nueva
-#   - /api/v1/github_backup/challenges   ← endpoint JSON con datos de challenges
+from flask import Blueprint, render_template, request, Response, send_file, redirect
+from datetime import datetime
+import requests
+import io
+import zipfile
+import time
+import jwt
+import json
+import pytz
+
 my_bp = Blueprint(
-    "github_backup",                    # nombre interno
+    "github_backup",
     __name__,
-    template_folder="templates",            # buscamos plantillas en .../templates
+    template_folder="templates",
     static_folder="static",
     static_url_path="/plugins/github_backup/static",
-    url_prefix=""                           # Nota: la ruta absoluta la concatena CTFd con lo que pongamos en @my_bp.route
+    url_prefix=""
 )
 
 @my_bp.route("/admin/plugins/github_backup")
 @admins_only
-def vista_panel_admin():
+def get_template():
     """
-    Esta función renderiza la nueva página que aparecerá
-    en el menú 'Plugins → Mi Plugin' (ruta: /admin/plugins/github_backup).
+    Render the GitHub Backup Plugin template for admins.
     """
     installation_url = config["GITHUB_APP_INSTALLATION_URL"]
-    return render_template("admin/challenges/github_backup.html", installation_url=installation_url)
+    return render_template("admin/plugins/github_backup.html", installation_url=installation_url)
 
-
-@my_bp.route("/api/v1/github_backup/challenges", methods=["GET"])
-def endpoint_challenges_json():
-    """
-    Ejemplo simple: devuelve JSON con todos los challenges.
-    Tú puedes filtrar, paginar, añadir seguridad, etc.
-    """
-    # Obtener todos los challenges de la base de datos
-    # chal_objs = Challenges.query.all()
-    #
-    # # Mapear a una lista de diccionarios ligeros
-    # data = []
-    # for c in chal_objs:
-    #     data.append({
-    #         "id": c.id,
-    #         "name": c.name,
-    #         "category": c.category,
-    #         "value": c.value
-    #     })
-    #
-    # return jsonify(data)
-    return jsonify([
-        {"id": 1, "name": "Challenge 1", "category": "Crypto", "value": 100},
-        {"id": 2, "name": "Challenge 2", "category": "Forensics", "value": 200}
-    ])
-
-import requests
-from CTFd.plugins.github_backup.models import db, GithubRepositories, GithubChallengeSync, GithubFlagSync, GithubHintSync, UserGitHubToken
-from CTFd.models import db, Challenges, Flags, Hints, Tags
-import json
-from flask import request, Response, send_file, redirect
-
-from CTFd.utils.decorators import admins_only
-from CTFd.utils.user import get_current_user, is_admin
-
-from datetime import datetime
-import time
-import jwt
-
-import io
-import zipfile
-from CTFd.plugins.github_backup.config import config
-
-# github_namespace = Namespace(
-#     'github', description='Endpoint to manage challenge sync from github'
-# )
 
 def generate_jwt():
     """
@@ -94,7 +51,11 @@ def generate_jwt():
 
     return jwt.encode(payload, private_key, algorithm="RS256")
 
+
 def get_installation_access_token(installation_id):
+    """
+    Retrieves an installation access token for a specified GitHub App installation.
+    """
     jwt_token = generate_jwt()
 
     headers = {
@@ -111,8 +72,8 @@ def get_installation_access_token(installation_id):
 
     return r.json().get("token")
 
+
 # TODO esta implementada, pero me parece que no se usa. Github lo envia despues de la instalacion
-# @github_namespace.route('/callback')
 @my_bp.route("/plugins/github_backup/callback", methods=["GET"])
 def recibe_callback():
     installation_id = request.args.get("installation_id")
@@ -142,10 +103,16 @@ def recibe_callback():
 
     return redirect("/admin/plugins/github_backup")
 
-# @github_namespace.route('/installations')
+
 @my_bp.route("/plugins/github_backup/installations", methods=["GET"])
 @admins_only
 def link_installation():
+    """
+    Handles the linking of a GitHub app installation to a user by retrieving
+    the installation's ID from the GitHub API and storing it in the database associated
+    with the currently logged-in user. It ensures that valid authentication is used
+    for communication with the GitHub API using a JWT token.
+    """
     jwt_token = generate_jwt()
 
     headers = {
@@ -165,7 +132,7 @@ def link_installation():
     if len(installations) == 1:
         installation_id = installations[0]["id"]
     else:
-        return {"success": False, "message": "Multiple installations. Filter required.", "r": r.json()}, 400
+        return {"success": False, "message": "Multiple installations.", "r": r.json()}, 400
 
     user_id = get_current_user().id
     token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
@@ -180,10 +147,14 @@ def link_installation():
 
     return {"success": True, "message": f"Installation ID {installation_id} saved correctly."}
 
-# lista los repositorios de la cuenta de usuario
+
 @my_bp.route("/plugins/github_backup/repos", methods=["GET"])
 @admins_only
 def get_repos():
+    """
+    Retrieves all repositories associated with the
+    installation. Returns the repository details, including their IDs, names, and full names.
+    """
     user_id = get_current_user().id
     token_entry = UserGitHubToken.query.filter_by(user_id=user_id).first()
 
@@ -220,7 +191,6 @@ def get_repos():
         repos_page = response.json().get("repositories", [])
         all_repos.extend(repos_page)
 
-        # Si no hay más repos, termina
         if "next" not in response.links:
             break
 
@@ -234,10 +204,15 @@ def get_repos():
     return {"success": True, "repos": repo_names}
 
 
-# Save the selected repositories in the table
 @my_bp.route("/plugins/github_backup/repos/selection", methods=["POST"])
 @admins_only
 def save_selected_repos():
+    """
+    Processes a POST request containing a list of repositories and
+    saves them if they are not already stored for the user in the database. Each
+    repository is stored with its associated details if it does not already
+    exist. All changes are committed to the database after processing.
+    """
     data = request.get_json()
     selected_repos = data.get("repos", [])
     user = get_current_user()
@@ -267,10 +242,13 @@ def save_selected_repos():
     return {"success": True, "message": "Repositories saved correctly"}
 
 
-# List the saved repos
 @my_bp.route("/plugins/github_backup/repos/saved", methods=["GET"])
 @admins_only
 def list_saved_repos():
+    """
+    This function retrieves all GitHub repositories that are saved by the currently
+    authenticated user.
+    """
     user_id = get_current_user().id
     saved_repos = GithubRepositories.query.filter_by(user_id=user_id).all()
 
@@ -287,10 +265,12 @@ def list_saved_repos():
     return {"success": True, "repos": result}
 
 
-# Delete a repository from the table
 @my_bp.route("/plugins/github_backup/repos/<int:repo_id>", methods=["DELETE"])
 @admins_only
 def delete_repo(repo_id):
+    """
+    Deletes a GitHub repository along with its related data stored in the database.
+    """
     user_id = get_current_user().id
     repo = GithubRepositories.query.filter_by(id=repo_id, user_id=user_id).first()
 
@@ -318,10 +298,14 @@ def delete_repo(repo_id):
     return {"success": True, "message": "Repository and related data deleted correctly."}
 
 
-# Import from the table button
 @my_bp.route("/plugins/github_backup/repos/<int:repo_id>/import", methods=["POST"])
 @admins_only
 def import_from_repo(repo_id):
+    """
+    Handles importing challenges from a specified GitHub repository using a user's GitHub token.
+    The function imports challenges, optionally deletes existing challenges based on the delete mode,
+    and updates the repository synchronization time.
+    """
     data = request.get_json()
     delete_mode = data.get("delete_mode")
 
@@ -359,19 +343,6 @@ def download_challenge(challenge_id: int) -> tuple[dict[str, bool | str], int] |
     Handles the downloading of a specific challenge data in JSON format. The endpoint generates
     a JSON file for the provided challenge ID and sends it as a downloadable attachment. The
     JSON content is obtained from a helper function and formatted with UTF-8 encoding.
-
-    Args:
-        challenge_id (int): The unique ID of the challenge to be downloaded.
-
-    Returns:
-        tuple[dict[str, bool | str], int] | Response: A JSON response with success status and
-        message in case of errors, or a Response object with the generated JSON file for
-        successful requests.
-
-    Raises:
-        ValueError: Raised if the provided challenge ID is invalid or the challenge cannot
-        be processed.
-        Exception: Raised for unexpected internal errors during the process.
     """
 
     try:
@@ -391,9 +362,13 @@ def download_challenge(challenge_id: int) -> tuple[dict[str, bool | str], int] |
     except Exception as e:
         return {"success": False, "message": f"Unexpected error: {str(e)}"}, 500
 
+
 @my_bp.route("/plugins/github_backup/challenges/download/example", methods=["GET"])
 @admins_only
 def download_example_json():
+    """
+    Handles the download of an example JSON file for a challenge configuration.
+    """
     example = {
         "challenge": {
             "uuid": "000000000000000",
@@ -456,6 +431,9 @@ def download_example_json():
 @my_bp.route("/plugins/github_backup/challenges", methods=["GET"])
 @admins_only
 def get_challenges():
+    """
+    Fetches a list of all challenges and their import status from GitHub.
+    """
     challenges = Challenges.query.all()
 
     data = []
@@ -469,12 +447,12 @@ def get_challenges():
 
     return {"success": True, "challenges": data}
 
+
 @my_bp.route("/plugins/github_backup/challenges/download", methods=["POST"])
 @admins_only
 def download_multiple_challenges():
     """
-    Recibe una lista de challenge IDs, genera un ZIP con los JSON de cada uno
-    y lo devuelve como descarga.
+    Handles a POST request to download multiple challenges as a ZIP archive.
     """
     try:
         challenge_ids = request.json.get("challenge_ids", [])
@@ -500,6 +478,7 @@ def download_multiple_challenges():
             as_attachment=True,
             download_name="challenges_export.zip",
         )
+
 
     except Exception as e:
         return {"success": False, "message": f"Unexpected error: {str(e)}"}, 500
