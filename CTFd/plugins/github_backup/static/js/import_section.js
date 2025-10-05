@@ -269,7 +269,7 @@ function attachRepoEventListeners() {
             });
         };
     });
-
+    
     document.querySelectorAll(".sync-now-btn").forEach(btn => {
         btn.onclick = async () => {
             if (isImportingRepos) return;
@@ -323,8 +323,8 @@ function attachRepoEventListeners() {
             }
         };
     });
-
-
+    
+    
     const importSelectedBtn = document.querySelector("#import-selected-repos");
     if (importSelectedBtn) {
         importSelectedBtn.onclick = async () => {
