@@ -21,7 +21,7 @@ def validate_challenge_data(data, path):
     if not isinstance(data["value"], int) or data["value"] < 0:
         raise ValueError(f"{path}: 'value' must be a positive integer")
 
-    if data["type"] not in ["standard", "dynamic"]:
+    if data["type"] not in ["standard"]:
         raise ValueError(f"{path}: 'type' is not valid")
 
     if data["state"] not in ["visible", "hidden"]:
@@ -65,7 +65,7 @@ def validate_hints_data(hints, path):
         if not isinstance(hint, dict):
             raise ValueError(f"{path}: Each hint must be a JSON object (index {i}).")
 
-        required_fields = ["uuid", "content", "type"]
+        required_fields = ["uuid", "title", "content", "type", "cost"]
         for field in required_fields:
             if field not in hint:
                 raise ValueError(f"{path}: Missing required field '{field}' in hint (index {i}).")
@@ -79,11 +79,11 @@ def validate_hints_data(hints, path):
         if not isinstance(hint["type"], str):
             raise ValueError(f"{path}: The 'type' field of the hint (index {i}) must be a string.")
 
-        if "title" in hint and not isinstance(hint["title"], str):
-            raise ValueError(f"{path}: The 'title' field of the hint (index {i}) must be a string if present.")
+        if not isinstance(hint["title"], str):
+            raise ValueError(f"{path}: The 'title' field of the hint (index {i}) must be a string.")
 
-        if "cost" in hint and not isinstance(hint["cost"], int):
-            raise ValueError(f"{path}: The 'cost' field of the hint (index {i}) must be an integer if present.")
+        if not isinstance(hint["cost"], int):
+            raise ValueError(f"{path}: The 'cost' field of the hint (index {i}) must be an integer.")
 
 
 def validate_dynamic_data(dynamic, path):
