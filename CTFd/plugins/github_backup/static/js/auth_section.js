@@ -12,7 +12,8 @@ bottonLinkInstalation?.addEventListener("click", () => {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert("Linked successfully. " + data.message);
+        confirm("Linked successfully. " + data.message);
+        location.reload();
       } else {
         alert("Error: " + (data.message || "Unexpected error"));
       }

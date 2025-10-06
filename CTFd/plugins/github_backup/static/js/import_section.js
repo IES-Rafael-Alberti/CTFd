@@ -1,8 +1,16 @@
-let selectedRepos = new Set();
 let isImportingRepos = false;
-const ITEMS_PER_PAGE = 10;
+
 let allRepos = [];
 let currentPage = 1;
+const ITEMS_PER_PAGE = 10;
+let selectedRepos = new Set();
+
+// Paginación de repos guardados
+let savedRepos = [];
+let savedReposPage = 1;
+const SAVED_ITEMS_PER_PAGE = 4;
+let selectedSavedRepos = new Set();
+
 
 const githubRepoSearch = document.querySelector("#github-repo-search");
 const githubReposList = document.querySelector("#github-repos-list");
@@ -184,6 +192,8 @@ buttonSaveSelectedRepos?.addEventListener("click", () => {
  */
 function loadSavedRepos() {
     const tableBody = document.querySelector("#github-saved-repos-table tbody");
+    const paginationContainer = document.querySelector("#github-saved-repos-pagination");
+
     tableBody.innerHTML = `
       <tr>
         <td colspan="4" class="text-center">
@@ -202,43 +212,124 @@ function loadSavedRepos() {
         tableBody.innerHTML = "";
 
         if (!data.success) {
-            const row = document.createElement("tr");
-            row.innerHTML = `<td colspan="4" class="text-center text-muted">ERROR: ${data.message || "Could not load the repositories."}</td>`;
-            tableBody.appendChild(row);
+            tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">ERROR: ${data.message || "Could not load the repositories."}</td></tr>`;
             return;
         }
 
-        const repos = data.repos;
+        const previousSelection = new Set(selectedSavedRepos);
+        savedRepos = data.repos || [];
+        savedReposPage = 1;
+        selectedSavedRepos = new Set([...previousSelection].filter(id => savedRepos.some(r => String(r.id) === id)));
 
-        if (repos.length === 0) {
-            const row = document.createElement("tr");
-            row.innerHTML = `<td colspan="4" class="text-center text-muted">No saved repositories.</td>`;
-            tableBody.appendChild(row);
-            return;
-        }
+        renderSavedRepos();
+    })
+    .catch(err => {
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Error: ${err.message}</td></tr>`;
+    });
+}
 
-        // Render repos
-        repos.forEach(repo => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td><input type="checkbox" class="sync-checkbox" value="${repo.id}"></td>
-                <td>${repo.full_name}</td>
-                <td>${repo.last_synced_at ? repo.last_synced_at + " UTC" : "-"}</td>
-                <td>
-                  <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">
+function renderSavedRepos() {
+    const tableBody = document.querySelector("#github-saved-repos-table tbody");
+    const paginationContainer = document.querySelector("#github-saved-repos-pagination");
+
+    tableBody.innerHTML = "";
+
+    if (savedRepos.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No saved repositories.</td></tr>`;
+        return;
+    }
+
+    const totalPages = Math.ceil(savedRepos.length / SAVED_ITEMS_PER_PAGE);
+    const start = (savedReposPage - 1) * SAVED_ITEMS_PER_PAGE;
+    const end = start + SAVED_ITEMS_PER_PAGE;
+    const reposToShow = savedRepos.slice(start, end);
+
+    // Renderizamos filas
+    reposToShow.forEach(repo => {
+        const tr = document.createElement("tr");
+
+        const checkedAttr = selectedSavedRepos.has(String(repo.id)) ? "checked" : "";
+
+        tr.innerHTML = `
+            <td>
+                <input 
+                    type="checkbox" 
+                    class="sync-checkbox" 
+                    value="${repo.id}"
+                    ${checkedAttr}
+                >
+            </td>
+            <td>${repo.full_name}</td>
+            <td>${repo.last_synced_at ? repo.last_synced_at + " UTC" : "-"}</td>
+            <td>
+                <button class="btn btn-sm btn-warning sync-now-btn" data-id="${repo.id}">
                     <i class="fas fa-download me-1"></i> ${repo.selected ? "Update" : "Import"}
-                  </button>
-                  <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">
+                </button>
+                <button class="btn btn-sm btn-danger delete-repo-btn" data-id="${repo.id}">
                     <i class="fas fa-trash me-1"></i> Delete
-                  </button>
-                </td>
-            `;
-            tableBody.appendChild(tr);
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(tr);
+    });
+
+    // ✅ Aquí está la clave:
+    // Escuchar cambios de checkbox y actualizar el Set global
+    tableBody.querySelectorAll(".sync-checkbox").forEach(cb => {
+        cb.addEventListener("change", e => {
+            const id = String(e.target.value);
+            if (e.target.checked) {
+                selectedSavedRepos.add(id);
+            } else {
+                selectedSavedRepos.delete(id);
+            }
         });
 
-        attachRepoEventListeners();
-    })
-    .catch(err => alert("Error: " + err.message));
+        // Aseguramos que el estado visual sea correcto incluso si se volvió a renderizar
+        if (selectedSavedRepos.has(String(cb.value))) {
+            cb.checked = true;
+        }
+    });
+
+    // Paginación
+    renderSavedReposPagination(totalPages);
+
+    // Reasignar los listeners de botones
+    attachRepoEventListeners();
+}
+
+function renderSavedReposPagination(totalPages) {
+    const pagination = document.querySelector("#github-saved-repos-pagination");
+    pagination.innerHTML = "";
+
+    const prevLi = document.createElement("li");
+    prevLi.className = `page-item ${savedReposPage === 1 ? "disabled" : ""}`;
+    prevLi.innerHTML = `<a class="page-link" href="#">Previous</a>`;
+    prevLi.addEventListener("click", e => {
+        e.preventDefault();
+        if (savedReposPage > 1) {
+            savedReposPage--;
+            renderSavedRepos();
+        }
+    });
+    pagination.appendChild(prevLi);
+
+    const infoLi = document.createElement("li");
+    infoLi.className = "page-item disabled";
+    infoLi.innerHTML = `<span class="page-link">${savedReposPage} / ${totalPages}</span>`;
+    pagination.appendChild(infoLi);
+
+    const nextLi = document.createElement("li");
+    nextLi.className = `page-item ${savedReposPage === totalPages ? "disabled" : ""}`;
+    nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
+    nextLi.addEventListener("click", e => {
+        e.preventDefault();
+        if (savedReposPage < totalPages) {
+            savedReposPage++;
+            renderSavedRepos();
+        }
+    });
+    pagination.appendChild(nextLi);
 }
 
 
@@ -367,7 +458,7 @@ function attachRepoEventListeners() {
                     if (resp.errors && resp.errors.length > 0) {
                         message += "\nErrors:\n" + resp.errors.map(e => `- ${e.file}: ${e.error}`).join("\n");
                     }
-                    console.log(`Imported ${repoId}: ${message}`);
+                    alert(`Imported ${repoId}: ${message}`);
                 } catch (err) {
                     alert(`Error importing ${repoId}: ${err.message}`);
                     syncCell.innerHTML = originalSyncContent;

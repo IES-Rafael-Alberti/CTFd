@@ -224,12 +224,12 @@ loadAllChallenges();
 
 // Export selected challenges
 document.getElementById("export-selected-challenges").addEventListener("click", async () => {
-    if (selected.length === 0) {
+    const challengeIds = Array.from(selectedChallenges);
+
+    if (challengeIds.length === 0) {
         alert("No challenges selected");
         return;
     }
-
-    const challengeIds = Array.from(selectedChallenges);
 
     try {
         const response = await fetch("/plugins/github_backup/challenges/download", {

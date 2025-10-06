@@ -7,15 +7,18 @@ From Settings -> Developer Settings -> Github App -> New Github App.
 Complete the form with the application details:
 - Name of the Github App
 - Description
-- Homepage URL: URL of the deployed platform
-- Setup URL: URL of the application to which the user will be redirected after completing the installation
+- Homepage URL: URL of the deployed platform (or localhost)
+- Setup URL: URL of the application to which the user will be redirected after completing the installation. For example: `http://localhost:4000/admin/plugins/github_backup`
+- Uncheck webhooks
 - In the permissions section on repositories:
-  - Contents -> Read
+  - Contents -> Read-only
   - Metadata -> Read-only
 - Choose that the Github App can only be installed on our Github account.
 
 Once created, you must modify it and create the Private Key. This private key must be downloaded and its content saved in the plugin's `config.py` file.
 You must also indicate the application ID and the installation URL of the Github App in the `config.py` file.
+
+**Note:** Write the private key on a single line, replacing each line break in the original format with `\n`.
 
 Example of `config.py`:
 ```python
@@ -29,11 +32,11 @@ config = {
 ## 2. Install the GitHub App on our GitHub account
 From the CTFd application, go to the application's administration panel and select Plugins -> Github backup.
 
-The first step is to click on the “1. Install Github App” button. This will take you to a Github window where you must select the account on which you want to install the Github App.
+The first step is to click on the “1. Install Github App” button.
 
 You can only have one active installation per Github App.
 
-In the next window, you can choose whether to give access permission to all repositories or only to some of them.
+In the window, you can choose whether to give access permission to all repositories or only to some of them.
 
 After completing the installation, you will be redirected back to the CTFd platform.
 

@@ -73,37 +73,6 @@ def get_installation_access_token(installation_id):
     return r.json().get("token")
 
 
-# TODO esta implementada, pero me parece que no se usa. Github lo envia despues de la instalacion
-@my_bp.route("/plugins/github_backup/callback", methods=["GET"])
-def recibe_callback():
-    installation_id = request.args.get("installation_id")
-
-    if not installation_id:
-        return {
-            "success": False,
-            "message": "No installation_id received."
-        }, 400
-
-    user = get_current_user()
-    if not user:
-        return {
-            "success": False,
-            "message": "User not authenticated"
-        }, 401
-
-    token_entry = UserGitHubToken.query.filter_by(user_id=user.id).first()
-
-    if token_entry:
-        token_entry.token = installation_id
-    else:
-        token_entry = UserGitHubToken(user_id=user.id, token=installation_id)
-        db.session.add(token_entry)
-
-    db.session.commit()
-
-    return redirect("/admin/plugins/github_backup")
-
-
 @my_bp.route("/plugins/github_backup/installations", methods=["GET"])
 @admins_only
 def link_installation():
@@ -145,7 +114,7 @@ def link_installation():
 
     db.session.commit()
 
-    return {"success": True, "message": f"Installation ID {installation_id} saved correctly."}
+    return {"success": True, "message": f"Installation ID saved correctly."}
 
 
 @my_bp.route("/plugins/github_backup/repos", methods=["GET"])
