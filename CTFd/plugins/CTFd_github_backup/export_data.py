@@ -1,6 +1,6 @@
-from CTFd.plugins.github_backup.models import GithubChallengeSync, GithubFlagSync, GithubHintSync
+from CTFd.plugins.CTFd_github_backup.models import GithubChallengeSync, GithubFlagSync, GithubHintSync
 from CTFd.models import Tags, Flags, Hints, Challenges
-from CTFd.plugins.github_backup.utils import generate_uuid
+from CTFd.plugins.CTFd_github_backup.utils import generate_uuid
 
 
 def is_imported_from_github(challenge_id: int) -> bool:
@@ -22,14 +22,14 @@ def prepare_json(challenge_id: int) -> tuple[dict, str]:
     challenge_sync = GithubChallengeSync.query.filter_by(challenge_id=challenge.id).first()
 
     if not challenge_sync:
-        chellenge_uuid = generate_uuid()
+        challenge_uuid = generate_uuid()
     else:
-        chellenge_uuid = challenge_sync.challenge_uuid
+        challenge_uuid = challenge_sync.challenge_uuid
 
     # Prepare challenge data
     data = {
         "challenge": {
-            "uuid": chellenge_uuid,
+            "uuid": challenge_uuid,
             "name": challenge.name,
             "description": challenge.description,
             "attribution": challenge.attribution,

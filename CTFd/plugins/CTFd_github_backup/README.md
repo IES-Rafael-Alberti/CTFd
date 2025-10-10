@@ -69,7 +69,7 @@ Example of JSON schema:
         "value": 50,
         "category": "web",
         "type": "standard",
-        "state": "visibe or hidden",
+        "state": "visible or hidden",
         "flags": [
             {
                 "uuid": "000000000000000",
@@ -118,7 +118,7 @@ For each challenge:
 - description *
 - attribution
 - connection_info
-- max_attemps
+- max_attempts
 - value *
 - category
 - type *: standard (dynamic type not implemented yet)

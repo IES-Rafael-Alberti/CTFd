@@ -2,10 +2,10 @@ from CTFd.models import Challenges
 from CTFd.utils.decorators import admins_only
 from CTFd.utils.user import get_current_user
 
-from CTFd.plugins.github_backup.models import db, GithubRepositories, GithubChallengeSync, GithubFlagSync, GithubHintSync, UserGitHubToken
-from CTFd.plugins.github_backup.expot_data import is_imported_from_github, prepare_json
-from CTFd.plugins.github_backup.import_data import import_challenges_from_repo
-from CTFd.plugins.github_backup.config import config
+from CTFd.plugins.CTFd_github_backup.models import db, GithubRepositories, GithubChallengeSync, GithubFlagSync, GithubHintSync, UserGitHubToken
+from CTFd.plugins.CTFd_github_backup.export_data import is_imported_from_github, prepare_json
+from CTFd.plugins.CTFd_github_backup.import_data import import_challenges_from_repo
+from CTFd.plugins.CTFd_github_backup.config import config
 
 from flask import Blueprint, render_template, request, Response, send_file, redirect
 from datetime import datetime

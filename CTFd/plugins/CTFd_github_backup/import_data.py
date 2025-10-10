@@ -1,6 +1,6 @@
 from CTFd.models import Tags, Flags, Hints, Challenges
-from CTFd.plugins.github_backup.validate_data import validate_tags_data, validate_flag_data, validate_hints_data, validate_challenge_data
-from CTFd.plugins.github_backup.models import db, GithubChallengeSync, GithubFlagSync, GithubHintSync
+from CTFd.plugins.CTFd_github_backup.validate_data import validate_tags_data, validate_flag_data, validate_hints_data, validate_challenge_data
+from CTFd.plugins.CTFd_github_backup.models import db, GithubChallengeSync, GithubFlagSync, GithubHintSync
 from datetime import datetime
 import json
 import requests
