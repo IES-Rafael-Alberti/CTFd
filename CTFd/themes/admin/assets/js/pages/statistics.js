@@ -3,15 +3,6 @@ import CTFd from "../compat/CTFd";
 import $ from "jquery";
 import echarts from "echarts/dist/echarts.common";
 import { colorHash } from "../compat/styles";
-import io from 'socket.io-client';
-
-// Connect to the Socket.IO server
-const socket = io();
-
-// Connection event handler
-socket.on('connect', function () {
-  console.log('Connected to the server');
-});
 
 // Update text content of an element by ID
 function updateTextContent(id, value) {
@@ -434,53 +425,111 @@ function updateSolvePercentagesGraph(data) {
   });
 }
 
-// Socket.IO event handlers
-socket.on('challenge_stats', function (data) {
-  updateChallengeStatsGraph(data);
-  updateCategoriesGraph(data);
-  updatePointsGraph(data);
+// Fetch challenge statistics
+async function fetchChallengeStats() {
+  try {
+    const response = await fetch('/api/v1/statistics/challenges');
+    const data = await response.json();
 
-  const challenges = data.data || [];
+    updateChallengeStatsGraph(data);
+    updateCategoriesGraph(data);
+    updatePointsGraph(data);
 
-  if (challenges.length > 0) {
-    // Find most and least solved challenges
-    let most = challenges[0];
-    let least = challenges[0];
+    const challenges = data.data || [];
 
-    for (const chal of challenges) {
-      if (chal.solves > most.solves) most = chal;
-      if (chal.solves < least.solves) least = chal;
+    if (challenges.length > 0) {
+      // Find most and least solved challenges
+      let most = challenges[0];
+      let least = challenges[0];
+
+      for (const chal of challenges) {
+        if (chal.solves > most.solves) most = chal;
+        if (chal.solves < least.solves) least = chal;
+      }
+
+      updateTextContent('challenge-count', challenges.length);
+      updateTextContent('most-solved', most.name);
+      updateTextContent('most-solved-count', most.solves);
+      updateTextContent('least-solved', least.name);
+      updateTextContent('least-solved-count', least.solves);
     }
-
-    updateTextContent('challenge-count', challenges.length);
-    updateTextContent('most-solved', most.name);
-    updateTextContent('most-solved-count', most.solves);
-    updateTextContent('least-solved', least.name);
-    updateTextContent('least-solved-count', least.solves);
+  } catch (error) {
+    console.error('Error fetching challenge stats:', error);
   }
-});
+}
 
-socket.on('scores_distribution', updateScoresDistributionGraph);
-socket.on('submissions_stats', updateSubmissionsStatsGraph);
+// Fetch score distribution
+async function fetchScoresDistribution() {
+  try {
+    const response = await fetch('/api/v1/statistics/scores/distribution');
+    const data = await response.json();
+    updateScoresDistributionGraph(data);
+  } catch (error) {
+    console.error('Error fetching scores distribution:', error);
+  }
+}
 
-// Update user statistics
-socket.on('users_stats', function (data) {
-  updateTextContent('user-count', data.data.registered);
-});
+// Fetch submissions statistics
+async function fetchSubmissionsStats() {
+  try {
+    const response = await fetch('/api/v1/statistics/submissions');
+    const data = await response.json();
+    updateSubmissionsStatsGraph(data);
+  } catch (error) {
+    console.error('Error fetching submissions stats:', error);
+  }
+}
 
-// Update team statistics
-socket.on('teams_stats', function (data) {
-  updateTextContent('team-count', data.data.registered);
-});
+// Fetch user statistics
+async function fetchUsersStats() {
+  try {
+    const response = await fetch('/api/v1/statistics/users');
+    const data = await response.json();
+    updateTextContent('user-count', data.data.registered);
+  } catch (error) {
+    console.error('Error fetching users stats:', error);
+  }
+}
 
-// Update solve percentages statistics
-socket.on('solve_percentages_stats', function (data) {
-  updateSolvePercentagesGraph(data);
-  updateTextContent('solve-count', data.data.solved);
-  updateTextContent('wrong-count', data.data.unsolved);
-});
+// Fetch team statistics
+async function fetchTeamsStats() {
+  try {
+    const response = await fetch('/api/v1/statistics/teams');
+    const data = await response.json();
+    updateTextContent('team-count', data.data.registered);
+  } catch (error) {
+    console.error('Error fetching teams stats:', error);
+  }
+}
 
-// Request initial data when document is ready
+// Fetch solve percentages statistics
+async function fetchSolvePercentagesStats() {
+  try {
+    const response = await fetch('/api/v1/statistics/challenges/solve_percentages');
+    const data = await response.json();
+    updateSolvePercentagesGraph(data);
+    updateTextContent('solve-count', data.data.solved);
+    updateTextContent('wrong-count', data.data.unsolved);
+  } catch (error) {
+    console.error('Error fetching solve percentages stats:', error);
+  }
+}
+
+// Fetch all statistics
+function fetchAllStats() {
+  fetchChallengeStats();
+  fetchScoresDistribution();
+  fetchSubmissionsStats();
+  fetchUsersStats();
+  fetchTeamsStats();
+  fetchSolvePercentagesStats();
+}
+
+// Initialize when document is ready
 $(document).ready(function () {
-  socket.emit('request_initial_data');
+  // Fetch initial data
+  fetchAllStats();
+
+  // Update data every 2 seconds
+  setInterval(fetchAllStats, 2000);
 });

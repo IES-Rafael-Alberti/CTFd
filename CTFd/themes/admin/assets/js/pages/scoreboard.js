@@ -3,21 +3,12 @@ import CTFd from "../compat/CTFd";
 import $ from "jquery";
 import "../compat/json";
 import { ezAlert } from "../compat/ezq";
-import { io } from "socket.io-client";
 
 // API function mappings for user and team operations
 const api_func = {
   users: (x, y) => CTFd.api.patch_user_public({ userId: x }, y),
   teams: (x, y) => CTFd.api.patch_team_public({ teamId: x }, y),
 };
-
-// Connect to the Socket.IO server
-const socket = io();
-
-// Connection event handler
-socket.on('connect', function () {
-  console.log('Connected to the server');
-});
 
 // Toggle account visibility (single account)
 function toggleAccount() {
@@ -242,12 +233,25 @@ function renderScoreboard(data) {
   }
 }
 
-// Handle real-time scoreboard updates
-socket.on('scoreboard_update', function (data) {
-  renderScoreboard(data.data);
-});
+// Fetch scoreboard data from API
+async function fetchScoreboardData() {
+  try {
+    const response = await fetch('/api/v1/scoreboard');
+    const data = await response.json();
 
-// Request initial data on page load
+    if (data.success && data.data) {
+      renderScoreboard(data.data);
+    }
+  } catch (error) {
+    console.error('Error fetching scoreboard data:', error);
+  }
+}
+
+// Initialize when document is ready
 $(document).ready(function () {
-  socket.emit('request_initial_data');
+  // Fetch initial data
+  fetchScoreboardData();
+
+  // Update data every 2 seconds
+  setInterval(fetchScoreboardData, 2000);
 });

@@ -2,17 +2,13 @@ import Alpine from "alpinejs";
 import CTFd from "./index";
 import { getOption } from "./utils/graphs/echarts/scoreboard";
 import { embed } from "./utils/graphs/echarts";
-import { io } from "socket.io-client";
 
 // Make Alpine and CTFd available globally
 window.Alpine = Alpine;
 window.CTFd = CTFd;
 
-// Default scoreboard polling interval to every 5 minutes
-const scoreboardUpdateInterval = window.scoreboardUpdateInterval || 300000;
-
-// Initialize WebSocket connection
-const socket = io();
+// Polling interval set to 2 seconds
+const scoreboardUpdateInterval = 2000;
 
 // Store a reference to the ECharts instance
 let chartInstance = null;
@@ -53,50 +49,10 @@ Alpine.data("ScoreboardDetail", () => ({
   },
 
   async init() {
-    // Establish WebSocket connection
-    socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
-    });
-
-    // Handle real-time scoreboard updates
-    socket.on('scoreboard_update', async (data) => {
-      this.data = await CTFd.pages.scoreboard.getScoreboardDetail(10, this.activeBracket);
-
-      let optionMerge = window.scoreboardChartOptions;
-      let option = getOption(CTFd.config.userMode, this.data, optionMerge);
-
-      let shouldUpdate = false;
-
-      if (chartInstance) {
-        const currentOption = chartInstance.getOption();
-        shouldUpdate = !areSeriesEqual(currentOption.series, option.series);
-      }
-
-      if (!chartInstance || shouldUpdate) {
-        if (chartInstance) {
-          chartInstance.dispose();
-          chartInstance = null;
-        }
-        chartInstance = embed(this.$refs.scoregraph, option);
-      }
-
-      this.show = Object.keys(this.data).length > 0;
-    });
-
-    // Handle WebSocket disconnection
-    socket.on('disconnect', () => {
-      console.log('Disconnected from WebSocket server');
-    });
-
-    // Handle WebSocket errors
-    socket.on('error', (error) => {
-      console.error('WebSocket error:', error);
-    });
-
     // Initial data fetch and chart initialization
     this.update();
 
-    // Periodic data refresh
+    // Periodic data refresh every 2 seconds
     setInterval(() => {
       this.update();
     }, scoreboardUpdateInterval);
@@ -110,9 +66,13 @@ Alpine.data("ScoreboardList", () => ({
   activeBracket: null,  // Currently active bracket
 
   async update() {
-    // Fetch brackets and standings data
-    this.brackets = await CTFd.pages.scoreboard.getBrackets(CTFd.config.userMode);
-    this.standings = await CTFd.pages.scoreboard.getScoreboard();
+    try {
+      // Fetch brackets and standings data
+      this.brackets = await CTFd.pages.scoreboard.getBrackets(CTFd.config.userMode);
+      this.standings = await CTFd.pages.scoreboard.getScoreboard();
+    } catch (error) {
+      console.error('Error updating scoreboard:', error);
+    }
   },
 
   async init() {
@@ -121,15 +81,10 @@ Alpine.data("ScoreboardList", () => ({
       this.$dispatch("bracket-change", value);
     });
 
-    // Handle real-time scoreboard updates
-    socket.on('scoreboard_update', async (data) => {
-      this.standings = await CTFd.pages.scoreboard.getScoreboard();
-    });
-
     // Initial data fetch
     this.update();
 
-    // Periodic data refresh
+    // Periodic data refresh every 2 seconds
     setInterval(() => {
       this.update();
     }, scoreboardUpdateInterval);
